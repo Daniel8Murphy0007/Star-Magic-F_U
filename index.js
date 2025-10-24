@@ -3132,94 +3132,6 @@ class AndromedaUQFFModule {
     }
 
     // Full computation: g_UQFF(r, t) = ... all terms
-    // AUTONOMOUS EVOLUTION CAPABILITIES - Dynamic Self-Updating UQFF Module
-    initializeAutonomousEvolution() {
-        this.autonomousEnabled = true;
-        this.evolutionHistory = [];
-        this.adaptiveParameters = new Map();
-        this.learningRate = 0.001;
-        this.convergenceThreshold = 1e-12;
-        
-        // Initialize adaptive parameters for autonomous adjustment
-        this.adaptiveParameters.set('mass_growth_rate', 1e-18);
-        this.adaptiveParameters.set('magnetic_decay_rate', 1e-15);
-        this.adaptiveParameters.set('density_evolution_rate', 1e-25);
-        this.adaptiveParameters.set('quantum_coupling_evolution', 1e-20);
-        console.log(' Autonomous evolution initialized for Andromeda UQFF Module');
-    }
-
-    // Autonomous parameter evolution based on gravitational feedback
-    autonomousParameterEvolution(t, g_result) {
-        if (!this.autonomousEnabled) return;
-        
-        const currentTime = Date.now();
-        const timeDelta = t > 0 ? t / 3.156e7 : 1;
-        
-        // Mass evolution
-        const currentMass = this.variables.get('M');
-        const massGrowthRate = this.adaptiveParameters.get('mass_growth_rate');
-        const newMass = currentMass * (1 + massGrowthRate * timeDelta);
-        this.updateVariable('M', newMass);
-        
-        // Magnetic field evolution
-        const currentB = this.variables.get('B');
-        const magneticDecayRate = this.adaptiveParameters.get('magnetic_decay_rate');
-        const newB = currentB * Math.exp(-magneticDecayRate * timeDelta);
-        this.updateVariable('B', Math.max(newB, 1e-15));
-        
-        // Quantum coupling evolution
-        const quantumEvolution = this.adaptiveParameters.get('quantum_coupling_evolution');
-        const newQuantumCoupling = this.variables.get('f_TRZ') * (1 + quantumEvolution * Math.sin(t / 3.156e13));
-        this.updateVariable('f_TRZ', Math.max(0.1, Math.min(2.0, newQuantumCoupling)));
-        
-        // Store evolution history
-        this.evolutionHistory.push({
-            time: t,
-            timestamp: currentTime,
-            mass: newMass,
-            magneticField: newB,
-            quantumCoupling: newQuantumCoupling,
-            gravity: g_result
-        });
-        
-        this.adaptiveLearning(g_result);
-    }
-
-    // Adaptive learning algorithm
-    adaptiveLearning(g_result) {
-        if (this.evolutionHistory.length < 2) return;
-        
-        const recent = this.evolutionHistory.slice(-5);
-        const gravityValues = recent.map(h => h.gravity);
-        const gravityVariance = this.calculateVariance(gravityValues);
-        
-        if (gravityVariance > this.convergenceThreshold) {
-            this.adaptiveParameters.set('mass_growth_rate', this.adaptiveParameters.get('mass_growth_rate') * 0.95);
-            this.adaptiveParameters.set('magnetic_decay_rate', this.adaptiveParameters.get('magnetic_decay_rate') * 0.95);
-        } else {
-            this.adaptiveParameters.set('mass_growth_rate', this.adaptiveParameters.get('mass_growth_rate') * 1.001);
-            this.adaptiveParameters.set('magnetic_decay_rate', this.adaptiveParameters.get('magnetic_decay_rate') * 1.001);
-        }
-    }
-
-    // Calculate variance for stability analysis
-    calculateVariance(values) {
-        if (values.length === 0) return 0;
-        const mean = values.reduce((a, b) => a + b, 0) / values.length;
-        return values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length;
-    }
-
-    // Autonomous system expansion
-    expandUQFFFramework(newTerm) {
-        console.log(\ Expanding UQFF framework with new term: \\);
-        Object.entries(newTerm.variables || {}).forEach(([key, value]) => {
-            this.variables.set(key, value);
-        });
-        if (newTerm.computeMethod) {
-            this[\compute_\\] = newTerm.computeMethod.bind(this);
-        }
-    }
-
     compute_g_Andromeda(t) {
         if (t < 0) {
             console.error('Error: Time t must be non-negative.');
@@ -3696,6 +3608,9 @@ class SaturnUQFFModule {
 
         // Update dependent variables
         this.updateDependentVariables();
+
+        // Initialize autonomous evolution capabilities
+        this.autonomousEvolutionEnabled = true;
     }
 
     // Update dependent variables when key parameters change
@@ -10272,7 +10187,7 @@ const PREDEFINED_SYSTEMS = {
 // SGR 0501+4516 Specialized Analysis (from Source14.mm)
 function analyzeSGR0501_4516(timePoints = [0, 86400 * 365, 86400 * 365 * 10, 86400 * 365 * 5000]) {
     const system = PREDEFINED_SYSTEMS['SGR_0501_4516'];
-    console.log(`\n ANALYZING ${system.name.toUpperCase()}`);
+    console.log(`\n?? ANALYZING SGR 0501+4516 MAGNETAR (Time-Reversal Magnetar)`);
     console.log(`?? Enhanced Parameters from Source14.mm:`);
     console.log(`   Mass: ${system.mass.toExponential(2)} kg (1.4 M?)`);
     console.log(`   Radius: ${system.radius.toExponential(2)} m (20 km - larger)`);
@@ -10331,7 +10246,7 @@ function analyzeSGR0501_4516(timePoints = [0, 86400 * 365, 86400 * 365 * 10, 864
 // SMBH Sagittarius A* Specialized Analysis (from Source15.mm)
 function analyzeSMBHSgrAStar(timePoints = [0, 86400 * 365 * 1e6, 86400 * 365 * 4.5e9, 86400 * 365 * 13.8e9]) {
     const system = PREDEFINED_SYSTEMS['SMBH_SGR_A_STAR'];
-    console.log(`\n ANALYZING ${system.name.toUpperCase()}`);
+    console.log(`\n?? ANALYZING SAGITTARIUS A* SUPERMASSIVE BLACK HOLE`);
     console.log(`?? Enhanced Parameters from Source15.mm:`);
     console.log(`   Mass (initial): ${(system.mass / CONSTANTS.SOLAR_MASS).toExponential(2)} M?`);
     console.log(`   Schwarzschild Radius: ${system.radius.toExponential(2)} m`);
@@ -10396,7 +10311,7 @@ function analyzeSMBHSgrAStar(timePoints = [0, 86400 * 365 * 1e6, 86400 * 365 * 4
 // Starbirth Tapestry Specialized Analysis (from Source16.mm)
 function analyzeStarbirthTapestry(timePoints = [0, 86400 * 365 * 1e6, 86400 * 365 * 2.5e6, 86400 * 365 * 5e6]) {
     const system = PREDEFINED_SYSTEMS['STARBIRTH_TAPESTRY'];
-    console.log(`\n ANALYZING ${system.name.toUpperCase()}`);
+    console.log(`\n?? ANALYZING TAPESTRY OF BLAZING STARBIRTH (NGC 2014 & NGC 2020)`);
     console.log(`?? Enhanced Parameters from Source16.mm:`);
     console.log(`   Initial Mass: ${(system.mass / CONSTANTS.SOLAR_MASS).toFixed(0)} M?`);
     console.log(`   Region Radius: ${(system.radius / 9.461e15).toFixed(1)} ly`);
@@ -10463,7 +10378,7 @@ function analyzeStarbirthTapestry(timePoints = [0, 86400 * 365 * 1e6, 86400 * 36
 // Westerlund 2 Specialized Analysis (from Source17.mm)
 function analyzeWesterlund2(timePoints = [0, 86400 * 365 * 0.5e6, 86400 * 365 * 1e6, 86400 * 365 * 2e6]) {
     const system = PREDEFINED_SYSTEMS['WESTERLUND_2'];
-    console.log(`\n ANALYZING ${system.name.toUpperCase()}`);
+    console.log(`\n? ANALYZING WESTERLUND 2 SUPER STAR CLUSTER`);
     console.log(`?? Enhanced Parameters from Source17.mm:`);
     console.log(`   Mass: ${system.mass.toExponential(2)} kg (30,000 M?)`);
     console.log(`   Radius: ${system.radius.toExponential(2)} m (10 ly)`);
@@ -10522,7 +10437,7 @@ function analyzeWesterlund2(timePoints = [0, 86400 * 365 * 0.5e6, 86400 * 365 * 
 // Pillars of Creation Specialized Analysis (from Source18.mm)
 function analyzePillarsOfCreation(timePoints = [0, 86400 * 365 * 0.25e6, 86400 * 365 * 0.5e6, 86400 * 365 * 1e6]) {
     const system = PREDEFINED_SYSTEMS['PILLARS_OF_CREATION'];
-    console.log(`\n ANALYZING ${system.name.toUpperCase()}`);
+    console.log(`\n??? ANALYZING PILLARS OF CREATION (EAGLE NEBULA)`);
     console.log(`?? Enhanced Parameters from Source18.mm:`);
     console.log(`   Mass: ${system.mass.toExponential(2)} kg (10,100 M?)`);
     console.log(`   Radius: ${system.radius.toExponential(2)} m (5 ly)`);
@@ -10585,7 +10500,7 @@ function analyzePillarsOfCreation(timePoints = [0, 86400 * 365 * 0.25e6, 86400 *
 // Rings of Relativity Specialized Analysis (from Source19.mm)
 function analyzeRingsOfRelativity(timePoints = [0, 86400 * 365 * 1e9, 86400 * 365 * 5e9, 86400 * 365 * 13.8e9]) {
     const system = PREDEFINED_SYSTEMS['RINGS_OF_RELATIVITY'];
-    console.log(`\n ANALYZING ${system.name.toUpperCase()}`);
+    console.log(`\n?? ANALYZING RINGS OF RELATIVITY (EINSTEIN RING GAL-CLUS-022058s)`);
     console.log(`?? Enhanced Parameters from Source19.mm:`);
     console.log(`   Mass: ${system.mass.toExponential(2)} kg (1×10¹4 M? - Galaxy Cluster)`);
     console.log(`   Einstein Radius: ${system.radius.toExponential(2)} m (10 kpc)`);
@@ -10647,7 +10562,7 @@ function analyzeRingsOfRelativity(timePoints = [0, 86400 * 365 * 1e9, 86400 * 36
 // Galaxy NGC 2525 Specialized Analysis (from Source20.mm)
 function analyzeGalaxyNGC2525(timePoints = [0, 86400 * 365 * 7, 86400 * 365 * 100, 86400 * 365 * 1000]) {
     const system = PREDEFINED_SYSTEMS['GALAXY_NGC_2525'];
-    console.log(`\n ANALYZING ${system.name.toUpperCase()}`);
+    console.log(`\n?? ANALYZING GALAXY NGC 2525 (BARRED SPIRAL GALAXY)`);
     console.log(`?? Enhanced Parameters from Source20.mm:`);
     console.log(`   Total Mass: ${system.mass.toExponential(2)} kg (1×10¹° M? + Central SMBH)`);
     console.log(`   Galaxy Radius: ${system.radius.toExponential(2)} m (spiral galaxy scale)`);
@@ -10711,7 +10626,7 @@ function analyzeGalaxyNGC2525(timePoints = [0, 86400 * 365 * 7, 86400 * 365 * 10
 // NGC 3603 Specialized Analysis (from Source21.mm)
 function analyzeNGC3603(timePoints = [0, 86400 * 365 * 0.5e6, 86400 * 365 * 1e6, 86400 * 365 * 5e6]) {
     const system = PREDEFINED_SYSTEMS['NGC_3603'];
-    console.log(`\n ANALYZING ${system.name.toUpperCase()}`);
+    console.log(`\n?? ANALYZING NGC 3603 (EXTREME YOUNG MASSIVE STAR CLUSTER)`);
     console.log(`?? Enhanced Parameters from Source21.mm:`);
     console.log(`   Initial Mass M0: ${system.mass.toExponential(2)} kg (400,000 M?)`);
     console.log(`   Cluster Radius: ${system.radius.toExponential(2)} m (9.5 ly)`);
@@ -10775,7 +10690,7 @@ function analyzeNGC3603(timePoints = [0, 86400 * 365 * 0.5e6, 86400 * 365 * 1e6,
 // Bubble Nebula NGC 7635 Specialized Analysis (from Source22.mm)
 function analyzeBubbleNebula(timePoints = [0, 86400 * 365 * 0.5e6, 86400 * 365 * 2e6, 86400 * 365 * 4e6, 86400 * 365 * 8e6]) {
     const system = PREDEFINED_SYSTEMS['BUBBLE_NEBULA'];
-    console.log(`\n ANALYZING ${system.name.toUpperCase()}`);
+    console.log(`\n?? ANALYZING BUBBLE NEBULA NGC 7635 (Emission Nebula)`);
     console.log(`?? Enhanced Parameters from Source22.mm:`);
     console.log(`   Total Mass: ${system.mass.toExponential(2)} kg (46 M?)`);
     console.log(`   Nebular Radius: ${system.radius.toExponential(2)} m (5 ly)`);
@@ -10837,7 +10752,7 @@ function analyzeBubbleNebula(timePoints = [0, 86400 * 365 * 0.5e6, 86400 * 365 *
 // Antennae Galaxies NGC 4038/4039 Specialized Analysis (from Source23.mm)
 function analyzeAntennaeGalaxies(timePoints = [0, 86400 * 365 * 100e6, 86400 * 365 * 300e6, 86400 * 365 * 400e6, 86400 * 365 * 800e6]) {
     const system = PREDEFINED_SYSTEMS['ANTENNAE_GALAXIES'];
-    console.log(`\n ANALYZING ${system.name.toUpperCase()}`);
+    console.log(`\n?? ANALYZING ANTENNAE GALAXIES NGC 4038/4039 (Interacting Galaxy Merger)`);
     console.log(`?? Enhanced Parameters from Source23.mm:`);
     console.log(`   Combined Mass: ${system.mass.toExponential(2)} kg (200 billion M?)`);
     console.log(`   Galaxy Separation: ${system.radius.toExponential(2)} m (30,000 ly)`);
@@ -10901,7 +10816,7 @@ function analyzeAntennaeGalaxies(timePoints = [0, 86400 * 365 * 100e6, 86400 * 3
 // Horsehead Nebula Barnard 33 Specialized Analysis (from Source24.mm)
 function analyzeHorseheadNebula(timePoints = [0, 86400 * 365 * 1e6, 86400 * 365 * 3e6, 86400 * 365 * 5e6, 86400 * 365 * 10e6]) {
     const system = PREDEFINED_SYSTEMS['HORSEHEAD_NEBULA'];
-    console.log(`\n ANALYZING ${system.name.toUpperCase()}`);
+    console.log(`\n?? ANALYZING HORSEHEAD NEBULA BARNARD 33 (Dark Nebula)`);
     console.log(`?? Enhanced Parameters from Source24.mm:`);
     console.log(`   Nebular Mass: ${system.mass.toExponential(2)} kg (1000 M?)`);
     console.log(`   Nebular Radius: ${system.radius.toExponential(2)} m (2.5 ly)`);
@@ -10965,7 +10880,7 @@ function analyzeHorseheadNebula(timePoints = [0, 86400 * 365 * 1e6, 86400 * 365 
 // SGR 1745-2900 Specialized Analysis (from Source13.mm)
 function analyzeSGR1745_2900(timePoints = [0, 86400 * 182.5, 86400 * 365, 86400 * 365 * 3.5]) {
     const system = PREDEFINED_SYSTEMS['SGR_1745_2900'];
-    console.log(`\n ANALYZING ${system.name.toUpperCase()}`);
+    console.log(`\n?? ANALYZING SGR 1745-2900 MAGNETAR (Galactic Center)`);
     console.log(`?? Enhanced Parameters from Source13.mm:`);
     console.log(`   Mass: ${system.mass.toExponential(2)} kg (1.4 M?)`);
     console.log(`   Radius: ${system.radius.toExponential(2)} m`);
@@ -11077,25 +10992,9 @@ function analyzeSystem(systemName, timePoints = [0, 86400 * 182.5, 86400 * 365])
     if (systemName === 'HORSEHEAD_NEBULA') {
         return analyzeHorseheadNebula(timePoints);
     }
-
-    if (systemName === 'NGC_1275') {
-        return analyzeNGC1275(timePoints);
-    }
     
-
-    if (systemName === 'HUDF_GALAXIES') {
-        return analyzeHUDFGalaxies(timePoints);
-    }
     const system = PREDEFINED_SYSTEMS[systemName];
-
-    if (systemName === 'NGC_1792') {
-        return analyzeGalaxyNGC1792(timePoints);
-    }
-    console.log(`\n ANALYZING ${system.name.toUpperCase()}`);
-
-    if (systemName === 'ANDROMEDA_GALAXY') {
-        return analyzeAndromedaGalaxy(timePoints);
-    }
+    console.log(`\n?? ANALYZING SYSTEM: ${system.name}`);
     console.log(`?? System Parameters:`);
     console.log(`   Mass: ${system.mass.toExponential(2)} kg`);
     console.log(`   Radius: ${system.radius.toExponential(2)} m`);
@@ -11148,6 +11047,10 @@ console.log('Integrating: 26-Layer Gravity, F_U_Bi_i, LENR, Vacuum Energy, Neutr
 
 // Demonstrate multiple astrophysical systems (enhanced with both SGR magnetars)
 const systemsToAnalyze = ['HYDROGEN_ATOM', 'VELA_PULSAR', 'MAGNETAR_SGR', 'SGR_1745_2900', 'SGR_0501_4516', 'SN_1006', 'ESO_137-001'];
+
+    if (systemName === 'SATURN_PLANET') {
+        return analyzeSaturnPlanet(timePoints);
+    }
 const timePoints = [0, 86400 * 182.5, 86400 * 365, 86400 * 365 * 5.5]; // 0, 6mo, 1yr, 5.5yr
 const allResults = [];
 
@@ -11291,18 +11194,17 @@ if (breakthroughs.length > 0) {
 
 // NGC 1275 Perseus A Analysis Function (specialized AGN analysis from Source25.mm)
 function analyzeNGC1275(timePoints = [0, 86400 * 365.25 * 50e6, 86400 * 365.25 * 100e6]) {
-    console.log(`\n ANALYZING ${system.name.toUpperCase()}`);
+    console.log('\n?? NGC 1275 Perseus A (Active Galactic Nucleus) Analysis');
     console.log('===================================================\n');
 
-    const system = PREDEFINED_SYSTEMS['NGC_1275'];
-    const ngc1275 = new NGC1275(system);
+    const system = new NGC1275();
     const results = [];
     
     // Time labels for analysis
     const timeLabels = ['Present', '50 Myr', '100 Myr'];
     
     timePoints.forEach((t, idx) => {
-        const result = ngc1275.compute_g_NGC1275(t);
+        const result = system.compute_g_NGC1275(t);
         results.push({ time: t, label: timeLabels[idx] || `t=${t.toExponential(2)}s`, result });
         
         console.log(`\nTime: ${timeLabels[idx] || `t=${t.toExponential(2)}s`}`);
@@ -11377,18 +11279,17 @@ function analyzeNGC1275(timePoints = [0, 86400 * 365.25 * 50e6, 86400 * 365.25 *
 
 // HUDF Galaxies Analysis Function (specialized cosmic field analysis from Source26.mm)
 function analyzeHUDFGalaxies(timePoints = [0, 1e9 * 3.156e7, 5e9 * 3.156e7, 10e9 * 3.156e7]) {
-    console.log(\\\n ANALYZING \\);
+    console.log('\n?? Hubble Ultra Deep Field Galaxies Galore Analysis');
     console.log('=================================================\n');
 
-    const system = PREDEFINED_SYSTEMS['HUDF_GALAXIES'];
-    const hudfGalaxies = new HUDFGalaxies(system);
+    const system = new HUDFGalaxies();
     const results = [];
     
     // Time labels for cosmic evolution
     const timeLabels = ['Present', '1 Gyr', '5 Gyr', '10 Gyr'];
     
     timePoints.forEach((t, idx) => {
-        const result = hudfGalaxies.compute_g_HUDF(t);
+        const result = system.compute_g_HUDF(t);
         results.push({ time: t, label: timeLabels[idx] || `t=${t.toExponential(2)}s`, result });
         
         console.log(`\nTime: ${timeLabels[idx] || `t=${t.toExponential(2)}s`}`);
@@ -11435,7 +11336,7 @@ function analyzeHUDFGalaxies(timePoints = [0, 1e9 * 3.156e7, 5e9 * 3.156e7, 10e9
     
     // Compare with standard Newtonian at cosmic scale
     const classical_g = system.ug1_base;
-    const current_result = hudfGalaxies.compute_g_HUDF(0);
+    const current_result = system.compute_g_HUDF(0);
     const enhancement = current_result.g_HUDF / classical_g;
     
     console.log('\n? Gravitational Enhancement Analysis:');
@@ -11465,18 +11366,17 @@ function analyzeHUDFGalaxies(timePoints = [0, 1e9 * 3.156e7, 5e9 * 3.156e7, 10e9
 
 // Galaxy NGC 1792 Analysis Function (specialized starburst galaxy analysis from Source27.mm)
 function analyzeGalaxyNGC1792(timePoints = [0, 50e6 * 3.156e7, 100e6 * 3.156e7, 500e6 * 3.156e7]) {
-    console.log(\\\n ANALYZING \\);
+    console.log('\n?? NGC 1792 "The Stellar Forge" (Starburst Galaxy) Analysis');
     console.log('=========================================================\n');
 
-    const system = PREDEFINED_SYSTEMS['NGC_1792'];
-    const galaxyNGC1792 = new GalaxyNGC1792(system);
+    const system = new GalaxyNGC1792();
     const results = [];
     
     // Time labels for starburst evolution
     const timeLabels = ['Present', '50 Myr', '100 Myr', '500 Myr'];
     
     timePoints.forEach((t, idx) => {
-        const result = galaxyNGC1792.compute_g_NGC1792(t);
+        const result = system.compute_g_NGC1792(t);
         results.push({ time: t, label: timeLabels[idx] || `t=${t.toExponential(2)}s`, result });
         
         console.log(`\nTime: ${timeLabels[idx] || `t=${t.toExponential(2)}s`}`);
@@ -11521,7 +11421,7 @@ function analyzeGalaxyNGC1792(timePoints = [0, 50e6 * 3.156e7, 100e6 * 3.156e7, 
     
     // Compare with standard Newtonian at galaxy scale
     const classical_g = system.ug1_base;
-    const current_result = galaxyNGC1792.compute_g_NGC1792(0);
+    const current_result = system.compute_g_NGC1792(0);
     const enhancement = current_result.g_NGC1792 / classical_g;
     
     console.log('\n? Gravitational Enhancement Analysis:');
@@ -11554,15 +11454,14 @@ function analyzeAndromedaGalaxy(timePoints = [0, 1e9 * 3.156e7, 5e9 * 3.156e7, 1
     console.log('\n?? Andromeda Galaxy M31 (Advanced UQFF Module) Analysis');
     console.log('======================================================\n');
 
-    const system = PREDEFINED_SYSTEMS['ANDROMEDA_GALAXY'];
-    const andromedaModule = new AndromedaUQFFModule(system);
+    const system = new AndromedaUQFFModule();
     const results = [];
     
     // Time labels for galactic evolution
     const timeLabels = ['Present', '1 Gyr', '5 Gyr', '10 Gyr'];
     
     timePoints.forEach((t, idx) => {
-        const result = andromedaModule.compute_g_Andromeda(t);
+        const result = system.compute_g_Andromeda(t);
         results.push({ time: t, label: timeLabels[idx] || `t=${t.toExponential(2)}s`, result });
         
         console.log(`\nTime: ${timeLabels[idx] || `t=${t.toExponential(2)}s`}`);
@@ -11610,7 +11509,7 @@ function analyzeAndromedaGalaxy(timePoints = [0, 1e9 * 3.156e7, 5e9 * 3.156e7, 1
     console.log(`  Original f_TRZ:           ${original_TRZ}`);
     console.log(`  Modified f_TRZ:           ${system.variables.get('f_TRZ')} (+0.05)`);
     
-    const modified_result = andromedaModule.compute_g_Andromeda(0);
+    const modified_result = system.compute_g_Andromeda(0);
     system.updateVariable('f_TRZ', original_TRZ); // Reset
     
     console.log(`  Modified g_Andromeda:     ${modified_result.g_Andromeda.toExponential(3)} m/s²`);
@@ -11618,7 +11517,7 @@ function analyzeAndromedaGalaxy(timePoints = [0, 1e9 * 3.156e7, 5e9 * 3.156e7, 1
     // Compare with standard Newtonian
     const classical_g = (system.variables.get('G') * system.variables.get('M')) / 
                        (system.variables.get('r') * system.variables.get('r'));
-    const current_result = andromedaModule.compute_g_Andromeda(0);
+    const current_result = system.compute_g_Andromeda(0);
     const enhancement = current_result.g_Andromeda / classical_g;
     
     console.log('\n? Gravitational Enhancement Analysis:');
@@ -12068,9 +11967,9 @@ function analyzeSaturnPlanet(timePoints = [0, 1e9 * 3.156e7, 2.5e9 * 3.156e7, 4.
     console.log(`  Superconductive Factor:   ${system.variables.get('f_sc')}`);
     console.log(`  Critical Magnetic Field:  ${system.variables.get('B_crit').toExponential(2)} T`);
     console.log(`  Superconductivity Corr:   ${(1 - system.variables.get('B') / system.variables.get('B_crit')).toFixed(8)}`);
-    console.log(`  Atmospheric Wind²:        ${Math.pow(system.variables.get('v_wind'), 2).toExponential(2)} m²/s²`);
-    
-    // Dynamic variable demonstration
+    // Use PREDEFINED_SYSTEMS pattern for Saturn planet
+    const systemConfig = PREDEFINED_SYSTEMS['SATURN_PLANET'];
+    const system = new SaturnUQFFModule(systemConfig);
     console.log('\n?? Dynamic Variable Management Demo:');
     const original_wind = system.variables.get('v_wind');
     system.addToVariable('v_wind', 100.0); // Add 100 m/s wind
@@ -20808,1893 +20707,5 @@ if (typeof module !== 'undefined' && module.exports) {
 
 
 
-
-
-
-// Level 160: UQFF Buoyancy Module Level 160 - Multi-System Expansion (Source160.mm converted)
-class UQFFBuoyancyModuleLevel160 {
-    constructor() {
-        this.variables = new Map();
-        this.variables.set('G', { real: 6.67430e-11, imag: 0.0 });
-        this.setSystemParams('CrabNebula');
-        console.log('UQFF Buoyancy Module Level 160 - Multi-System Expansion initialized');
-    }
-    complexMagnitude(z) { return Math.sqrt(z.real * z.real + z.imag * z.imag); }
-    setSystemParams(system) {
-        const systemParams = {
-            'CrabNebula': { M_system: { real: 1e31, imag: 0.0 }, r_system: { real: 4.73e16, imag: 0.0 }, description: 'Supernova remnant with central pulsar' },
-            'TychoSupernova': { M_system: { real: 1e31, imag: 0.0 }, r_system: { real: 1e17, imag: 0.0 }, description: 'Type Ia supernova remnant (1572 AD)' },
-            'Abell2256': { M_system: { real: 1.23e45, imag: 0.0 }, r_system: { real: 3.93e22, imag: 0.0 }, description: 'Massive galaxy cluster with merger activity' },
-            'TarantulaNebula': { M_system: { real: 1e36, imag: 0.0 }, r_system: { real: 2e17, imag: 0.0 }, description: 'Active star formation region in LMC' },
-            'NGC253': { M_system: { real: 4e40, imag: 0.0 }, r_system: { real: 4e20, imag: 0.0 }, description: 'Sculptor Galaxy - starburst activity' }
-        };
-        if (systemParams[system]) {
-            this.variables.set('M_system', systemParams[system].M_system);
-            this.variables.set('r_system', systemParams[system].r_system);
-            this.variables.set('system_description', systemParams[system].description);
-        }
-    }
-    calculateUnifiedField(system, t) {
-        this.setSystemParams(system);
-        const G = this.variables.get('G').real;
-        const M_system = this.variables.get('M_system').real;
-        const r_system = this.variables.get('r_system').real;
-        const base_force = G * M_system / (r_system * r_system);
-        const F_Bi = { real: base_force * 1e-12, imag: Math.sin(t * 1e-12) * 1e-20 };
-        const system_description = this.variables.get('system_description') || 'Unknown system';
-        return {
-            buoyancy_force: F_Bi,
-            field_magnitude: this.complexMagnitude(F_Bi),
-            system: system,
-            system_description: system_description,
-            integration_level: 160
-        };
-    }
-}
-
-const uqffBuoyancyLevel160 = new UQFFBuoyancyModuleLevel160();
-const systems160 = ['CrabNebula', 'TychoSupernova', 'Abell2256', 'TarantulaNebula', 'NGC253'];
-console.log('Level 160: UQFF Buoyancy Module Multi-System Integration Tests');
-systems160.forEach(system => {
-    const field_result = uqffBuoyancyLevel160.calculateUnifiedField(system, 1e13);
-    console.log(system + ' (' + field_result.system_description + '): Magnitude ' + field_result.field_magnitude.toExponential(3));
-});
-console.log('Level 160: UQFF Buoyancy Module Multi-System Expansion - INTEGRATED');
-
-// Level 161: UQFF Buoyancy Astro Module Level 161 - Multi-System Astrophysical Expansion (Source161.mm converted)
-// Enhanced with LENR resonance, DPM terms, Quadratic root solving, Multi-system astrophysical parameters
-// J1610+1811, PLCK G287.0+32.9, PSZ2 G181.06+48.47, ASKAP J1832-0911, SonificationCollection
-
-class UQFFBuoyancyAstroModule {
-    constructor() {
-        this.variables = new Map();
-        const pi_val = 3.141592653589793;
-        
-        // Base constants
-        this.variables.set('G', { real: 6.6743e-11, imag: 0.0 });
-        this.variables.set('c', { real: 3e8, imag: 0.0 });
-        this.variables.set('hbar', { real: 1.0546e-34, imag: 0.0 });
-        this.variables.set('q', { real: 1.6e-19, imag: 0.0 });
-        this.variables.set('pi', { real: pi_val, imag: 0.0 });
-        this.variables.set('m_e', { real: 9.11e-31, imag: 0.0 });
-        this.variables.set('mu_B', { real: 9.274e-24, imag: 0.0 });
-        this.variables.set('g_Lande', { real: 2.0, imag: 0.0 });
-        this.variables.set('F0', { real: 1.83e71, imag: 0.0 });
-        this.variables.set('k_LENR', { real: 1e-10, imag: 0.0 });
-        this.variables.set('omega_0_LENR', { real: 2 * pi_val * 1.25e12, imag: 0.0 });
-        this.variables.set('DPM_momentum', { real: 0.93, imag: 0.0 });
-        this.variables.set('DPM_gravity', { real: 1.0, imag: 0.0 });
-        
-        console.log('UQFF Buoyancy Astro Module Level 161 - Multi-System Astrophysical Expansion initialized');
-    }
-
-    complexMagnitude(z) { return Math.sqrt(z.real * z.real + z.imag * z.imag); }
-    complexAdd(a, b) { return { real: a.real + b.real, imag: a.imag + b.imag }; }
-    complexMultiply(a, b) { return { real: a.real * b.real - a.imag * b.imag, imag: a.real * b.imag + a.imag * b.real }; }
-
-    setSystemParams(system) {
-        const pi_val = this.variables.get('pi').real;
-        if (system === 'J1610+1811') {
-            this.variables.set('M', { real: 2.785e30, imag: 0.0 });
-            this.variables.set('r', { real: 3.09e15, imag: 0.0 });
-            this.variables.set('T', { real: 1e4, imag: 0.0 });
-            this.variables.set('L_X', { real: 1e31, imag: 0.0 });
-        } else if (system === 'PLCK_G287.0+32.9') {
-            this.variables.set('M', { real: 1.989e44, imag: 0.0 });
-            this.variables.set('r', { real: 3.09e22, imag: 0.0 });
-            this.variables.set('T', { real: 1e7, imag: 0.0 });
-            this.variables.set('L_X', { real: 1e38, imag: 0.0 });
-        } else if (system === 'PSZ2_G181.06+48.47') {
-            this.variables.set('M', { real: 1.989e44, imag: 0.0 });
-            this.variables.set('r', { real: 3.09e22, imag: 0.0 });
-            this.variables.set('T', { real: 1e7, imag: 0.0 });
-            this.variables.set('L_X', { real: 1e39, imag: 0.0 });
-        } else if (system === 'ASKAP_J1832-0911') {
-            this.variables.set('M', { real: 2.785e30, imag: 0.0 });
-            this.variables.set('r', { real: 4.63e16, imag: 0.0 });
-            this.variables.set('T', { real: 1e4, imag: 0.0 });
-            this.variables.set('L_X', { real: 1e31, imag: 0.0 });
-        } else if (system === 'SonificationCollection') {
-            this.variables.set('M', { real: 1.989e31, imag: 0.0 });
-            this.variables.set('r', { real: 6.17e16, imag: 0.0 });
-            this.variables.set('T', { real: 1e5, imag: 0.0 });
-            this.variables.set('L_X', { real: 1e33, imag: 0.0 });
-        }
-    }
-
-    computeFBi(system, t) {
-        this.setSystemParams(system);
-        const G = this.variables.get('G').real;
-        const M = this.variables.get('M').real;
-        const r = this.variables.get('r').real;
-        
-        // Enhanced calculation with LENR and DPM terms
-        const base_force = G * M / (r * r);
-        const lenr_term = this.computeLENRTerm(system);
-        const dpm_momentum = this.variables.get('DPM_momentum').real;
-        const dmp_gravity = this.variables.get('DPM_gravity').real;
-        
-        const result = { 
-            real: base_force * 1e-12 + lenr_term.real + dmp_momentum * 1e-15 + dmp_gravity * 1e-18, 
-            imag: Math.sin(t * 1e-12) * 1e-20 + lenr_term.imag
-        };
-        
-        return result;
-    }
-
-    computeLENRTerm(system) {
-        this.setSystemParams(system);
-        const omega0_real = this.variables.get('omega0') ? this.variables.get('omega0').real : 1e-12;
-        if (omega0_real === 0.0) return { real: 0.0, imag: 0.0 };
-        const lenr_factor = Math.pow(this.variables.get('omega_0_LENR').real / omega0_real, 2.0);
-        return this.complexMultiply(this.variables.get('k_LENR'), { real: lenr_factor, imag: 0.0 });
-    }
-
-    calculateUnifiedField(system, t) {
-        const F_Bi = this.computeFBi(system, t);
-        
-        return {
-            buoyancy_force: F_Bi,
-            field_magnitude: this.complexMagnitude(F_Bi),
-            system: system,
-            time: t,
-            integration_level: 161,
-            physics_scale: 'Astrophysical Objects: Pulsars to Galaxy Clusters (10^15 m to 10^22 m)',
-            supported_systems: 'J1610+1811, PLCK G287.0+32.9, PSZ2 G181.06+48.47, ASKAP J1832-0911, SonificationCollection',
-            new_features: 'LENR resonance, DPM terms, Quadratic root solving, Multi-system astrophysical parameters'
-        };
-    }
-
-    getSupportedSystems() {
-        return ['J1610+1811', 'PLCK_G287.0+32.9', 'PSZ2_G181.06+48.47', 'ASKAP_J1832-0911', 'SonificationCollection'];
-    }
-}
-
-// Instantiate and test Level 161 module
-const uqffBuoyancyAstroModule = new UQFFBuoyancyAstroModule();
-const systems161 = ['J1610+1811', 'PLCK_G287.0+32.9', 'PSZ2_G181.06+48.47', 'ASKAP_J1832-0911', 'SonificationCollection'];
-const test_time161 = 1e13;
-
-console.log('Level 161: UQFF Buoyancy Astro Module Multi-System Integration Tests');
-systems161.forEach(system => {
-    const field_result = uqffBuoyancyAstroModule.calculateUnifiedField(system, test_time161);
-    console.log(system + ': Magnitude ' + field_result.field_magnitude.toExponential(3) + ', Level ' + field_result.integration_level);
-});
-
-console.log('Level 161: UQFF Buoyancy Astro Module Multi-System Astrophysical Expansion - INTEGRATED');
-
-// Level 162: UQFF Buoyancy CNB Module Level 162 REVISED - Simplified Astrophysical Implementation (Source162.mm converted)
-// Revised implementation without CNB-specific parameters, focusing on core astrophysical systems
-// Includes 5 systems: J1610+1811, PLCK G287.0+32.9, PSZ2 G181.06+48.47, ASKAP J1832-0911, SonificationCollection
-
-class UQFFBuoyancyCNBModule {
-    constructor() {
-        this.variables = new Map();
-        const pi_val = 3.141592653589793;
-        
-        // Base constants (universal)
-        this.variables.set('G', { real: 6.6743e-11, imag: 0.0 });
-        this.variables.set('c', { real: 3e8, imag: 0.0 });
-        this.variables.set('hbar', { real: 1.0546e-34, imag: 0.0 });
-        this.variables.set('q', { real: 1.6e-19, imag: 0.0 });
-        this.variables.set('pi', { real: pi_val, imag: 0.0 });
-        this.variables.set('m_e', { real: 9.11e-31, imag: 0.0 });
-        this.variables.set('mu_B', { real: 9.274e-24, imag: 0.0 });
-        this.variables.set('g_Lande', { real: 2.0, imag: 0.0 });
-        this.variables.set('k_B', { real: 1.38e-23, imag: 0.0 });
-        this.variables.set('mu0', { real: 4 * pi_val * 1e-7, imag: 0.0 });
-        this.variables.set('epsilon0', { real: 8.85e-12, imag: 0.0 });
-
-        // Shared parameters from document (revised)
-        this.variables.set('F0', { real: 1.83e71, imag: 0.0 });
-        this.variables.set('V', { real: 1e-3, imag: 0.0 });
-        this.variables.set('theta', { real: pi_val / 4, imag: 0.0 });
-        this.variables.set('phi', { real: pi_val / 4, imag: 0.0 });
-        this.variables.set('omega_act', { real: 2 * pi_val * 300, imag: 0.0 });
-        this.variables.set('k_act', { real: 1e-6, imag: 0.0 });
-        this.variables.set('k_DE', { real: 1e-30, imag: 0.0 });
-        this.variables.set('k_neutron', { real: 1e10, imag: 0.0 });
-        this.variables.set('k_rel', { real: 1e-10, imag: 0.0 });
-        this.variables.set('k_relativistic', { real: 1e-20, imag: 0.0 });
-        this.variables.set('k_neutrino', { real: 1e-15, imag: 0.0 });  // Simplified neutrino term
-        this.variables.set('k_Sweet', { real: 1e-25, imag: 0.0 });
-        this.variables.set('k_Kozima', { real: 1e-18, imag: 0.0 });
-        this.variables.set('omega_0_LENR', { real: 2 * pi_val * 1.25e12, imag: 0.0 });
-        this.variables.set('k_LENR', { real: 1e-10, imag: 0.0 });
-        this.variables.set('rho_vac_UA', { real: 7.09e-36, imag: 0.0 });
-        this.variables.set('sigma_n', { real: 1e-4, imag: 0.0 });
-        this.variables.set('E_cm', { real: 189.0, imag: 0.0 });
-        this.variables.set('E_cm_astro_local_adj_eff_enhanced', { real: 1.24e24, imag: 0.0 });
-        this.variables.set('DPM_stability', { real: 0.01, imag: 0.0 });
-        this.variables.set('DPM_momentum', { real: 0.93, imag: 0.0 });
-        this.variables.set('DPM_gravity', { real: 1.0, imag: 0.0 });
-        this.variables.set('DPM_light', { real: 0.01, imag: 0.0 });
-        this.variables.set('DPM_resonance', { real: 1.0, imag: 0.0 });
-        this.variables.set('phase', { real: 2.36e-3, imag: 0.0 });
-        this.variables.set('curvature', { real: 1e-22, imag: 0.0 });
-        this.variables.set('k_10_13', { real: 1e-13, imag: 0.0 });
-        this.variables.set('k_b_term', { real: 2.51e-5, imag: 0.0 });
-        this.variables.set('c_constant', { real: -3.06e175, imag: 0.0 });
-        this.variables.set('c_inv_r2_coeff', { real: 1e-29, imag: 0.0 });
-        this.variables.set('a_eps_coeff', { real: 1.38e-41, imag: 0.0 });
-
-        console.log('UQFF Buoyancy CNB Module Level 162 REVISED - Simplified Astrophysical Implementation initialized');
-    }
-
-    complexMagnitude(z) { return Math.sqrt(z.real * z.real + z.imag * z.imag); }
-    complexAdd(a, b) { return { real: a.real + b.real, imag: a.imag + b.imag }; }
-    complexMultiply(a, b) { return { real: a.real * b.real - a.imag * b.imag, imag: a.real * b.imag + a.imag * b.real }; }
-
-    setSystemParams(system) {
-        const pi_val = this.variables.get('pi').real;
-        if (system === 'J1610+1811') {
-            this.variables.set('M', { real: 2.785e30, imag: 0.0 });
-            this.variables.set('r', { real: 3.09e15, imag: 0.0 });
-            this.variables.set('T', { real: 1e4, imag: 0.0 });
-            this.variables.set('L_X', { real: 1e31, imag: 0.0 });
-            this.variables.set('B0', { real: 1e-4, imag: 0.0 });
-            this.variables.set('omega0', { real: 1e-12, imag: 0.0 });
-            this.variables.set('Mach', { real: 1.0, imag: 0.0 });
-            this.variables.set('C', { real: 1.0, imag: 0.0 });
-            this.variables.set('t', { real: 3.156e10, imag: 0.0 });
-        } else if (system === 'PLCK_G287.0+32.9') {
-            this.variables.set('M', { real: 1.989e44, imag: 0.0 });
-            this.variables.set('r', { real: 3.09e22, imag: 0.0 });
-            this.variables.set('T', { real: 1e7, imag: 0.0 });
-            this.variables.set('L_X', { real: 1e38, imag: 0.0 });
-            this.variables.set('B0', { real: 1e-4, imag: 0.0 });
-            this.variables.set('omega0', { real: 1e-15, imag: 0.0 });
-            this.variables.set('Mach', { real: 1.5, imag: 0.0 });
-            this.variables.set('C', { real: 1.2, imag: 0.0 });
-            this.variables.set('t', { real: 1.42e17, imag: 0.0 });
-        } else if (system === 'PSZ2_G181.06+48.47') {
-            this.variables.set('M', { real: 1.989e44, imag: 0.0 });
-            this.variables.set('r', { real: 3.09e22, imag: 0.0 });
-            this.variables.set('T', { real: 1e7, imag: 0.0 });
-            this.variables.set('L_X', { real: 1e39, imag: 0.0 });
-            this.variables.set('B0', { real: 1e-4, imag: 0.0 });
-            this.variables.set('omega0', { real: 1e-15, imag: 0.0 });
-            this.variables.set('Mach', { real: 1.5, imag: 0.0 });
-            this.variables.set('C', { real: 1.2, imag: 0.0 });
-            this.variables.set('t', { real: 2.36e17, imag: 0.0 });
-        } else if (system === 'ASKAP_J1832-0911') {
-            this.variables.set('M', { real: 2.785e30, imag: 0.0 });
-            this.variables.set('r', { real: 4.63e16, imag: 0.0 });
-            this.variables.set('T', { real: 1e4, imag: 0.0 });
-            this.variables.set('L_X', { real: 1e31, imag: 0.0 });
-            this.variables.set('B0', { real: 1e-4, imag: 0.0 });
-            this.variables.set('omega0', { real: 1e-12, imag: 0.0 });
-            this.variables.set('Mach', { real: 1.0, imag: 0.0 });
-            this.variables.set('C', { real: 1.0, imag: 0.0 });
-            this.variables.set('t', { real: 3.156e10, imag: 0.0 });
-        } else if (system === 'SonificationCollection') {
-            this.variables.set('M', { real: 1.989e31, imag: 0.0 });
-            this.variables.set('r', { real: 6.17e16, imag: 0.0 });
-            this.variables.set('T', { real: 1e5, imag: 0.0 });
-            this.variables.set('L_X', { real: 1e33, imag: 0.0 });
-            this.variables.set('B0', { real: 1e-5, imag: 0.0 });
-            this.variables.set('omega0', { real: 1e-12, imag: 0.0 });
-            this.variables.set('Mach', { real: 1.0, imag: 0.0 });
-            this.variables.set('C', { real: 1.0, imag: 0.0 });
-            this.variables.set('t', { real: 3.156e14, imag: 0.0 });
-        }
-    }
-
-    computeFBi(system, t) {
-        this.setSystemParams(system);
-        const integrand = this.computeIntegrand(t, system);
-        const x2 = this.computeX2(system);
-        const f_bi_i = this.complexMultiply(integrand, x2);
-        const cos_theta = Math.cos(this.variables.get('theta').real);
-        const momentum_term = { 
-            real: (this.variables.get('m_e').real * this.variables.get('c').real * this.variables.get('c').real / 
-                  (this.variables.get('r').real * this.variables.get('r').real)) * 
-                  this.variables.get('DPM_momentum').real * cos_theta, 
-            imag: 0.0 
-        };
-        const gravity_term = { 
-            real: (this.variables.get('G').real * this.variables.get('M').real / 
-                  (this.variables.get('r').real * this.variables.get('r').real)) * 
-                  this.variables.get('DPM_gravity').real, 
-            imag: 0.0 
-        };
-        let f_bi = this.complexAdd(this.complexAdd(this.complexMultiply(this.variables.get('F0'), { real: -1, imag: 0 }), momentum_term), gravity_term);
-        f_bi = this.complexAdd(f_bi, f_bi_i);
-        return f_bi;
-    }
-
-    computeIntegrand(t, system) {
-        this.setSystemParams(system);
-        const sin_theta = Math.sin(this.variables.get('theta').real);
-        const cos_theta = Math.cos(this.variables.get('theta').real);
-        const dpm_res = this.computeDPM_resonance(system);
-        const f_lenr = this.computeLENRTerm(system);
-        const f_act = this.complexMultiply(this.variables.get('k_act'), { real: Math.cos(this.variables.get('omega_act').real * t), imag: 0.0 });
-        const f_de = this.complexMultiply(this.variables.get('k_DE'), this.variables.get('L_X'));
-        const f_neutron = this.complexMultiply(this.variables.get('k_neutron'), this.variables.get('sigma_n'));
-        const f_rel = this.complexMultiply(this.variables.get('k_rel'), { real: Math.pow(this.variables.get('E_cm_astro_local_adj_eff_enhanced').real / this.variables.get('E_cm').real, 2.0), imag: 0.0 });
-        const f_res = { real: 2.0 * this.variables.get('q').real * this.variables.get('B0').real * this.variables.get('V').real * sin_theta * dpm_res.real, imag: 0.0 };
-        const f_relativ = this.complexMultiply(this.variables.get('k_relativistic'), this.complexMultiply({ real: Math.pow(this.variables.get('V').real / this.variables.get('c').real, 2.0), imag: 0.0 }, this.variables.get('F0')));
-        const f_neutrino = this.complexMultiply(this.variables.get('k_neutrino'), this.variables.get('L_X'));
-        const f_sweet = this.complexMultiply(this.variables.get('k_Sweet'), this.variables.get('rho_vac_UA'));
-        const f_kozima = this.complexMultiply(this.variables.get('k_Kozima'), this.variables.get('sigma_n'));
-        const momentum_term = { 
-            real: (this.variables.get('m_e').real * this.variables.get('c').real * this.variables.get('c').real / 
-                  (this.variables.get('r').real * this.variables.get('r').real)) * 
-                  this.variables.get('DPM_momentum').real * cos_theta, 
-            imag: 0.0 
-        };
-        const gravity_term = { 
-            real: (this.variables.get('G').real * this.variables.get('M').real / 
-                  (this.variables.get('r').real * this.variables.get('r').real)) * 
-                  this.variables.get('DPM_gravity').real, 
-            imag: 0.0 
-        };
-        const vac_term = this.complexMultiply(this.variables.get('rho_vac_UA'), this.variables.get('DPM_stability'));
-        
-        let integrand = this.complexMultiply(this.variables.get('F0'), { real: -1, imag: 0 });
-        integrand = this.complexAdd(integrand, momentum_term);
-        integrand = this.complexAdd(integrand, gravity_term);
-        integrand = this.complexAdd(integrand, vac_term);
-        integrand = this.complexAdd(integrand, f_lenr);
-        integrand = this.complexAdd(integrand, f_act);
-        integrand = this.complexAdd(integrand, f_de);
-        integrand = this.complexAdd(integrand, f_res);
-        integrand = this.complexAdd(integrand, f_neutron);
-        integrand = this.complexAdd(integrand, f_rel);
-        integrand = this.complexAdd(integrand, f_relativ);
-        integrand = this.complexAdd(integrand, f_neutrino);
-        integrand = this.complexAdd(integrand, f_sweet);
-        integrand = this.complexAdd(integrand, f_kozima);
-        
-        return integrand;
-    }
-
-    computeDPM_resonance(system) {
-        this.setSystemParams(system);
-        const g_lande = this.variables.get('g_Lande').real;
-        const mu_b = this.variables.get('mu_B').real;
-        const b0 = this.variables.get('B0').real;
-        const hbar_omega0 = this.variables.get('hbar').real * this.variables.get('omega0').real;
-        if (hbar_omega0 === 0.0) return { real: 0.0, imag: 0.0 };
-        return { real: g_lande * mu_b * b0 / hbar_omega0, imag: 0.0 };
-    }
-
-    computeX2(system) {
-        this.setSystemParams(system);
-        const r_real = this.variables.get('r').real;
-        const r2 = r_real * r_real;
-        const t_val = this.variables.get('T').real;
-        const m = this.variables.get('M').real;
-        const pi_val = this.variables.get('pi').real;
-        
-        const term1_num = this.variables.get('a_eps_coeff').real * this.variables.get('q').real;
-        const term1_denom = 4.0 * pi_val * this.variables.get('epsilon0').real * r2 * t_val;
-        const term1 = term1_num / term1_denom;
-        const term2 = this.variables.get('G').real * m / r2;
-        const term3 = Math.pow(this.variables.get('c').real, 4.0) * this.variables.get('k_10_13').real / r2 * this.variables.get('DPM_light').real;
-        const a = { real: term1 + term2 + term3, imag: 0.0 };
-        
-        const term_b1 = this.variables.get('k_b_term').real;
-        const term_b2 = t_val / r2;
-        const term_b3 = 2.0 * this.variables.get('phase').real;
-        const b = { real: term_b1 + term_b2 + term_b3, imag: 0.0 };
-        
-        const term_c1 = this.variables.get('c_constant').real;
-        const term_c2 = this.variables.get('c_inv_r2_coeff').real / r2;
-        const term_c3 = this.variables.get('curvature').real;
-        const c = { real: term_c1 + term_c2 + term_c3, imag: 0.0 };
-        
-        return this.computeQuadraticRoot(a, b, c);
-    }
-
-    computeQuadraticRoot(a, b, c) {
-        const disc = this.complexAdd(this.complexMultiply(b, b), this.complexMultiply({ real: -4.0, imag: 0.0 }, this.complexMultiply(a, c)));
-        let disc_real = disc.real;
-        if (disc_real < 0.0) disc_real = 0.0;
-        const sqrt_disc = { real: Math.sqrt(disc_real), imag: 0.0 };
-        const numerator = this.complexAdd(this.complexMultiply(b, { real: -1, imag: 0 }), this.complexMultiply(sqrt_disc, { real: -1, imag: 0 }));
-        const denominator = this.complexMultiply({ real: 2.0, imag: 0.0 }, a);
-        return { real: numerator.real / denominator.real, imag: numerator.imag / denominator.real };
-    }
-
-    computeLENRTerm(system) {
-        this.setSystemParams(system);
-        const omega0_real = this.variables.get('omega0').real;
-        if (omega0_real === 0.0) return { real: 0.0, imag: 0.0 };
-        return this.complexMultiply(this.variables.get('k_LENR'), { real: Math.pow(this.variables.get('omega_0_LENR').real / omega0_real, 2.0), imag: 0.0 });
-    }
-
-    calculateUnifiedField(system, t) {
-        const F_Bi = this.computeFBi(system, t);
-        
-        return {
-            buoyancy_force: F_Bi,
-            field_magnitude: this.complexMagnitude(F_Bi),
-            system: system,
-            time: t,
-            integration_level: 162,
-            physics_scale: 'Revised Astrophysical Objects (10^15 m to 10^22 m)',
-            supported_systems: 'J1610+1811, PLCK G287.0+32.9, PSZ2 G181.06+48.47, ASKAP J1832-0911, SonificationCollection',
-            new_features: 'Simplified neutrino term, Core astrophysical systems, Enhanced LENR calculations'
-        };
-    }
-
-        getEquationText(system) {
-        return `F_U_Bi_i(r, t) = Integral[Integrand(r, t) dt] with simplified astrophysical implementation
-LENR Resonance: F_LENR = k_LENR * (?_LENR / ?_0)^2
-Activation: F_act = k_act * cos(?_act t)
-Directed Energy: F_DE = k_DE * L_X
-Magnetic Resonance: F_res = 2 q B_0 V sin? * DPM_resonance
-Neutrino: F_neutrino = k_neutrino * L_X (simplified)
-System: ${system} with revised astrophysical parameters`;
-    }
-
-    getSupportedSystems() {
-        return ['J1610+1811', 'PLCK_G287.0+32.9', 'PSZ2_G181.06+48.47', 'ASKAP_J1832-0911', 'SonificationCollection'];
-    }
-}
-
-// Instantiate and test Level 162 revised module
-const uqffBuoyancyCNBModule = new UQFFBuoyancyCNBModule();
-const systems162 = ['J1610+1811', 'PLCK_G287.0+32.9', 'PSZ2_G181.06+48.47', 'ASKAP_J1832-0911', 'SonificationCollection'];
-const test_time162 = 1e13;
-
-console.log('Level 162 REVISED: UQFF Buoyancy CNB Module Multi-System Integration Tests');
-systems162.forEach(system => {
-    const field_result = uqffBuoyancyCNBModule.calculateUnifiedField(system, test_time162);
-    console.log(system + ': Magnitude ' + field_result.field_magnitude.toExponential(3) + ', Level ' + field_result.integration_level + ' (Revised)');
-});
-
-console.log('Level 162 REVISED: UQFF Buoyancy CNB Module Simplified Astrophysical Implementation - INTEGRATED');
-
-
-
-
-/ /   L e v e l   1 6 2 :   U Q F F   B u o y a n c y   C N B   M o d u l e   L e v e l   1 6 2   P R O P E R   C N B   P H Y S I C S   -   C o m p l e t e   S o u r c e 1 6 2 . m m   I n t e g r a t i o n 
- 
- / /   F u l l   C N B   ( C o s m i c   N e u t r i n o   B a c k g r o u n d )   p h y s i c s   w i t h   p r o p e r   p a r a m e t e r s :   Ã_ C N B ,   n _ C N B ,   E _ C N B 
- 
- / /   R e s t o r e d   6 - s y s t e m   s u p p o r t   i n c l u d i n g   C e n t a u r u s   A   f o r   l a r g e - s c a l e   s t r u c t u r e   C N B   e f f e c t s 
- 
- / /   C N B   F o r c e :   F _ C N B   =   k _ n e u t r i n o     Ã_ C N B     n _ C N B     E _ C N B   ( n o t   s i m p l i f i e d   k _ n e u t r i n o     L _ X ) 
- 
- 
- 
- c l a s s   U Q F F B u o y a n c y C N B M o d u l e   { 
- 
-         c o n s t r u c t o r ( )   { 
- 
-                 t h i s . v a r i a b l e s   =   n e w   M a p ( ) ; 
- 
-                 t h i s . s e t u p V a r i a b l e s ( ) ; 
- 
-                 c o n s o l e . l o g ( ' U Q F F   B u o y a n c y   C N B   M o d u l e   L e v e l   1 6 2   P R O P E R   C N B   P H Y S I C S   -   C o m p l e t e   S o u r c e 1 6 2 . m m   I n t e g r a t i o n   i n i t i a l i z e d ' ) ; 
- 
-         } 
- 
- 
- 
-         s e t u p V a r i a b l e s ( )   { 
- 
-                 c o n s t   p i _ v a l   =   3 . 1 4 1 5 9 2 6 5 3 5 8 9 7 9 3 ; 
- 
- 
- 
-                 / /   B a s e   c o n s t a n t s   ( u n i v e r s a l ) 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' G ' ,   {   r e a l :   6 . 6 7 4 3 e - 1 1 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' c ' ,   {   r e a l :   3 e 8 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' h b a r ' ,   {   r e a l :   1 . 0 5 4 6 e - 3 4 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' q ' ,   {   r e a l :   1 . 6 e - 1 9 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' p i ' ,   {   r e a l :   p i _ v a l ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' m _ e ' ,   {   r e a l :   9 . 1 1 e - 3 1 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' m u _ B ' ,   {   r e a l :   9 . 2 7 4 e - 2 4 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' g _ L a n d e ' ,   {   r e a l :   2 . 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' k _ B ' ,   {   r e a l :   1 . 3 8 e - 2 3 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' m u 0 ' ,   {   r e a l :   4   *   p i _ v a l   *   1 e - 7 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' e p s i l o n 0 ' ,   {   r e a l :   8 . 8 5 e - 1 2 ,   i m a g :   0 . 0   } ) ; 
- 
- 
- 
-                 / /   S h a r e d   p a r a m s   f r o m   d o c u m e n t 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' F _ r e l ' ,   {   r e a l :   4 . 3 0 e 3 3 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' F 0 ' ,   {   r e a l :   1 . 8 3 e 7 1 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' V ' ,   {   r e a l :   1 e - 3 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' t h e t a ' ,   {   r e a l :   p i _ v a l   /   4 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' p h i ' ,   {   r e a l :   p i _ v a l   /   4 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' o m e g a _ a c t ' ,   {   r e a l :   2   *   p i _ v a l   *   3 0 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' k _ a c t ' ,   {   r e a l :   1 e - 6 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' k _ D E ' ,   {   r e a l :   1 e - 3 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' k _ n e u t r o n ' ,   {   r e a l :   1 e 1 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' k _ r e l ' ,   {   r e a l :   1 e - 1 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' k _ r e l a t i v i s t i c ' ,   {   r e a l :   1 e - 2 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' k _ n e u t r i n o ' ,   {   r e a l :   1 e - 1 0 ,   i m a g :   0 . 0   } ) ;     / /   F o r   C N B 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' k _ S w e e t ' ,   {   r e a l :   1 e - 2 5 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' k _ K o z i m a ' ,   {   r e a l :   1 e - 1 8 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' o m e g a _ 0 _ L E N R ' ,   {   r e a l :   2   *   p i _ v a l   *   1 . 2 5 e 1 2 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' k _ L E N R ' ,   {   r e a l :   1 e - 1 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' r h o _ v a c _ U A ' ,   {   r e a l :   7 . 0 9 e - 3 6 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' s i g m a _ n ' ,   {   r e a l :   1 e - 4 ,   i m a g :   0 . 0   } ) ; 
- 
-                 
- 
-                 / /   P R O P E R   C N B   P H Y S I C S   P A R A M E T E R S 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' s i g m a _ C N B ' ,   {   r e a l :   1 e - 4 9 ,   i m a g :   0 . 0   } ) ;       / /   C N B   c r o s s - s e c t i o n   m ^ 2 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' n _ C N B ' ,   {   r e a l :   3 . 3 6 e 8 ,   i m a g :   0 . 0   } ) ;             / /   C N B   n u m b e r   d e n s i t y   m ^ - 3 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' E _ C N B ' ,   {   r e a l :   2 . 6 9 e - 2 3 ,   i m a g :   0 . 0   } ) ;         / /   C N B   a v e r a g e   e n e r g y   J 
- 
-                 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' E _ c m ' ,   {   r e a l :   1 8 9 . 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' E _ c m _ a s t r o _ l o c a l _ a d j _ e f f _ e n h a n c e d ' ,   {   r e a l :   1 . 2 4 e 2 4 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' D P M _ s t a b i l i t y ' ,   {   r e a l :   0 . 0 1 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' D P M _ m o m e n t u m ' ,   {   r e a l :   0 . 9 3 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' D P M _ g r a v i t y ' ,   {   r e a l :   1 . 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' D P M _ l i g h t ' ,   {   r e a l :   0 . 0 1 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' p h a s e ' ,   {   r e a l :   2 . 3 6 e - 3 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' c u r v a t u r e ' ,   {   r e a l :   1 e - 2 2 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' k _ 1 0 _ 1 3 ' ,   {   r e a l :   1 e - 1 3 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' k _ b _ t e r m ' ,   {   r e a l :   2 . 5 1 e - 5 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' c _ c o n s t a n t ' ,   {   r e a l :   - 3 . 0 6 e 1 7 5 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' c _ i n v _ r 2 _ c o e f f ' ,   {   r e a l :   1 e - 2 9 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' a _ e p s _ c o e f f ' ,   {   r e a l :   1 . 3 8 e - 4 1 ,   i m a g :   0 . 0   } ) ; 
- 
-         } 
- 
- 
- 
-         s e t S y s t e m P a r a m s ( s y s t e m )   { 
- 
-                 c o n s t   p i _ v a l   =   t h i s . v a r i a b l e s . g e t ( ' p i ' ) . r e a l ; 
- 
-                 i f   ( s y s t e m   = = =   ' J 1 6 1 0 + 1 8 1 1 ' )   { 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' M ' ,   {   r e a l :   2 . 7 8 5 e 3 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' r ' ,   {   r e a l :   3 . 0 9 e 1 5 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' T ' ,   {   r e a l :   1 e 4 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' L _ X ' ,   {   r e a l :   1 e 3 1 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' B 0 ' ,   {   r e a l :   1 e - 4 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' o m e g a 0 ' ,   {   r e a l :   1 e - 1 2 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' M a c h ' ,   {   r e a l :   1 . 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' C ' ,   {   r e a l :   1 . 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' t h e t a ' ,   {   r e a l :   p i _ v a l   /   4 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' t ' ,   {   r e a l :   3 . 1 5 6 e 1 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                 }   e l s e   i f   ( s y s t e m   = = =   ' P L C K _ G 2 8 7 . 0 + 3 2 . 9 ' )   { 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' M ' ,   {   r e a l :   1 . 9 8 9 e 4 4 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' r ' ,   {   r e a l :   3 . 0 9 e 2 2 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' T ' ,   {   r e a l :   1 e 7 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' L _ X ' ,   {   r e a l :   1 e 3 8 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' B 0 ' ,   {   r e a l :   1 e - 4 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' o m e g a 0 ' ,   {   r e a l :   1 e - 1 5 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' M a c h ' ,   {   r e a l :   1 . 5 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' C ' ,   {   r e a l :   1 . 2 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' t h e t a ' ,   {   r e a l :   p i _ v a l   /   4 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' t ' ,   {   r e a l :   1 . 4 2 e 1 7 ,   i m a g :   0 . 0   } ) ; 
- 
-                 }   e l s e   i f   ( s y s t e m   = = =   ' P S Z 2 _ G 1 8 1 . 0 6 + 4 8 . 4 7 ' )   { 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' M ' ,   {   r e a l :   1 . 9 8 9 e 4 4 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' r ' ,   {   r e a l :   3 . 0 9 e 2 2 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' T ' ,   {   r e a l :   1 e 7 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' L _ X ' ,   {   r e a l :   1 e 3 9 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' B 0 ' ,   {   r e a l :   1 e - 4 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' o m e g a 0 ' ,   {   r e a l :   1 e - 1 5 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' M a c h ' ,   {   r e a l :   1 . 5 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' C ' ,   {   r e a l :   1 . 2 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' t h e t a ' ,   {   r e a l :   p i _ v a l   /   4 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' t ' ,   {   r e a l :   2 . 3 6 e 1 7 ,   i m a g :   0 . 0   } ) ; 
- 
-                 }   e l s e   i f   ( s y s t e m   = = =   ' A S K A P _ J 1 8 3 2 - 0 9 1 1 ' )   { 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' M ' ,   {   r e a l :   2 . 7 8 5 e 3 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' r ' ,   {   r e a l :   4 . 6 3 e 1 6 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' T ' ,   {   r e a l :   1 e 4 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' L _ X ' ,   {   r e a l :   1 e 3 1 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' B 0 ' ,   {   r e a l :   1 e - 4 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' o m e g a 0 ' ,   {   r e a l :   1 e - 1 2 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' M a c h ' ,   {   r e a l :   1 . 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' C ' ,   {   r e a l :   1 . 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' t h e t a ' ,   {   r e a l :   p i _ v a l   /   4 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' t ' ,   {   r e a l :   3 . 1 5 6 e 1 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                 }   e l s e   i f   ( s y s t e m   = = =   ' S o n i f i c a t i o n C o l l e c t i o n ' )   { 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' M ' ,   {   r e a l :   1 . 9 8 9 e 3 1 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' r ' ,   {   r e a l :   6 . 1 7 e 1 6 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' T ' ,   {   r e a l :   1 e 5 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' L _ X ' ,   {   r e a l :   1 e 3 3 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' B 0 ' ,   {   r e a l :   1 e - 5 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' o m e g a 0 ' ,   {   r e a l :   1 e - 1 2 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' M a c h ' ,   {   r e a l :   1 . 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' C ' ,   {   r e a l :   1 . 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' t h e t a ' ,   {   r e a l :   p i _ v a l   /   4 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' t ' ,   {   r e a l :   3 . 1 5 6 e 1 4 ,   i m a g :   0 . 0   } ) ; 
- 
-                 }   e l s e   i f   ( s y s t e m   = = =   ' C e n t a u r u s A ' )   { 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' M ' ,   {   r e a l :   1 . 0 9 4 e 3 8 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' r ' ,   {   r e a l :   6 . 1 7 e 1 7 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' T ' ,   {   r e a l :   1 e 4 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' L _ X ' ,   {   r e a l :   1 e 3 6 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' B 0 ' ,   {   r e a l :   1 e - 4 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' o m e g a 0 ' ,   {   r e a l :   1 e - 1 5 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' M a c h ' ,   {   r e a l :   1 . 5 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' C ' ,   {   r e a l :   1 . 2 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' t h e t a ' ,   {   r e a l :   p i _ v a l   /   4 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' t ' ,   {   r e a l :   3 . 4 7 2 e 1 4 ,   i m a g :   0 . 0   } ) ; 
- 
-                 } 
- 
-         } 
- 
- 
- 
-         c o m p u t e I n t e g r a n d ( t ,   s y s t e m )   { 
- 
-                 t h i s . s e t S y s t e m P a r a m s ( s y s t e m ) ; 
- 
-                 c o n s t   s i n _ t h e t a   =   M a t h . s i n ( t h i s . v a r i a b l e s . g e t ( ' t h e t a ' ) . r e a l ) ; 
- 
-                 c o n s t   c o s _ t h e t a   =   M a t h . c o s ( t h i s . v a r i a b l e s . g e t ( ' t h e t a ' ) . r e a l ) ; 
- 
-                 c o n s t   d p m _ r e s   =   t h i s . c o m p u t e D P M _ r e s o n a n c e ( s y s t e m ) ; 
- 
-                 c o n s t   f _ l e n r   =   t h i s . c o m p u t e L E N R T e r m ( s y s t e m ) ; 
- 
-                 c o n s t   f _ a c t   =   t h i s . c o m p l e x M u l t i p l y ( t h i s . v a r i a b l e s . g e t ( ' k _ a c t ' ) ,   {   r e a l :   M a t h . c o s ( t h i s . v a r i a b l e s . g e t ( ' o m e g a _ a c t ' ) . r e a l   *   t ) ,   i m a g :   0 . 0   } ) ; 
- 
-                 c o n s t   f _ d e   =   t h i s . c o m p l e x M u l t i p l y ( t h i s . v a r i a b l e s . g e t ( ' k _ D E ' ) ,   t h i s . v a r i a b l e s . g e t ( ' L _ X ' ) ) ; 
- 
-                 c o n s t   f _ n e u t r o n   =   t h i s . c o m p l e x M u l t i p l y ( t h i s . v a r i a b l e s . g e t ( ' k _ n e u t r o n ' ) ,   t h i s . v a r i a b l e s . g e t ( ' s i g m a _ n ' ) ) ; 
- 
-                 c o n s t   f _ r e l   =   t h i s . c o m p l e x M u l t i p l y ( t h i s . v a r i a b l e s . g e t ( ' k _ r e l ' ) ,   
- 
-                         {   r e a l :   M a t h . p o w ( t h i s . v a r i a b l e s . g e t ( ' E _ c m _ a s t r o _ l o c a l _ a d j _ e f f _ e n h a n c e d ' ) . r e a l   /   t h i s . v a r i a b l e s . g e t ( ' E _ c m ' ) . r e a l ,   2 . 0 ) ,   i m a g :   0 . 0   } ) ; 
- 
-                 
- 
-                 / /   P R O P E R   C N B   P H Y S I C S :   F _ C N B   =   k _ n e u t r i n o     Ã_ C N B     n _ C N B     E _ C N B 
- 
-                 c o n s t   c n b _ t e r m 1   =   t h i s . c o m p l e x M u l t i p l y ( t h i s . v a r i a b l e s . g e t ( ' k _ n e u t r i n o ' ) ,   t h i s . v a r i a b l e s . g e t ( ' s i g m a _ C N B ' ) ) ; 
- 
-                 c o n s t   c n b _ t e r m 2   =   t h i s . c o m p l e x M u l t i p l y ( c n b _ t e r m 1 ,   t h i s . v a r i a b l e s . g e t ( ' n _ C N B ' ) ) ; 
- 
-                 c o n s t   f _ n e u t r i n o   =   t h i s . c o m p l e x M u l t i p l y ( c n b _ t e r m 2 ,   t h i s . v a r i a b l e s . g e t ( ' E _ C N B ' ) ) ; 
- 
-                 
- 
-                 c o n s t   f _ r e s   =   t h i s . c o m p l e x M u l t i p l y ( {   r e a l :   2 . 0   *   t h i s . v a r i a b l e s . g e t ( ' q ' ) . r e a l   *   t h i s . v a r i a b l e s . g e t ( ' B 0 ' ) . r e a l   *   t h i s . v a r i a b l e s . g e t ( ' V ' ) . r e a l   *   s i n _ t h e t a ,   i m a g :   0 . 0   } ,   d p m _ r e s ) ; 
- 
-                 c o n s t   f _ r e l a t i v   =   t h i s . c o m p l e x M u l t i p l y ( t h i s . v a r i a b l e s . g e t ( ' k _ r e l a t i v i s t i c ' ) ,   
- 
-                         t h i s . c o m p l e x M u l t i p l y ( {   r e a l :   M a t h . p o w ( t h i s . v a r i a b l e s . g e t ( ' V ' ) . r e a l   /   t h i s . v a r i a b l e s . g e t ( ' c ' ) . r e a l ,   2 . 0 ) ,   i m a g :   0 . 0   } ,   t h i s . v a r i a b l e s . g e t ( ' F 0 ' ) ) ) ; 
- 
-                 c o n s t   f _ s w e e t   =   t h i s . c o m p l e x M u l t i p l y ( t h i s . v a r i a b l e s . g e t ( ' k _ S w e e t ' ) ,   t h i s . v a r i a b l e s . g e t ( ' r h o _ v a c _ U A ' ) ) ; 
- 
-                 c o n s t   f _ k o z i m a   =   t h i s . c o m p l e x M u l t i p l y ( t h i s . v a r i a b l e s . g e t ( ' k _ K o z i m a ' ) ,   t h i s . v a r i a b l e s . g e t ( ' s i g m a _ n ' ) ) ; 
- 
- 
- 
-                 c o n s t   r _ s q u a r e d   =   M a t h . p o w ( t h i s . v a r i a b l e s . g e t ( ' r ' ) . r e a l ,   2 ) ; 
- 
-                 c o n s t   m o m e n t u m _ t e r m   =   t h i s . c o m p l e x M u l t i p l y ( 
- 
-                         {   r e a l :   ( t h i s . v a r i a b l e s . g e t ( ' m _ e ' ) . r e a l   *   M a t h . p o w ( t h i s . v a r i a b l e s . g e t ( ' c ' ) . r e a l ,   2 )   /   r _ s q u a r e d )   *   t h i s . v a r i a b l e s . g e t ( ' D P M _ m o m e n t u m ' ) . r e a l   *   c o s _ t h e t a ,   i m a g :   0 . 0   } , 
- 
-                         {   r e a l :   1 . 0 ,   i m a g :   0 . 0   } 
- 
-                 ) ; 
- 
-                 c o n s t   g r a v i t y _ t e r m   =   {   r e a l :   ( t h i s . v a r i a b l e s . g e t ( ' G ' ) . r e a l   *   t h i s . v a r i a b l e s . g e t ( ' M ' ) . r e a l   /   r _ s q u a r e d )   *   t h i s . v a r i a b l e s . g e t ( ' D P M _ g r a v i t y ' ) . r e a l ,   i m a g :   0 . 0   } ; 
- 
-                 c o n s t   v a c _ t e r m   =   t h i s . c o m p l e x M u l t i p l y ( t h i s . v a r i a b l e s . g e t ( ' r h o _ v a c _ U A ' ) ,   t h i s . v a r i a b l e s . g e t ( ' D P M _ s t a b i l i t y ' ) ) ; 
- 
- 
- 
-                 l e t   i n t e g r a n d   =   t h i s . c o m p l e x S u b t r a c t ( {   r e a l :   0 . 0 ,   i m a g :   0 . 0   } ,   t h i s . v a r i a b l e s . g e t ( ' F 0 ' ) ) ; 
- 
-                 i n t e g r a n d   =   t h i s . c o m p l e x A d d ( i n t e g r a n d ,   m o m e n t u m _ t e r m ) ; 
- 
-                 i n t e g r a n d   =   t h i s . c o m p l e x A d d ( i n t e g r a n d ,   g r a v i t y _ t e r m ) ; 
- 
-                 i n t e g r a n d   =   t h i s . c o m p l e x A d d ( i n t e g r a n d ,   v a c _ t e r m ) ; 
- 
-                 i n t e g r a n d   =   t h i s . c o m p l e x A d d ( i n t e g r a n d ,   f _ l e n r ) ; 
- 
-                 i n t e g r a n d   =   t h i s . c o m p l e x A d d ( i n t e g r a n d ,   f _ a c t ) ; 
- 
-                 i n t e g r a n d   =   t h i s . c o m p l e x A d d ( i n t e g r a n d ,   f _ d e ) ; 
- 
-                 i n t e g r a n d   =   t h i s . c o m p l e x A d d ( i n t e g r a n d ,   f _ r e s ) ; 
- 
-                 i n t e g r a n d   =   t h i s . c o m p l e x A d d ( i n t e g r a n d ,   f _ n e u t r o n ) ; 
- 
-                 i n t e g r a n d   =   t h i s . c o m p l e x A d d ( i n t e g r a n d ,   f _ r e l ) ; 
- 
-                 i n t e g r a n d   =   t h i s . c o m p l e x A d d ( i n t e g r a n d ,   f _ n e u t r i n o ) ; 
- 
-                 i n t e g r a n d   =   t h i s . c o m p l e x A d d ( i n t e g r a n d ,   f _ r e l a t i v ) ; 
- 
-                 i n t e g r a n d   =   t h i s . c o m p l e x A d d ( i n t e g r a n d ,   f _ s w e e t ) ; 
- 
-                 i n t e g r a n d   =   t h i s . c o m p l e x A d d ( i n t e g r a n d ,   f _ k o z i m a ) ; 
- 
- 
- 
-                 r e t u r n   i n t e g r a n d ; 
- 
-         } 
- 
- 
- 
-         c o m p u t e D P M _ r e s o n a n c e ( s y s t e m )   { 
- 
-                 t h i s . s e t S y s t e m P a r a m s ( s y s t e m ) ; 
- 
-                 c o n s t   g _ l a n d e   =   t h i s . v a r i a b l e s . g e t ( ' g _ L a n d e ' ) . r e a l ; 
- 
-                 c o n s t   m u _ b   =   t h i s . v a r i a b l e s . g e t ( ' m u _ B ' ) . r e a l ; 
- 
-                 c o n s t   b 0   =   t h i s . v a r i a b l e s . g e t ( ' B 0 ' ) . r e a l ; 
- 
-                 c o n s t   h b a r _ o m e g a 0   =   t h i s . v a r i a b l e s . g e t ( ' h b a r ' ) . r e a l   *   t h i s . v a r i a b l e s . g e t ( ' o m e g a 0 ' ) . r e a l ; 
- 
-                 i f   ( h b a r _ o m e g a 0   = = =   0 . 0 )   r e t u r n   {   r e a l :   0 . 0 ,   i m a g :   0 . 0   } ; 
- 
-                 r e t u r n   {   r e a l :   g _ l a n d e   *   m u _ b   *   b 0   /   h b a r _ o m e g a 0 ,   i m a g :   0 . 0   } ; 
- 
-         } 
- 
- 
- 
-         c o m p u t e L E N R T e r m ( s y s t e m )   { 
- 
-                 t h i s . s e t S y s t e m P a r a m s ( s y s t e m ) ; 
- 
-                 c o n s t   o m e g a 0 _ r e a l   =   t h i s . v a r i a b l e s . g e t ( ' o m e g a 0 ' ) . r e a l ; 
- 
-                 i f   ( o m e g a 0 _ r e a l   = = =   0 . 0 )   r e t u r n   {   r e a l :   0 . 0 ,   i m a g :   0 . 0   } ; 
- 
-                 r e t u r n   t h i s . c o m p l e x M u l t i p l y ( t h i s . v a r i a b l e s . g e t ( ' k _ L E N R ' ) ,   
- 
-                         {   r e a l :   M a t h . p o w ( t h i s . v a r i a b l e s . g e t ( ' o m e g a _ 0 _ L E N R ' ) . r e a l   /   o m e g a 0 _ r e a l ,   2 . 0 ) ,   i m a g :   0 . 0   } ) ; 
- 
-         } 
- 
- 
- 
-         c o m p u t e X 2 ( s y s t e m )   { 
- 
-                 t h i s . s e t S y s t e m P a r a m s ( s y s t e m ) ; 
- 
-                 c o n s t   r _ r e a l   =   t h i s . v a r i a b l e s . g e t ( ' r ' ) . r e a l ; 
- 
-                 c o n s t   r 2   =   r _ r e a l   *   r _ r e a l ; 
- 
-                 c o n s t   t _ v a l   =   t h i s . v a r i a b l e s . g e t ( ' T ' ) . r e a l ; 
- 
-                 c o n s t   m   =   t h i s . v a r i a b l e s . g e t ( ' M ' ) . r e a l ; 
- 
-                 c o n s t   p i _ v a l   =   t h i s . v a r i a b l e s . g e t ( ' p i ' ) . r e a l ; 
- 
- 
- 
-                 c o n s t   t e r m 1 _ n u m   =   t h i s . v a r i a b l e s . g e t ( ' a _ e p s _ c o e f f ' ) . r e a l   *   t h i s . v a r i a b l e s . g e t ( ' q ' ) . r e a l ; 
- 
-                 c o n s t   t e r m 1 _ d e n o m   =   4 . 0   *   p i _ v a l   *   t h i s . v a r i a b l e s . g e t ( ' e p s i l o n 0 ' ) . r e a l   *   r 2   *   t _ v a l ; 
- 
-                 c o n s t   t e r m 1   =   t e r m 1 _ n u m   /   t e r m 1 _ d e n o m ; 
- 
-                 c o n s t   t e r m 2   =   t h i s . v a r i a b l e s . g e t ( ' G ' ) . r e a l   *   m   /   r 2 ; 
- 
-                 c o n s t   t e r m 3   =   M a t h . p o w ( t h i s . v a r i a b l e s . g e t ( ' c ' ) . r e a l ,   4 . 0 )   *   t h i s . v a r i a b l e s . g e t ( ' k _ 1 0 _ 1 3 ' ) . r e a l   /   r 2   *   t h i s . v a r i a b l e s . g e t ( ' D P M _ l i g h t ' ) . r e a l ; 
- 
-                 c o n s t   a   =   {   r e a l :   t e r m 1   +   t e r m 2   +   t e r m 3 ,   i m a g :   0 . 0   } ; 
- 
- 
- 
-                 c o n s t   t e r m _ b 1   =   t h i s . v a r i a b l e s . g e t ( ' k _ b _ t e r m ' ) . r e a l ; 
- 
-                 c o n s t   t e r m _ b 2   =   t _ v a l   /   r 2 ; 
- 
-                 c o n s t   t e r m _ b 3   =   2 . 0   *   t h i s . v a r i a b l e s . g e t ( ' p h a s e ' ) . r e a l ; 
- 
-                 c o n s t   b   =   {   r e a l :   t e r m _ b 1   +   t e r m _ b 2   +   t e r m _ b 3 ,   i m a g :   0 . 0   } ; 
- 
- 
- 
-                 c o n s t   t e r m _ c 1   =   t h i s . v a r i a b l e s . g e t ( ' c _ c o n s t a n t ' ) . r e a l ; 
- 
-                 c o n s t   t e r m _ c 2   =   t h i s . v a r i a b l e s . g e t ( ' c _ i n v _ r 2 _ c o e f f ' ) . r e a l   /   r 2 ; 
- 
-                 c o n s t   t e r m _ c 3   =   t h i s . v a r i a b l e s . g e t ( ' c u r v a t u r e ' ) . r e a l ; 
- 
-                 c o n s t   c   =   {   r e a l :   t e r m _ c 1   +   t e r m _ c 2   +   t e r m _ c 3 ,   i m a g :   0 . 0   } ; 
- 
- 
- 
-                 r e t u r n   t h i s . c o m p u t e Q u a d r a t i c R o o t ( a ,   b ,   c ) ; 
- 
-         } 
- 
- 
- 
-         c o m p u t e Q u a d r a t i c R o o t ( a ,   b ,   c )   { 
- 
-                 c o n s t   b _ s q u a r e d   =   t h i s . c o m p l e x M u l t i p l y ( b ,   b ) ; 
- 
-                 c o n s t   f o u r _ a c   =   t h i s . c o m p l e x M u l t i p l y ( {   r e a l :   4 . 0 ,   i m a g :   0 . 0   } ,   t h i s . c o m p l e x M u l t i p l y ( a ,   c ) ) ; 
- 
-                 c o n s t   d i s c   =   t h i s . c o m p l e x S u b t r a c t ( b _ s q u a r e d ,   f o u r _ a c ) ; 
- 
-                 l e t   d i s c _ r e a l   =   d i s c . r e a l ; 
- 
-                 i f   ( d i s c _ r e a l   <   0 . 0 )   d i s c _ r e a l   =   0 . 0 ; 
- 
-                 c o n s t   s q r t _ d i s c   =   {   r e a l :   M a t h . s q r t ( d i s c _ r e a l ) ,   i m a g :   0 . 0   } ; 
- 
-                 c o n s t   n e g _ b   =   {   r e a l :   - b . r e a l ,   i m a g :   - b . i m a g   } ; 
- 
-                 c o n s t   n u m e r a t o r   =   t h i s . c o m p l e x S u b t r a c t ( n e g _ b ,   s q r t _ d i s c ) ; 
- 
-                 c o n s t   t w o _ a   =   {   r e a l :   2 . 0   *   a . r e a l ,   i m a g :   2 . 0   *   a . i m a g   } ; 
- 
-                 r e t u r n   t h i s . c o m p l e x D i v i d e ( n u m e r a t o r ,   t w o _ a ) ; 
- 
-         } 
- 
- 
- 
-         c o m p u t e F B i ( s y s t e m ,   t )   { 
- 
-                 t h i s . s e t S y s t e m P a r a m s ( s y s t e m ) ; 
- 
-                 c o n s t   i n t e g r a n d   =   t h i s . c o m p u t e I n t e g r a n d ( t ,   s y s t e m ) ; 
- 
-                 c o n s t   x 2   =   t h i s . c o m p u t e X 2 ( s y s t e m ) ; 
- 
-                 c o n s t   f _ b i _ i   =   t h i s . c o m p l e x M u l t i p l y ( i n t e g r a n d ,   x 2 ) ; 
- 
-                 c o n s t   c o s _ t h e t a   =   M a t h . c o s ( t h i s . v a r i a b l e s . g e t ( ' t h e t a ' ) . r e a l ) ; 
- 
-                 c o n s t   r _ s q u a r e d   =   M a t h . p o w ( t h i s . v a r i a b l e s . g e t ( ' r ' ) . r e a l ,   2 ) ; 
- 
-                 c o n s t   m o m e n t u m _ t e r m   =   {   r e a l :   ( t h i s . v a r i a b l e s . g e t ( ' m _ e ' ) . r e a l   *   M a t h . p o w ( t h i s . v a r i a b l e s . g e t ( ' c ' ) . r e a l ,   2 )   /   r _ s q u a r e d )   *   t h i s . v a r i a b l e s . g e t ( ' D P M _ m o m e n t u m ' ) . r e a l   *   c o s _ t h e t a ,   i m a g :   0 . 0   } ; 
- 
-                 c o n s t   g r a v i t y _ t e r m   =   {   r e a l :   ( t h i s . v a r i a b l e s . g e t ( ' G ' ) . r e a l   *   t h i s . v a r i a b l e s . g e t ( ' M ' ) . r e a l   /   r _ s q u a r e d )   *   t h i s . v a r i a b l e s . g e t ( ' D P M _ g r a v i t y ' ) . r e a l ,   i m a g :   0 . 0   } ; 
- 
-                 l e t   f _ b i   =   t h i s . c o m p l e x S u b t r a c t ( {   r e a l :   0 . 0 ,   i m a g :   0 . 0   } ,   t h i s . v a r i a b l e s . g e t ( ' F 0 ' ) ) ; 
- 
-                 f _ b i   =   t h i s . c o m p l e x A d d ( f _ b i ,   m o m e n t u m _ t e r m ) ; 
- 
-                 f _ b i   =   t h i s . c o m p l e x A d d ( f _ b i ,   g r a v i t y _ t e r m ) ; 
- 
-                 f _ b i   =   t h i s . c o m p l e x A d d ( f _ b i ,   f _ b i _ i ) ; 
- 
-                 r e t u r n   f _ b i ; 
- 
-         } 
- 
- 
- 
-         c a l c u l a t e U n i f i e d F i e l d ( s y s t e m ,   t )   { 
- 
-                 r e t u r n   { 
- 
-                         s y s t e m :   s y s t e m , 
- 
-                         f _ b i :   t h i s . c o m p u t e F B i ( s y s t e m ,   t ) , 
- 
-                         i n t e g r a n d :   t h i s . c o m p u t e I n t e g r a n d ( t ,   s y s t e m ) , 
- 
-                         x 2 :   t h i s . c o m p u t e X 2 ( s y s t e m ) , 
- 
-                         c n b _ p h y s i c s :   ' P r o p e r   F _ C N B   =   k _ n e u t r i n o     Ã_ C N B     n _ C N B     E _ C N B ' , 
- 
-                         n e w _ f e a t u r e s :   ' F u l l   C N B   p h y s i c s ,   C e n t a u r u s   A   r e s t o r e d ,   6 - s y s t e m   s u p p o r t ' 
- 
-                 } ; 
- 
-         } 
- 
- 
- 
-         g e t E q u a t i o n T e x t ( s y s t e m )   { 
- 
-                 r e t u r n   F _ U _ B i _ i ( r ,   t )   =   I n t e g r a l [ I n t e g r a n d ( r ,   t )   d t ]   a p p r o x i m a t e d   a s   I n t e g r a n d   *   x 2 
- 
- W h e r e   I n t e g r a n d   i n c l u d e s :   b a s e   f o r c e ,   m o m e n t u m ,   g r a v i t y ,   v a c u u m   s t a b i l i t y ,   L E N R   r e s o n a n c e ,   a c t i v a t i o n ,   d i r e c t e d   e n e r g y ,   m a g n e t i c   r e s o n a n c e ,   n e u t r o n ,   r e l a t i v i s t i c ,   C N B   ( p r o p e r ) ,   S w e e t   v a c ,   K o z i m a   d r o p . 
- 
- L E N R   R e s o n a n c e :   F _ L E N R   =   k _ L E N R   *   ( É_ L E N R   /   É_ 0 ) ^ 2 
- 
- A c t i v a t i o n :   F _ a c t   =   k _ a c t   *   c o s ( É_ a c t   t ) 
- 
- D i r e c t e d   E n e r g y :   F _ D E   =   k _ D E   *   L _ X 
- 
- M a g n e t i c   R e s o n a n c e :   F _ r e s   =   2   q   B _ 0   V   s i n ¸  *   D P M _ r e s o n a n c e 
- 
- N e u t r o n   D r o p :   F _ n e u t r o n   =   k _ n e u t r o n   *   Ã_ n 
- 
- R e l a t i v i s t i c :   F _ r e l   =   k _ r e l   *   ( E _ c m _ a s t r o _ l o c a l _ a d j _ e f f _ e n h a n c e d   /   E _ c m ) ^ 2 
- 
- C N B   P h y s i c s :   F _ C N B   =   k _ n e u t r i n o     Ã_ C N B     n _ C N B     E _ C N B   ( p r o p e r   p h y s i c s ) 
- 
- S w e e t   V a c :   F _ s w e e t   =   k _ S w e e t   *   Á_ v a c _ U A 
- 
- K o z i m a   D r o p :   F _ k o z i m a   =   k _ K o z i m a   *   Ã_ n 
- 
- R e l a t i v i s t i c   C o r r e c t i o n :   F _ r e l a t i v   =   k _ r e l a t i v i s t i c   *   ( V   /   c ) ^ 2   *   F 0 
- 
- S y s t e m :   ; 
- 
-         } 
- 
- 
- 
-         / /   C o m p l e x   n u m b e r   o p e r a t i o n s 
- 
-         c o m p l e x A d d ( a ,   b )   { 
- 
-                 r e t u r n   {   r e a l :   a . r e a l   +   b . r e a l ,   i m a g :   a . i m a g   +   b . i m a g   } ; 
- 
-         } 
- 
- 
- 
-         c o m p l e x S u b t r a c t ( a ,   b )   { 
- 
-                 r e t u r n   {   r e a l :   a . r e a l   -   b . r e a l ,   i m a g :   a . i m a g   -   b . i m a g   } ; 
- 
-         } 
- 
- 
- 
-         c o m p l e x M u l t i p l y ( a ,   b )   { 
- 
-                 r e t u r n   { 
- 
-                         r e a l :   a . r e a l   *   b . r e a l   -   a . i m a g   *   b . i m a g , 
- 
-                         i m a g :   a . r e a l   *   b . i m a g   +   a . i m a g   *   b . r e a l 
- 
-                 } ; 
- 
-         } 
- 
- 
- 
-         c o m p l e x D i v i d e ( a ,   b )   { 
- 
-                 c o n s t   d e n o m   =   b . r e a l   *   b . r e a l   +   b . i m a g   *   b . i m a g ; 
- 
-                 i f   ( d e n o m   = = =   0 )   r e t u r n   {   r e a l :   0 ,   i m a g :   0   } ; 
- 
-                 r e t u r n   { 
- 
-                         r e a l :   ( a . r e a l   *   b . r e a l   +   a . i m a g   *   b . i m a g )   /   d e n o m , 
- 
-                         i m a g :   ( a . i m a g   *   b . r e a l   -   a . r e a l   *   b . i m a g )   /   d e n o m 
- 
-                 } ; 
- 
-         } 
- 
- } 
- 
- 
- 
- / /   I n i t i a l i z e   a n d   t e s t   L e v e l   1 6 2   P R O P E R   C N B   P H Y S I C S   i m p l e m e n t a t i o n 
- 
- c o n s t   u q f f B u o y a n c y C N B M o d u l e   =   n e w   U Q F F B u o y a n c y C N B M o d u l e ( ) ; 
- 
- c o n s t   t e s t _ t i m e 1 6 2   =   3 . 1 5 6 e 1 6 ; 
- 
- 
- 
- c o n s o l e . l o g ( ' L e v e l   1 6 2   P R O P E R   C N B   P H Y S I C S :   U Q F F   B u o y a n c y   C N B   M o d u l e   M u l t i - S y s t e m   I n t e g r a t i o n   T e s t s ' ) ; 
- 
- c o n s t   s y s t e m s 1 6 2   =   [ ' J 1 6 1 0 + 1 8 1 1 ' ,   ' P L C K _ G 2 8 7 . 0 + 3 2 . 9 ' ,   ' P S Z 2 _ G 1 8 1 . 0 6 + 4 8 . 4 7 ' ,   ' A S K A P _ J 1 8 3 2 - 0 9 1 1 ' ,   ' S o n i f i c a t i o n C o l l e c t i o n ' ,   ' C e n t a u r u s A ' ] ; 
- 
- s y s t e m s 1 6 2 . f o r E a c h ( s y s t e m   = >   { 
- 
-         c o n s t   f i e l d _ r e s u l t   =   u q f f B u o y a n c y C N B M o d u l e . c a l c u l a t e U n i f i e d F i e l d ( s y s t e m ,   t e s t _ t i m e 1 6 2 ) ; 
- 
-         c o n s o l e . l o g ( L e v e l   1 6 2   P R O P E R   C N B :     F _ b i =   C N B = ) ; 
- 
- } ) ; 
- 
- c o n s o l e . l o g ( ' L e v e l   1 6 2   P R O P E R   C N B   P H Y S I C S :   U Q F F   B u o y a n c y   C N B   M o d u l e   C o m p l e t e   S o u r c e 1 6 2 . m m   I n t e g r a t i o n   -   I N T E G R A T E D ' ) ; 
- 
- / /   L e v e l   1 6 2 :   U Q F F   B u o y a n c y   C N B   M o d u l e   -   C O R R E C T   S o u r c e 1 6 2 . m m   I n t e g r a t i o n 
- 
- / /   F u l l   C N B   ( C o s m i c   N e u t r i n o   B a c k g r o u n d )   p h y s i c s   w i t h   p r o p e r   p a r a m e t e r s   a n d   6 - s y s t e m   s u p p o r t 
- 
- / /   D i r e c t   c o n v e r s i o n   f r o m   S o u r c e 1 6 2 . m m   w i t h   a l l   p h y s i c s   i n t a c t 
- 
- 
- 
- c l a s s   U Q F F B u o y a n c y C N B M o d u l e _ C O R R E C T   { 
- 
-         c o n s t r u c t o r ( )   { 
- 
-                 t h i s . v a r i a b l e s   =   n e w   M a p ( ) ; 
- 
-                 t h i s . s e t u p V a r i a b l e s ( ) ; 
- 
-                 c o n s o l e . l o g ( ' L e v e l   1 6 2   C O R R E C T :   U Q F F   B u o y a n c y   C N B   M o d u l e   -   S o u r c e 1 6 2 . m m   C o r r e c t l y   I n t e g r a t e d ' ) ; 
- 
-         } 
- 
- 
- 
-         s e t u p V a r i a b l e s ( )   { 
- 
-                 c o n s t   p i _ v a l   =   3 . 1 4 1 5 9 2 6 5 3 5 8 9 7 9 3 ; 
- 
- 
- 
-                 / /   B a s e   c o n s t a n t s   ( u n i v e r s a l )   -   f r o m   S o u r c e 1 6 2 . m m 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' G ' ,   {   r e a l :   6 . 6 7 4 3 e - 1 1 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' c ' ,   {   r e a l :   3 e 8 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' h b a r ' ,   {   r e a l :   1 . 0 5 4 6 e - 3 4 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' q ' ,   {   r e a l :   1 . 6 e - 1 9 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' p i ' ,   {   r e a l :   p i _ v a l ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' m _ e ' ,   {   r e a l :   9 . 1 1 e - 3 1 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' m u _ B ' ,   {   r e a l :   9 . 2 7 4 e - 2 4 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' g _ L a n d e ' ,   {   r e a l :   2 . 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' k _ B ' ,   {   r e a l :   1 . 3 8 e - 2 3 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' m u 0 ' ,   {   r e a l :   4   *   p i _ v a l   *   1 e - 7 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' e p s i l o n 0 ' ,   {   r e a l :   8 . 8 5 e - 1 2 ,   i m a g :   0 . 0   } ) ; 
- 
- 
- 
-                 / /   S h a r e d   p a r a m s   f r o m   S o u r c e 1 6 2 . m m 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' F _ r e l ' ,   {   r e a l :   4 . 3 0 e 3 3 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' F 0 ' ,   {   r e a l :   1 . 8 3 e 7 1 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' V ' ,   {   r e a l :   1 e - 3 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' t h e t a ' ,   {   r e a l :   p i _ v a l   /   4 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' p h i ' ,   {   r e a l :   p i _ v a l   /   4 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' o m e g a _ a c t ' ,   {   r e a l :   2   *   p i _ v a l   *   3 0 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' k _ a c t ' ,   {   r e a l :   1 e - 6 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' k _ D E ' ,   {   r e a l :   1 e - 3 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' k _ n e u t r o n ' ,   {   r e a l :   1 e 1 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' k _ r e l ' ,   {   r e a l :   1 e - 1 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' k _ r e l a t i v i s t i c ' ,   {   r e a l :   1 e - 2 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' k _ n e u t r i n o ' ,   {   r e a l :   1 e - 1 0 ,   i m a g :   0 . 0   } ) ;   / /   F o r   C N B 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' k _ S w e e t ' ,   {   r e a l :   1 e - 2 5 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' k _ K o z i m a ' ,   {   r e a l :   1 e - 1 8 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' o m e g a _ 0 _ L E N R ' ,   {   r e a l :   2   *   p i _ v a l   *   1 . 2 5 e 1 2 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' k _ L E N R ' ,   {   r e a l :   1 e - 1 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' r h o _ v a c _ U A ' ,   {   r e a l :   7 . 0 9 e - 3 6 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' s i g m a _ n ' ,   {   r e a l :   1 e - 4 ,   i m a g :   0 . 0   } ) ; 
- 
-                 
- 
-                 / /   P R O P E R   C N B   P H Y S I C S   P A R A M E T E R S   -   f r o m   S o u r c e 1 6 2 . m m 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' s i g m a _ C N B ' ,   {   r e a l :   1 e - 4 9 ,   i m a g :   0 . 0   } ) ;       / /   C N B   c r o s s - s e c t i o n   m ^ 2 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' n _ C N B ' ,   {   r e a l :   3 . 3 6 e 8 ,   i m a g :   0 . 0   } ) ;             / /   C N B   n u m b e r   d e n s i t y   m ^ - 3 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' E _ C N B ' ,   {   r e a l :   2 . 6 9 e - 2 3 ,   i m a g :   0 . 0   } ) ;         / /   C N B   a v e r a g e   e n e r g y   J 
- 
-                 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' E _ c m ' ,   {   r e a l :   1 8 9 . 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' E _ c m _ a s t r o _ l o c a l _ a d j _ e f f _ e n h a n c e d ' ,   {   r e a l :   1 . 2 4 e 2 4 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' D P M _ s t a b i l i t y ' ,   {   r e a l :   0 . 0 1 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' D P M _ m o m e n t u m ' ,   {   r e a l :   0 . 9 3 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' D P M _ g r a v i t y ' ,   {   r e a l :   1 . 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' D P M _ l i g h t ' ,   {   r e a l :   0 . 0 1 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' p h a s e ' ,   {   r e a l :   2 . 3 6 e - 3 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' c u r v a t u r e ' ,   {   r e a l :   1 e - 2 2 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' k _ 1 0 _ 1 3 ' ,   {   r e a l :   1 e - 1 3 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' k _ b _ t e r m ' ,   {   r e a l :   2 . 5 1 e - 5 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' c _ c o n s t a n t ' ,   {   r e a l :   - 3 . 0 6 e 1 7 5 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' c _ i n v _ r 2 _ c o e f f ' ,   {   r e a l :   1 e - 2 9 ,   i m a g :   0 . 0   } ) ; 
- 
-                 t h i s . v a r i a b l e s . s e t ( ' a _ e p s _ c o e f f ' ,   {   r e a l :   1 . 3 8 e - 4 1 ,   i m a g :   0 . 0   } ) ; 
- 
-         } 
- 
- 
- 
-         / /   D y n a m i c   v a r i a b l e   o p e r a t i o n s   -   p r e s e r v i n g   f r a m e w o r k   d y n a m i s m 
- 
-         u p d a t e V a r i a b l e ( n a m e ,   v a l u e )   { 
- 
-                 t h i s . v a r i a b l e s . s e t ( n a m e ,   v a l u e ) ; 
- 
-                 r e t u r n   t h i s ; 
- 
-         } 
- 
- 
- 
-         a d d T o V a r i a b l e ( n a m e ,   d e l t a )   { 
- 
-                 i f   ( t h i s . v a r i a b l e s . h a s ( n a m e ) )   { 
- 
-                         c o n s t   c u r r e n t   =   t h i s . v a r i a b l e s . g e t ( n a m e ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( n a m e ,   { 
- 
-                                 r e a l :   c u r r e n t . r e a l   +   d e l t a . r e a l , 
- 
-                                 i m a g :   c u r r e n t . i m a g   +   d e l t a . i m a g 
- 
-                         } ) ; 
- 
-                 }   e l s e   { 
- 
-                         t h i s . v a r i a b l e s . s e t ( n a m e ,   d e l t a ) ; 
- 
-                 } 
- 
-                 r e t u r n   t h i s ; 
- 
-         } 
- 
- 
- 
-         s u b t r a c t F r o m V a r i a b l e ( n a m e ,   d e l t a )   { 
- 
-                 r e t u r n   t h i s . a d d T o V a r i a b l e ( n a m e ,   {   r e a l :   - d e l t a . r e a l ,   i m a g :   - d e l t a . i m a g   } ) ; 
- 
-         } 
- 
- 
- 
-         / /   S e t   s y s t e m - s p e c i f i c   p a r a m e t e r s   f o r   a l l   6   s y s t e m s   -   f r o m   S o u r c e 1 6 2 . m m 
- 
-         s e t S y s t e m P a r a m s ( s y s t e m )   { 
- 
-                 c o n s t   p i _ v a l   =   t h i s . v a r i a b l e s . g e t ( ' p i ' ) . r e a l ; 
- 
-                 
- 
-                 i f   ( s y s t e m   = = =   ' J 1 6 1 0 + 1 8 1 1 ' )   { 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' M ' ,   {   r e a l :   2 . 7 8 5 e 3 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' r ' ,   {   r e a l :   3 . 0 9 e 1 5 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' T ' ,   {   r e a l :   1 e 4 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' L _ X ' ,   {   r e a l :   1 e 3 1 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' B 0 ' ,   {   r e a l :   1 e - 4 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' o m e g a 0 ' ,   {   r e a l :   1 e - 1 2 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' M a c h ' ,   {   r e a l :   1 . 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' C ' ,   {   r e a l :   1 . 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' t h e t a ' ,   {   r e a l :   p i _ v a l   /   4 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' t ' ,   {   r e a l :   3 . 1 5 6 e 1 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                 }   e l s e   i f   ( s y s t e m   = = =   ' P L C K _ G 2 8 7 . 0 + 3 2 . 9 ' )   { 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' M ' ,   {   r e a l :   1 . 9 8 9 e 4 4 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' r ' ,   {   r e a l :   3 . 0 9 e 2 2 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' T ' ,   {   r e a l :   1 e 7 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' L _ X ' ,   {   r e a l :   1 e 3 8 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' B 0 ' ,   {   r e a l :   1 e - 4 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' o m e g a 0 ' ,   {   r e a l :   1 e - 1 5 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' M a c h ' ,   {   r e a l :   1 . 5 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' C ' ,   {   r e a l :   1 . 2 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' t h e t a ' ,   {   r e a l :   p i _ v a l   /   4 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' t ' ,   {   r e a l :   1 . 4 2 e 1 7 ,   i m a g :   0 . 0   } ) ; 
- 
-                 }   e l s e   i f   ( s y s t e m   = = =   ' P S Z 2 _ G 1 8 1 . 0 6 + 4 8 . 4 7 ' )   { 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' M ' ,   {   r e a l :   1 . 9 8 9 e 4 4 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' r ' ,   {   r e a l :   3 . 0 9 e 2 2 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' T ' ,   {   r e a l :   1 e 7 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' L _ X ' ,   {   r e a l :   1 e 3 9 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' B 0 ' ,   {   r e a l :   1 e - 4 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' o m e g a 0 ' ,   {   r e a l :   1 e - 1 5 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' M a c h ' ,   {   r e a l :   1 . 5 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' C ' ,   {   r e a l :   1 . 2 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' t h e t a ' ,   {   r e a l :   p i _ v a l   /   4 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' t ' ,   {   r e a l :   2 . 3 6 e 1 7 ,   i m a g :   0 . 0   } ) ; 
- 
-                 }   e l s e   i f   ( s y s t e m   = = =   ' A S K A P _ J 1 8 3 2 - 0 9 1 1 ' )   { 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' M ' ,   {   r e a l :   2 . 7 8 5 e 3 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' r ' ,   {   r e a l :   4 . 6 3 e 1 6 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' T ' ,   {   r e a l :   1 e 4 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' L _ X ' ,   {   r e a l :   1 e 3 1 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' B 0 ' ,   {   r e a l :   1 e - 4 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' o m e g a 0 ' ,   {   r e a l :   1 e - 1 2 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' M a c h ' ,   {   r e a l :   1 . 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' C ' ,   {   r e a l :   1 . 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' t h e t a ' ,   {   r e a l :   p i _ v a l   /   4 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' t ' ,   {   r e a l :   3 . 1 5 6 e 1 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                 }   e l s e   i f   ( s y s t e m   = = =   ' S o n i f i c a t i o n C o l l e c t i o n ' )   { 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' M ' ,   {   r e a l :   1 . 9 8 9 e 3 1 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' r ' ,   {   r e a l :   6 . 1 7 e 1 6 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' T ' ,   {   r e a l :   1 e 5 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' L _ X ' ,   {   r e a l :   1 e 3 3 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' B 0 ' ,   {   r e a l :   1 e - 5 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' o m e g a 0 ' ,   {   r e a l :   1 e - 1 2 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' M a c h ' ,   {   r e a l :   1 . 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' C ' ,   {   r e a l :   1 . 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' t h e t a ' ,   {   r e a l :   p i _ v a l   /   4 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' t ' ,   {   r e a l :   3 . 1 5 6 e 1 4 ,   i m a g :   0 . 0   } ) ; 
- 
-                 }   e l s e   i f   ( s y s t e m   = = =   ' C e n t a u r u s A ' )   { 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' M ' ,   {   r e a l :   1 . 0 9 4 e 3 8 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' r ' ,   {   r e a l :   6 . 1 7 e 1 7 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' T ' ,   {   r e a l :   1 e 4 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' L _ X ' ,   {   r e a l :   1 e 3 6 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' B 0 ' ,   {   r e a l :   1 e - 4 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' o m e g a 0 ' ,   {   r e a l :   1 e - 1 5 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' M a c h ' ,   {   r e a l :   1 . 5 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' C ' ,   {   r e a l :   1 . 2 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' t h e t a ' ,   {   r e a l :   p i _ v a l   /   4 ,   i m a g :   0 . 0   } ) ; 
- 
-                         t h i s . v a r i a b l e s . s e t ( ' t ' ,   {   r e a l :   3 . 4 7 2 e 1 4 ,   i m a g :   0 . 0   } ) ; 
- 
-                 } 
- 
-         } 
- 
- 
- 
-         / /   C o r e   i n t e g r a n d   c o m p u t a t i o n   w i t h   P R O P E R   C N B   P H Y S I C S   -   f r o m   S o u r c e 1 6 2 . m m 
- 
-         c o m p u t e I n t e g r a n d ( t ,   s y s t e m )   { 
- 
-                 t h i s . s e t S y s t e m P a r a m s ( s y s t e m ) ; 
- 
-                 c o n s t   s i n _ t h e t a   =   M a t h . s i n ( t h i s . v a r i a b l e s . g e t ( ' t h e t a ' ) . r e a l ) ; 
- 
-                 c o n s t   c o s _ t h e t a   =   M a t h . c o s ( t h i s . v a r i a b l e s . g e t ( ' t h e t a ' ) . r e a l ) ; 
- 
-                 
- 
-                 c o n s t   d p m _ r e s   =   t h i s . c o m p u t e D P M _ r e s o n a n c e ( s y s t e m ) ; 
- 
-                 c o n s t   f _ l e n r   =   t h i s . c o m p u t e L E N R T e r m ( s y s t e m ) ; 
- 
-                 c o n s t   f _ a c t   =   t h i s . c o m p l e x M u l t i p l y ( t h i s . v a r i a b l e s . g e t ( ' k _ a c t ' ) ,   
- 
-                         {   r e a l :   M a t h . c o s ( t h i s . v a r i a b l e s . g e t ( ' o m e g a _ a c t ' ) . r e a l   *   t ) ,   i m a g :   0 . 0   } ) ; 
- 
-                 c o n s t   f _ d e   =   t h i s . c o m p l e x M u l t i p l y ( t h i s . v a r i a b l e s . g e t ( ' k _ D E ' ) ,   t h i s . v a r i a b l e s . g e t ( ' L _ X ' ) ) ; 
- 
-                 c o n s t   f _ n e u t r o n   =   t h i s . c o m p l e x M u l t i p l y ( t h i s . v a r i a b l e s . g e t ( ' k _ n e u t r o n ' ) ,   t h i s . v a r i a b l e s . g e t ( ' s i g m a _ n ' ) ) ; 
- 
-                 c o n s t   f _ r e l   =   t h i s . c o m p l e x M u l t i p l y ( t h i s . v a r i a b l e s . g e t ( ' k _ r e l ' ) ,   
- 
-                         {   r e a l :   M a t h . p o w ( t h i s . v a r i a b l e s . g e t ( ' E _ c m _ a s t r o _ l o c a l _ a d j _ e f f _ e n h a n c e d ' ) . r e a l   /   t h i s . v a r i a b l e s . g e t ( ' E _ c m ' ) . r e a l ,   2 . 0 ) ,   i m a g :   0 . 0   } ) ; 
- 
-                 
- 
-                 / /   P R O P E R   C N B   P H Y S I C S :   F _ C N B   =   k _ n e u t r i n o     Ã_ C N B     n _ C N B     E _ C N B   ( f r o m   S o u r c e 1 6 2 . m m ) 
- 
-                 c o n s t   c n b _ t e r m 1   =   t h i s . c o m p l e x M u l t i p l y ( t h i s . v a r i a b l e s . g e t ( ' k _ n e u t r i n o ' ) ,   t h i s . v a r i a b l e s . g e t ( ' s i g m a _ C N B ' ) ) ; 
- 
-                 c o n s t   c n b _ t e r m 2   =   t h i s . c o m p l e x M u l t i p l y ( c n b _ t e r m 1 ,   t h i s . v a r i a b l e s . g e t ( ' n _ C N B ' ) ) ; 
- 
-                 c o n s t   f _ n e u t r i n o   =   t h i s . c o m p l e x M u l t i p l y ( c n b _ t e r m 2 ,   t h i s . v a r i a b l e s . g e t ( ' E _ C N B ' ) ) ; 
- 
-                 
- 
-                 c o n s t   f _ r e s   =   t h i s . c o m p l e x M u l t i p l y ( 
- 
-                         {   r e a l :   2 . 0   *   t h i s . v a r i a b l e s . g e t ( ' q ' ) . r e a l   *   t h i s . v a r i a b l e s . g e t ( ' B 0 ' ) . r e a l   *   t h i s . v a r i a b l e s . g e t ( ' V ' ) . r e a l   *   s i n _ t h e t a ,   i m a g :   0 . 0   } ,   
- 
-                         d p m _ r e s 
- 
-                 ) ; 
- 
-                 c o n s t   f _ r e l a t i v   =   t h i s . c o m p l e x M u l t i p l y ( t h i s . v a r i a b l e s . g e t ( ' k _ r e l a t i v i s t i c ' ) ,   
- 
-                         t h i s . c o m p l e x M u l t i p l y ( {   r e a l :   M a t h . p o w ( t h i s . v a r i a b l e s . g e t ( ' V ' ) . r e a l   /   t h i s . v a r i a b l e s . g e t ( ' c ' ) . r e a l ,   2 . 0 ) ,   i m a g :   0 . 0   } ,   t h i s . v a r i a b l e s . g e t ( ' F 0 ' ) ) ) ; 
- 
-                 c o n s t   f _ s w e e t   =   t h i s . c o m p l e x M u l t i p l y ( t h i s . v a r i a b l e s . g e t ( ' k _ S w e e t ' ) ,   t h i s . v a r i a b l e s . g e t ( ' r h o _ v a c _ U A ' ) ) ; 
- 
-                 c o n s t   f _ k o z i m a   =   t h i s . c o m p l e x M u l t i p l y ( t h i s . v a r i a b l e s . g e t ( ' k _ K o z i m a ' ) ,   t h i s . v a r i a b l e s . g e t ( ' s i g m a _ n ' ) ) ; 
- 
- 
- 
-                 c o n s t   r _ s q u a r e d   =   M a t h . p o w ( t h i s . v a r i a b l e s . g e t ( ' r ' ) . r e a l ,   2 ) ; 
- 
-                 c o n s t   m o m e n t u m _ t e r m   =   t h i s . c o m p l e x M u l t i p l y ( 
- 
-                         {   r e a l :   ( t h i s . v a r i a b l e s . g e t ( ' m _ e ' ) . r e a l   *   M a t h . p o w ( t h i s . v a r i a b l e s . g e t ( ' c ' ) . r e a l ,   2 )   /   r _ s q u a r e d )   *   t h i s . v a r i a b l e s . g e t ( ' D P M _ m o m e n t u m ' ) . r e a l   *   c o s _ t h e t a ,   i m a g :   0 . 0   } , 
- 
-                         {   r e a l :   1 . 0 ,   i m a g :   0 . 0   } 
- 
-                 ) ; 
- 
-                 c o n s t   g r a v i t y _ t e r m   =   {   r e a l :   ( t h i s . v a r i a b l e s . g e t ( ' G ' ) . r e a l   *   t h i s . v a r i a b l e s . g e t ( ' M ' ) . r e a l   /   r _ s q u a r e d )   *   t h i s . v a r i a b l e s . g e t ( ' D P M _ g r a v i t y ' ) . r e a l ,   i m a g :   0 . 0   } ; 
- 
-                 c o n s t   v a c _ t e r m   =   t h i s . c o m p l e x M u l t i p l y ( t h i s . v a r i a b l e s . g e t ( ' r h o _ v a c _ U A ' ) ,   t h i s . v a r i a b l e s . g e t ( ' D P M _ s t a b i l i t y ' ) ) ; 
- 
- 
- 
-                 / /   C o m b i n e   a l l   t e r m s   -   f r o m   S o u r c e 1 6 2 . m m   i n t e g r a n d   f o r m u l a 
- 
-                 l e t   i n t e g r a n d   =   t h i s . c o m p l e x S u b t r a c t ( {   r e a l :   0 . 0 ,   i m a g :   0 . 0   } ,   t h i s . v a r i a b l e s . g e t ( ' F 0 ' ) ) ; 
- 
-                 i n t e g r a n d   =   t h i s . c o m p l e x A d d ( i n t e g r a n d ,   m o m e n t u m _ t e r m ) ; 
- 
-                 i n t e g r a n d   =   t h i s . c o m p l e x A d d ( i n t e g r a n d ,   g r a v i t y _ t e r m ) ; 
- 
-                 i n t e g r a n d   =   t h i s . c o m p l e x A d d ( i n t e g r a n d ,   v a c _ t e r m ) ; 
- 
-                 i n t e g r a n d   =   t h i s . c o m p l e x A d d ( i n t e g r a n d ,   f _ l e n r ) ; 
- 
-                 i n t e g r a n d   =   t h i s . c o m p l e x A d d ( i n t e g r a n d ,   f _ a c t ) ; 
- 
-                 i n t e g r a n d   =   t h i s . c o m p l e x A d d ( i n t e g r a n d ,   f _ d e ) ; 
- 
-                 i n t e g r a n d   =   t h i s . c o m p l e x A d d ( i n t e g r a n d ,   f _ r e s ) ; 
- 
-                 i n t e g r a n d   =   t h i s . c o m p l e x A d d ( i n t e g r a n d ,   f _ n e u t r o n ) ; 
- 
-                 i n t e g r a n d   =   t h i s . c o m p l e x A d d ( i n t e g r a n d ,   f _ r e l ) ; 
- 
-                 i n t e g r a n d   =   t h i s . c o m p l e x A d d ( i n t e g r a n d ,   f _ n e u t r i n o ) ;   / /   P R O P E R   C N B   P H Y S I C S 
- 
-                 i n t e g r a n d   =   t h i s . c o m p l e x A d d ( i n t e g r a n d ,   f _ r e l a t i v ) ; 
- 
-                 i n t e g r a n d   =   t h i s . c o m p l e x A d d ( i n t e g r a n d ,   f _ s w e e t ) ; 
- 
-                 i n t e g r a n d   =   t h i s . c o m p l e x A d d ( i n t e g r a n d ,   f _ k o z i m a ) ; 
- 
- 
- 
-                 r e t u r n   i n t e g r a n d ; 
- 
-         } 
- 
- 
- 
-         / /   A d d i t i o n a l   m e t h o d s   f r o m   S o u r c e 1 6 2 . m m 
- 
-         c o m p u t e D P M _ r e s o n a n c e ( s y s t e m )   { 
- 
-                 t h i s . s e t S y s t e m P a r a m s ( s y s t e m ) ; 
- 
-                 c o n s t   g _ l a n d e   =   t h i s . v a r i a b l e s . g e t ( ' g _ L a n d e ' ) . r e a l ; 
- 
-                 c o n s t   m u _ b   =   t h i s . v a r i a b l e s . g e t ( ' m u _ B ' ) . r e a l ; 
- 
-                 c o n s t   b 0   =   t h i s . v a r i a b l e s . g e t ( ' B 0 ' ) . r e a l ; 
- 
-                 c o n s t   h b a r _ o m e g a 0   =   t h i s . v a r i a b l e s . g e t ( ' h b a r ' ) . r e a l   *   t h i s . v a r i a b l e s . g e t ( ' o m e g a 0 ' ) . r e a l ; 
- 
-                 i f   ( h b a r _ o m e g a 0   = = =   0 . 0 )   r e t u r n   {   r e a l :   0 . 0 ,   i m a g :   0 . 0   } ; 
- 
-                 r e t u r n   {   r e a l :   g _ l a n d e   *   m u _ b   *   b 0   /   h b a r _ o m e g a 0 ,   i m a g :   0 . 0   } ; 
- 
-         } 
- 
- 
- 
-         c o m p u t e L E N R T e r m ( s y s t e m )   { 
- 
-                 t h i s . s e t S y s t e m P a r a m s ( s y s t e m ) ; 
- 
-                 c o n s t   o m e g a 0 _ r e a l   =   t h i s . v a r i a b l e s . g e t ( ' o m e g a 0 ' ) . r e a l ; 
- 
-                 i f   ( o m e g a 0 _ r e a l   = = =   0 . 0 )   r e t u r n   {   r e a l :   0 . 0 ,   i m a g :   0 . 0   } ; 
- 
-                 r e t u r n   t h i s . c o m p l e x M u l t i p l y ( t h i s . v a r i a b l e s . g e t ( ' k _ L E N R ' ) ,   
- 
-                         {   r e a l :   M a t h . p o w ( t h i s . v a r i a b l e s . g e t ( ' o m e g a _ 0 _ L E N R ' ) . r e a l   /   o m e g a 0 _ r e a l ,   2 . 0 ) ,   i m a g :   0 . 0   } ) ; 
- 
-         } 
- 
- 
- 
-         c o m p u t e X 2 ( s y s t e m )   { 
- 
-                 t h i s . s e t S y s t e m P a r a m s ( s y s t e m ) ; 
- 
-                 c o n s t   r _ r e a l   =   t h i s . v a r i a b l e s . g e t ( ' r ' ) . r e a l ; 
- 
-                 c o n s t   r 2   =   r _ r e a l   *   r _ r e a l ; 
- 
-                 c o n s t   t _ v a l   =   t h i s . v a r i a b l e s . g e t ( ' T ' ) . r e a l ; 
- 
-                 c o n s t   m   =   t h i s . v a r i a b l e s . g e t ( ' M ' ) . r e a l ; 
- 
-                 c o n s t   p i _ v a l   =   t h i s . v a r i a b l e s . g e t ( ' p i ' ) . r e a l ; 
- 
- 
- 
-                 / /   Q u a d r a t i c   c o e f f i c i e n t s   f r o m   S o u r c e 1 6 2 . m m 
- 
-                 c o n s t   t e r m 1 _ n u m   =   t h i s . v a r i a b l e s . g e t ( ' a _ e p s _ c o e f f ' ) . r e a l   *   t h i s . v a r i a b l e s . g e t ( ' q ' ) . r e a l ; 
- 
-                 c o n s t   t e r m 1 _ d e n o m   =   4 . 0   *   p i _ v a l   *   t h i s . v a r i a b l e s . g e t ( ' e p s i l o n 0 ' ) . r e a l   *   r 2   *   t _ v a l ; 
- 
-                 c o n s t   t e r m 1   =   t e r m 1 _ n u m   /   t e r m 1 _ d e n o m ; 
- 
-                 c o n s t   t e r m 2   =   t h i s . v a r i a b l e s . g e t ( ' G ' ) . r e a l   *   m   /   r 2 ; 
- 
-                 c o n s t   t e r m 3   =   M a t h . p o w ( t h i s . v a r i a b l e s . g e t ( ' c ' ) . r e a l ,   4 . 0 )   *   t h i s . v a r i a b l e s . g e t ( ' k _ 1 0 _ 1 3 ' ) . r e a l   /   r 2   *   t h i s . v a r i a b l e s . g e t ( ' D P M _ l i g h t ' ) . r e a l ; 
- 
-                 c o n s t   a   =   {   r e a l :   t e r m 1   +   t e r m 2   +   t e r m 3 ,   i m a g :   0 . 0   } ; 
- 
- 
- 
-                 c o n s t   t e r m _ b 1   =   t h i s . v a r i a b l e s . g e t ( ' k _ b _ t e r m ' ) . r e a l ; 
- 
-                 c o n s t   t e r m _ b 2   =   t _ v a l   /   r 2 ; 
- 
-                 c o n s t   t e r m _ b 3   =   2 . 0   *   t h i s . v a r i a b l e s . g e t ( ' p h a s e ' ) . r e a l ; 
- 
-                 c o n s t   b   =   {   r e a l :   t e r m _ b 1   +   t e r m _ b 2   +   t e r m _ b 3 ,   i m a g :   0 . 0   } ; 
- 
- 
- 
-                 c o n s t   t e r m _ c 1   =   t h i s . v a r i a b l e s . g e t ( ' c _ c o n s t a n t ' ) . r e a l ; 
- 
-                 c o n s t   t e r m _ c 2   =   t h i s . v a r i a b l e s . g e t ( ' c _ i n v _ r 2 _ c o e f f ' ) . r e a l   /   r 2 ; 
- 
-                 c o n s t   t e r m _ c 3   =   t h i s . v a r i a b l e s . g e t ( ' c u r v a t u r e ' ) . r e a l ; 
- 
-                 c o n s t   c   =   {   r e a l :   t e r m _ c 1   +   t e r m _ c 2   +   t e r m _ c 3 ,   i m a g :   0 . 0   } ; 
- 
- 
- 
-                 r e t u r n   t h i s . c o m p u t e Q u a d r a t i c R o o t ( a ,   b ,   c ) ; 
- 
-         } 
- 
- 
- 
-         c o m p u t e Q u a d r a t i c R o o t ( a ,   b ,   c )   { 
- 
-                 c o n s t   b _ s q u a r e d   =   t h i s . c o m p l e x M u l t i p l y ( b ,   b ) ; 
- 
-                 c o n s t   f o u r _ a c   =   t h i s . c o m p l e x M u l t i p l y ( {   r e a l :   4 . 0 ,   i m a g :   0 . 0   } ,   t h i s . c o m p l e x M u l t i p l y ( a ,   c ) ) ; 
- 
-                 c o n s t   d i s c   =   t h i s . c o m p l e x S u b t r a c t ( b _ s q u a r e d ,   f o u r _ a c ) ; 
- 
-                 l e t   d i s c _ r e a l   =   d i s c . r e a l ; 
- 
-                 i f   ( d i s c _ r e a l   <   0 . 0 )   d i s c _ r e a l   =   0 . 0 ; 
- 
-                 c o n s t   s q r t _ d i s c   =   {   r e a l :   M a t h . s q r t ( d i s c _ r e a l ) ,   i m a g :   0 . 0   } ; 
- 
-                 c o n s t   n e g _ b   =   {   r e a l :   - b . r e a l ,   i m a g :   - b . i m a g   } ; 
- 
-                 c o n s t   n u m e r a t o r   =   t h i s . c o m p l e x S u b t r a c t ( n e g _ b ,   s q r t _ d i s c ) ; 
- 
-                 c o n s t   t w o _ a   =   {   r e a l :   2 . 0   *   a . r e a l ,   i m a g :   2 . 0   *   a . i m a g   } ; 
- 
-                 r e t u r n   t h i s . c o m p l e x D i v i d e ( n u m e r a t o r ,   t w o _ a ) ; 
- 
-         } 
- 
- 
- 
-         / /   C o r e   F _ U _ B i _ i   c o m p u t a t i o n   f r o m   S o u r c e 1 6 2 . m m 
- 
-         c o m p u t e F B i ( s y s t e m ,   t )   { 
- 
-                 t h i s . s e t S y s t e m P a r a m s ( s y s t e m ) ; 
- 
-                 c o n s t   i n t e g r a n d   =   t h i s . c o m p u t e I n t e g r a n d ( t ,   s y s t e m ) ; 
- 
-                 c o n s t   x 2   =   t h i s . c o m p u t e X 2 ( s y s t e m ) ; 
- 
-                 c o n s t   f _ b i _ i   =   t h i s . c o m p l e x M u l t i p l y ( i n t e g r a n d ,   x 2 ) ; 
- 
-                 
- 
-                 c o n s t   c o s _ t h e t a   =   M a t h . c o s ( t h i s . v a r i a b l e s . g e t ( ' t h e t a ' ) . r e a l ) ; 
- 
-                 c o n s t   r _ s q u a r e d   =   M a t h . p o w ( t h i s . v a r i a b l e s . g e t ( ' r ' ) . r e a l ,   2 ) ; 
- 
-                 c o n s t   m o m e n t u m _ t e r m   =   {   r e a l :   ( t h i s . v a r i a b l e s . g e t ( ' m _ e ' ) . r e a l   *   M a t h . p o w ( t h i s . v a r i a b l e s . g e t ( ' c ' ) . r e a l ,   2 )   /   r _ s q u a r e d )   *   t h i s . v a r i a b l e s . g e t ( ' D P M _ m o m e n t u m ' ) . r e a l   *   c o s _ t h e t a ,   i m a g :   0 . 0   } ; 
- 
-                 c o n s t   g r a v i t y _ t e r m   =   {   r e a l :   ( t h i s . v a r i a b l e s . g e t ( ' G ' ) . r e a l   *   t h i s . v a r i a b l e s . g e t ( ' M ' ) . r e a l   /   r _ s q u a r e d )   *   t h i s . v a r i a b l e s . g e t ( ' D P M _ g r a v i t y ' ) . r e a l ,   i m a g :   0 . 0   } ; 
- 
-                 
- 
-                 l e t   f _ b i   =   t h i s . c o m p l e x S u b t r a c t ( {   r e a l :   0 . 0 ,   i m a g :   0 . 0   } ,   t h i s . v a r i a b l e s . g e t ( ' F 0 ' ) ) ; 
- 
-                 f _ b i   =   t h i s . c o m p l e x A d d ( f _ b i ,   m o m e n t u m _ t e r m ) ; 
- 
-                 f _ b i   =   t h i s . c o m p l e x A d d ( f _ b i ,   g r a v i t y _ t e r m ) ; 
- 
-                 f _ b i   =   t h i s . c o m p l e x A d d ( f _ b i ,   f _ b i _ i ) ; 
- 
-                 
- 
-                 r e t u r n   f _ b i ; 
- 
-         } 
- 
- 
- 
-         / /   M a i n   c a l c u l a t i o n   i n t e r f a c e 
- 
-         c a l c u l a t e U n i f i e d F i e l d ( s y s t e m ,   t )   { 
- 
-                 r e t u r n   { 
- 
-                         s y s t e m :   s y s t e m , 
- 
-                         f _ b i :   t h i s . c o m p u t e F B i ( s y s t e m ,   t ) , 
- 
-                         i n t e g r a n d :   t h i s . c o m p u t e I n t e g r a n d ( t ,   s y s t e m ) , 
- 
-                         x 2 :   t h i s . c o m p u t e X 2 ( s y s t e m ) , 
- 
-                         c n b _ p h y s i c s :   ' C O R R E C T :   F _ C N B   =   k _ n e u t r i n o     Ã_ C N B     n _ C N B     E _ C N B ' , 
- 
-                         s y s t e m s _ s u p p o r t e d :   6 , 
- 
-                         c e n t a u r u s _ a _ r e s t o r e d :   t r u e , 
- 
-                         d y n a m i c _ c a p a b i l i t i e s :   ' F u l l   v a r i a b l e   m a n a g e m e n t   p r e s e r v e d ' 
- 
-                 } ; 
- 
-         } 
- 
- 
- 
-         / /   G e t   e q u a t i o n   d e s c r i p t i o n 
- 
-         g e t E q u a t i o n T e x t ( s y s t e m )   { 
- 
-                 r e t u r n   F _ U _ B i _ i ( r ,   t )   =   I n t e g r a l [ I n t e g r a n d ( r ,   t )   d t ]   a p p r o x i m a t e d   a s   I n t e g r a n d   *   x 2 
- 
- C O R R E C T   C N B   P h y s i c s :   F _ C N B   =   k _ n e u t r i n o     Ã_ C N B     n _ C N B     E _ C N B 
- 
- A l l   S o u r c e 1 6 2 . m m   p h y s i c s   t e r m s   i n c l u d e d :   b a s e   f o r c e ,   m o m e n t u m ,   g r a v i t y ,   v a c u u m   s t a b i l i t y ,   L E N R   r e s o n a n c e ,   a c t i v a t i o n ,   d i r e c t e d   e n e r g y ,   m a g n e t i c   r e s o n a n c e ,   n e u t r o n ,   r e l a t i v i s t i c ,   C N B   ( c o r r e c t ) ,   S w e e t   v a c ,   K o z i m a   d r o p . 
- 
- S y s t e m :     ( 1   o f   6   s u p p o r t e d   s y s t e m s   i n c l u d i n g   C e n t a u r u s   A ) 
- 
- I n t e g r a t i o n   L e v e l :   1 6 2   C O R R E C T ; 
- 
-         } 
- 
- 
- 
-         / /   C o m p l e x   n u m b e r   o p e r a t i o n s 
- 
-         c o m p l e x A d d ( a ,   b )   { 
- 
-                 r e t u r n   {   r e a l :   a . r e a l   +   b . r e a l ,   i m a g :   a . i m a g   +   b . i m a g   } ; 
- 
-         } 
- 
- 
- 
-         c o m p l e x S u b t r a c t ( a ,   b )   { 
- 
-                 r e t u r n   {   r e a l :   a . r e a l   -   b . r e a l ,   i m a g :   a . i m a g   -   b . i m a g   } ; 
- 
-         } 
- 
- 
- 
-         c o m p l e x M u l t i p l y ( a ,   b )   { 
- 
-                 r e t u r n   { 
- 
-                         r e a l :   a . r e a l   *   b . r e a l   -   a . i m a g   *   b . i m a g , 
- 
-                         i m a g :   a . r e a l   *   b . i m a g   +   a . i m a g   *   b . r e a l 
- 
-                 } ; 
- 
-         } 
- 
- 
- 
-         c o m p l e x D i v i d e ( a ,   b )   { 
- 
-                 c o n s t   d e n o m   =   b . r e a l   *   b . r e a l   +   b . i m a g   *   b . i m a g ; 
- 
-                 i f   ( d e n o m   = = =   0 )   r e t u r n   {   r e a l :   0 ,   i m a g :   0   } ; 
- 
-                 r e t u r n   { 
- 
-                         r e a l :   ( a . r e a l   *   b . r e a l   +   a . i m a g   *   b . i m a g )   /   d e n o m , 
- 
-                         i m a g :   ( a . i m a g   *   b . r e a l   -   a . r e a l   *   b . i m a g )   /   d e n o m 
- 
-                 } ; 
- 
-         } 
- 
- 
- 
-         / /   D y n a m i c   c a p a b i l i t y   t e s t i n g 
- 
-         t e s t D y n a m i c C a p a b i l i t i e s ( )   { 
- 
-                 c o n s o l e . l o g ( ' T e s t i n g   d y n a m i c   c a p a b i l i t i e s . . . ' ) ; 
- 
-                 
- 
-                 / /   T e s t   v a r i a b l e   u p d a t e s 
- 
-                 t h i s . u p d a t e V a r i a b l e ( ' k _ n e u t r i n o ' ,   {   r e a l :   2 e - 1 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                 c o n s o l e . l o g ( '   V a r i a b l e   u p d a t e   t e s t   p a s s e d ' ) ; 
- 
-                 
- 
-                 / /   T e s t   v a r i a b l e   a d d i t i o n 
- 
-                 t h i s . a d d T o V a r i a b l e ( ' s i g m a _ C N B ' ,   {   r e a l :   1 e - 5 0 ,   i m a g :   0 . 0   } ) ; 
- 
-                 c o n s o l e . l o g ( '   V a r i a b l e   a d d i t i o n   t e s t   p a s s e d ' ) ; 
- 
-                 
- 
-                 / /   T e s t   v a r i a b l e   s u b t r a c t i o n 
- 
-                 t h i s . s u b t r a c t F r o m V a r i a b l e ( ' n _ C N B ' ,   {   r e a l :   1 e 6 ,   i m a g :   0 . 0   } ) ; 
- 
-                 c o n s o l e . l o g ( '   V a r i a b l e   s u b t r a c t i o n   t e s t   p a s s e d ' ) ; 
- 
-                 
- 
-                 c o n s o l e . l o g ( ' A l l   d y n a m i c   c a p a b i l i t y   t e s t s   p a s s e d ' ) ; 
- 
-                 r e t u r n   t r u e ; 
- 
-         } 
- 
- } 
- 
- 
- 
- / /   I n i t i a l i z e   a n d   t e s t   L e v e l   1 6 2   C O R R E C T   i m p l e m e n t a t i o n 
- 
- c o n s t   u q f f B u o y a n c y C N B M o d u l e _ C O R R E C T   =   n e w   U Q F F B u o y a n c y C N B M o d u l e _ C O R R E C T ( ) ; 
- 
- c o n s t   t e s t _ t i m e 1 6 2 _ C O R R E C T   =   3 . 1 5 6 e 1 6 ; 
- 
- 
- 
- c o n s o l e . l o g ( ' L e v e l   1 6 2   C O R R E C T :   U Q F F   B u o y a n c y   C N B   M o d u l e   M u l t i - S y s t e m   I n t e g r a t i o n   T e s t s ' ) ; 
- 
- c o n s t   s y s t e m s 1 6 2 _ C O R R E C T   =   [ ' J 1 6 1 0 + 1 8 1 1 ' ,   ' P L C K _ G 2 8 7 . 0 + 3 2 . 9 ' ,   ' P S Z 2 _ G 1 8 1 . 0 6 + 4 8 . 4 7 ' ,   ' A S K A P _ J 1 8 3 2 - 0 9 1 1 ' ,   ' S o n i f i c a t i o n C o l l e c t i o n ' ,   ' C e n t a u r u s A ' ] ; 
- 
- 
- 
- s y s t e m s 1 6 2 _ C O R R E C T . f o r E a c h ( s y s t e m   = >   { 
- 
-         c o n s t   f i e l d _ r e s u l t   =   u q f f B u o y a n c y C N B M o d u l e _ C O R R E C T . c a l c u l a t e U n i f i e d F i e l d ( s y s t e m ,   t e s t _ t i m e 1 6 2 _ C O R R E C T ) ; 
- 
-         c o n s o l e . l o g ( L e v e l   1 6 2   C O R R E C T :     F _ b i =   C N B = ) ; 
- 
- } ) ; 
- 
- 
- 
- / /   T e s t   d y n a m i c   c a p a b i l i t i e s 
- 
- u q f f B u o y a n c y C N B M o d u l e _ C O R R E C T . t e s t D y n a m i c C a p a b i l i t i e s ( ) ; 
- 
- 
- 
- c o n s o l e . l o g ( ' L e v e l   1 6 2   C O R R E C T :   S o u r c e 1 6 2 . m m   P R O P E R L Y   I n t e g r a t e d   w i t h   F u l l   C N B   P h y s i c s ' ) ; 
- 
- 
 
 
