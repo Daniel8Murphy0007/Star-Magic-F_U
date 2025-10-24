@@ -1,0 +1,142 @@
+﻿// SolarWindBuoyancyModule class implementation (Source93.mm)
+class SolarWindBuoyancyModule {
+    constructor() {
+        // Initialize variables Map for dynamic management
+        this.variables = new Map();
+        
+        // Universal constants and defaults
+        this.variables.set('epsilon_sw', 0.001);                // Buoyancy modulation (unitless)
+        this.variables.set('rho_vac_sw', 8e-21);                // J/m^3 (solar wind energy density)
+        this.variables.set('beta_1', 0.6);                      // From buoyancy coupling
+        this.variables.set('U_g1', 1.39e26);                    // J/m^3 (Ug1 example)
+        this.variables.set('Omega_g', 7.3e-16);                 // rad/s
+        this.variables.set('M_bh', 8.15e36);                    // kg
+        this.variables.set('d_g', 2.55e20);                     // m
+        this.variables.set('E_react', 1.0);                     // Normalized
+        this.variables.set('U_UA', 1.0);                        // Universal Aether factor
+        this.variables.set('t_n', 0.0);                         // s
+        this.variables.set('pi', Math.PI);
+        
+        // Compute initial modulation factor
+        this.variables.set('modulation_factor', this.computeModulationFactor());
+    }
+    
+    // Update variable with automatic recalculation
+    updateVariable(name, value) {
+        this.variables.set(name, value);
+        if (name === 'epsilon_sw' || name === 'rho_vac_sw') {
+            this.variables.set('modulation_factor', this.computeModulationFactor());
+        }
+    }
+    
+    // Add to variable
+    addToVariable(name, delta) {
+        const current = this.variables.get(name) || 0;
+        this.updateVariable(name, current + delta);
+    }
+    
+    // Subtract from variable
+    subtractFromVariable(name, delta) {
+        this.addToVariable(name, -delta);
+    }
+    
+    // Compute ε_sw (fixed 0.001)
+    computeEpsilon_sw() {
+        return this.variables.get('epsilon_sw');
+    }
+    
+    // Compute modulation factor 1 + ε_sw * ρ_vac,sw
+    computeModulationFactor() {
+        const epsilon_sw = this.variables.get('epsilon_sw');
+        const rho_vac_sw = this.variables.get('rho_vac_sw');
+        return 1.0 + epsilon_sw * rho_vac_sw;
+    }
+    
+    // Compute example U_b1 with modulation
+    computeU_b1() {
+        const beta_1 = this.variables.get('beta_1');
+        const U_g1 = this.variables.get('U_g1');
+        const Omega_g = this.variables.get('Omega_g');
+        const M_bh_over_d_g = this.variables.get('M_bh') / this.variables.get('d_g');
+        const E_react = this.variables.get('E_react');
+        const mod_factor = this.computeModulationFactor();
+        const U_UA = this.variables.get('U_UA');
+        const cos_term = Math.cos(this.variables.get('pi') * this.variables.get('t_n'));
+        
+        return -beta_1 * U_g1 * Omega_g * M_bh_over_d_g * E_react * mod_factor * U_UA * cos_term;
+    }
+    
+    // Get equation text description
+    getEquationText() {
+        return 'Modulation Factor = 1 + ε_sw * ρ_vac,sw\n' +
+               'Where ε_sw = 0.001 (unitless); ρ_vac,sw = 8e-21 J/m.\n' +
+               'In U_bi: ... * (1 + ε_sw * ρ_vac,sw) * ... 1 (negligible correction ~8e-24).\n' +
+               'U_b1 = -β_1 U_g1 Ω_g (M_bh / d_g) * modulation * U_UA * cos(π t_n)\n' +
+               ' -1.94e27 J/m (at t_n=0, Sun params; modulation 1).\n' +
+               'Role: Minor solar wind density effect on buoyancy; stabilizes heliosphere/nebulae.\n' +
+               'UQFF: Scales counterforce to Ug; negligible but flexible for variations.';
+    }
+    
+    // Print all current variables
+    printVariables() {
+        console.log('Current Variables:');
+        for (const [key, value] of this.variables) {
+            console.log(${key} = );
+        }
+    }
+}
+
+// Solar Wind Buoyancy UQFF Analysis (from Source93.mm)
+function analyzeSolarWindBuoyancyUQFF93(timePoints = null) {
+    if (timePoints === null) timePoints = [0, 1e6, 1e9, 1e12, 1e15];
+
+    console.log('\n  ANALYZING Solar Wind Buoyancy UQFF (Source93.mm)');
+    console.log(' Framework: Buoyancy Modulation by Solar Wind Density (ρ_sw) in UQFF');
+
+    const solarWindModule = new SolarWindBuoyancyModule();
+    const results = {
+        system_name: 'Solar Wind Buoyancy UQFF',
+        source: 'Source93.mm',
+        time_analysis: [],
+        solar_wind_properties: {
+            epsilon_sw: solarWindModule.computeEpsilon_sw(),
+            modulation_factor: solarWindModule.computeModulationFactor(),
+            rho_vac_sw: solarWindModule.variables.get('rho_vac_sw')
+        }
+    };
+    
+    console.log(\n  Solar Wind Modulation Properties:);
+    console.log(   ε_sw =  (unitless));
+    console.log(   ρ_vac,sw =  J/m);
+    console.log(   Modulation Factor = );
+    console.log(   U_b1 with modulation =  J/m);
+
+    // Time evolution analysis
+    timePoints.forEach((t, index) => {
+        solarWindModule.updateVariable('t_n', t);
+        const U_b1_modulated = solarWindModule.computeU_b1();
+        const modulation_factor = solarWindModule.computeModulationFactor();
+        const cos_term = Math.cos(Math.PI * t);
+        
+        console.log(\n--- Solar Wind Time Point : t =  s ---);
+        console.log(  Modulated U_b1:  J/m);
+        console.log(   Modulation Factor: );
+        console.log(   cos(π t_n): );
+        console.log(   ε_sw Scaling:  (0.1% effect));
+        
+        results.time_analysis.push({
+            time: t,
+            U_b1_modulated: U_b1_modulated,
+            modulation_factor: modulation_factor,
+            cos_term: cos_term,
+            epsilon_sw: solarWindModule.computeEpsilon_sw()
+        });
+    });
+    
+    console.log(\n Solar Wind Buoyancy Summary:);
+    console.log(   Negligible Correction: ~);
+    console.log(   Physical Role: Minor solar wind density stabilization);
+    console.log(   UQFF Integration: Flexible modulation framework);
+    
+    return results;
+}

@@ -1,0 +1,2790 @@
+{
+  "timestamp": "2025-10-22T19:04:33.529Z",
+  "theory": "Unified Quantum Field Force (UQFF)",
+  "author": "Daniel T. Murphy",
+  "constants": {
+    "SOLAR_MASS": 1.989e+30,
+    "SOLAR_RADIUS": 696000000,
+    "GALACTIC_SPIN_RATE": 7.3e-16,
+    "BLACK_HOLE_MASS": 8.15e+36,
+    "GALACTIC_DISTANCE": 255000000000000000000,
+    "AETHER_DENSITY": 1e-23,
+    "SCM_DENSITY": 1000000000000000,
+    "HELIOSPHERE_RADIUS": 14960000000000,
+    "OMEGA_C": 1.8112590826010062e-8,
+    "PLANCK_CONSTANT": 1.055e-34,
+    "SPEED_OF_LIGHT": 299800000,
+    "GRAVITATIONAL_CONSTANT": 6.674e-11,
+    "BOHR_RADIUS": 5.29e-11,
+    "RHO_VAC_UA": 7.09e-36,
+    "RHO_VAC_SCM": 7.09e-37,
+    "HUBBLE_TIME": 435196800000000000,
+    "LAMBDA_COSMO": 1.1e-52,
+    "COLMAN_GILLESPIE_FREQ": 300,
+    "THZ_RESONANCE_LOW": 1200000000000,
+    "THZ_RESONANCE_HIGH": 1300000000000,
+    "B_CRIT_MAGNETAR": 44000000000000,
+    "LEP_F_REL": 4.3e+33
+  },
+  "coupling": {
+    "k1": 1.5,
+    "k2": 1.2,
+    "k3": 1.8,
+    "k4": 2.1,
+    "beta1": 0.6,
+    "beta2": 0.5,
+    "beta3": 0.7,
+    "beta4": 0.4,
+    "gamma": 1e-22,
+    "alpha": 0.0005,
+    "epsilon": 0.00001,
+    "k_LENR": 1e-10,
+    "k_act": 0.000001,
+    "k_DE": 1e-15,
+    "k_neutron": 1e-15,
+    "k_rel": 1e-20,
+    "k_vac": 1e-20,
+    "k_thz": 1e-25,
+    "k_conduit": 1e-30,
+    "k_spooky": 1e-35,
+    "k_phonon": 1e-15,
+    "k_Ub": 0.1,
+    "Delta_k_eta": 725000000
+  },
+  "results": {
+    "metadata": {
+      "version": "2.0 - Enhanced with MAIN_1.mm",
+      "frameworks": [
+        "26-Layer Compressed Gravity",
+        "F_U_Bi_i Integrand with LENR",
+        "Colman-Gillespie 300Hz/THz Integration",
+        "Floyd Sweet Vacuum Energy Extraction",
+        "Hideo Kozima Neutron Drop Model",
+        "Magnetar Gravity Framework",
+        "LEP 1998 Relativistic Coherence"
+      ],
+      "predefinedSystems": [
+        "SN_1006",
+        "ESO_137-001",
+        "MAGNETAR_SGR",
+        "SGR_1745_2900",
+        "SGR_0501_4516",
+        "VELA_PULSAR",
+        "HYDROGEN_ATOM",
+        "SMBH_SGR_A_STAR",
+        "STARBIRTH_TAPESTRY",
+        "WESTERLUND_2",
+        "PILLARS_OF_CREATION",
+        "RINGS_OF_RELATIVITY",
+        "GALAXY_NGC_2525",
+        "NGC_3603",
+        "BUBBLE_NEBULA",
+        "ANTENNAE_GALAXIES",
+        "HORSEHEAD_NEBULA",
+        "NGC_1275",
+        "HUDF_GALAXIES",
+        "NGC_1792",
+        "ANDROMEDA_GALAXY",
+        "SOMBRERO_GALAXY",
+        "SATURN_PLANET",
+        "M16_EAGLE_NEBULA",
+        "CRAB_NEBULA",
+        "SGR_1745_2900_ENHANCED",
+        "SGR_1745_2900_FREQUENCY",
+        "SGR_A_STAR_FREQUENCY",
+        "TAPESTRY_STARBIRTH",
+        "RESONANCE_SUPERCONDUCTIVE",
+        "COMPRESSED_RESONANCE",
+        "CRAB_RESONANCE",
+        "COMPRESSED_RESONANCE_24",
+        "UNIVERSE_DIAMETER",
+        "HYDROGEN_PTOE_RESONANCE",
+        "LAGOON_NEBULA",
+        "SPIRAL_SUPERNOVAE",
+        "NGC6302_BUG_NEBULA",
+        "NGC6302_RESONANCE",
+        "ORION_NEBULA",
+        "COMPRESSED_RESONANCE_UQFF34",
+        "COMPRESSED_RESONANCE_UQFF50",
+        "MULTI_UQFF52",
+        "YOUNG_STARS_OUTFLOWS_54",
+        "BIG_BANG_GRAVITY_56",
+        "MULTI_COMPRESSED_UQFF_57",
+        "MULTI_UQFF_COMPRESSION_60",
+        "UFE_ORB_EXPERIMENT_64",
+        "NEBULAR_UQFF_65",
+        "RED_DWARF_UQFF_66",
+        "INERTIA_UQFF_67",
+        "HYDROGEN_UQFF_68",
+        "UQFF_COMPRESSION_69",
+        "M51_GALAXY_70",
+        "NGC1316_GALAXY_71",
+        "V838MON_LIGHT_ECHO_72",
+        "NGC1300_BARRED_GALAXY_73",
+        "UQFF_COMPRESSED_RESONANCE_74",
+        "NGC2264_CONE_NEBULA_76",
+        "UGC10214_TADPOLE_GALAXY_77",
+        "NGC4676_MICE_GALAXIES_78",
+        "NGC6537_RED_SPIDER_79",
+        "SMBH_BINARY_80",
+        "NGC346_NEBULA_81",
+        "SMBH_UQFF_82",
+        "LENR_UQFF_83",
+        "LENR_CALIB_UQFF_84",
+        "NGC346_UQFF_85",
+        "MUGE_UQFF_86",
+        "MUGE_RESONANCE_UQFF_87",
+        "ANDROMEDA_ENHANCED_UQFF_88",
+        "AETHER_COUPLING_UQFF_89",
+        "BACKGROUND_AETHER_UQFF_90"
+      ],
+      "analysisTimePoints": [
+        0,
+        182.5,
+        365,
+        2007.5
+      ]
+    },
+    "results": [
+      {
+        "systemName": "UQFF Hydrogen Atom Evolution",
+        "systemParams": {
+          "name": "UQFF Hydrogen Atom Evolution",
+          "mass": 1.673e-27,
+          "radius": 5.29e-11,
+          "temperature": 0,
+          "luminosity": 0,
+          "magneticField": 0.0001,
+          "velocity": 2200000,
+          "omega0": 1000000000000000,
+          "neutronFactor": 0,
+          "conduitScale": 1,
+          "z_general": 0,
+          "c": 300000000,
+          "pi": 3.141592653589793,
+          "E_vac": 7.09e-36,
+          "hbar": 1.0546e-34,
+          "f_TRZ": 0.1,
+          "Lambda": 1.1e-52,
+          "q": 1.602e-19,
+          "t_Hubble": 435528000000000000,
+          "M_sun": 1.989e+30,
+          "M": 1.673e-27,
+          "M_visible": 1.673e-27,
+          "M_DM": 0,
+          "r": 5.29e-11,
+          "H0": 70,
+          "Mpc_to_m": 3.086e+22,
+          "z": 0,
+          "Omega_m": 0.3,
+          "Omega_Lambda": 0.7,
+          "t": 1e-15,
+          "rho_fluid": 1e-25,
+          "V_volume": 6.200912818000453e-31,
+          "v_orbital": 2200000,
+          "delta_rho": 1e-26,
+          "rho_mean": 1e-25,
+          "B": 0.0001,
+          "B_crit": 100000000000,
+          "Delta_x": 1e-10,
+          "integral_psi": 1,
+          "A_amplitude": 1e-10,
+          "k_wave": 100000000000,
+          "omega_osc": 1000000000000000,
+          "x_position": 0,
+          "Ug1": 0,
+          "Ug2": 0,
+          "Ug3": 0,
+          "Ug4": 0,
+          "scale_macro": 1e-12,
+          "f_sc": 1,
+          "electron_mass": 9.11e-31,
+          "proton_mass": 1.673e-27,
+          "year_to_s": 31560000,
+          "defaultTimeSeconds": 1e-15,
+          "bohr_radius": 5.29e-11,
+          "rydberg_energy": 13.6,
+          "lyman_alpha_freq": 2470000000000000,
+          "fine_structure": 0.007297,
+          "evolutionMode": "atomic_quantum",
+          "quantumDominant": true,
+          "cosmologyNegligible": true,
+          "electronCloud": true,
+          "atomicTransitions": true,
+          "targetScale": "hydrogen_atom",
+          "integrationMode": "full_UQFF_plus_SM_atomic"
+        },
+        "timeAnalysis": [
+          {
+            "time_days": 0,
+            "time_seconds": 0,
+            "system": "UQFF Hydrogen Atom Evolution",
+            "totalField": 7.261525740428486e+54,
+            "components": {
+              "Ug1": 6.18890438142963e+48,
+              "Ug2": 0,
+              "Ug3": 3958460192169.419,
+              "Ug4": 9.026310647128588e+32,
+              "Ub1": 1.815313362619724e+54,
+              "Ub2": 1.8154e+54,
+              "Ub3": 1.8154e+54,
+              "Ub4": 1.8154e+54,
+              "Um": 0,
+              "UA": 1.1101270000000001e-15,
+              "magnetarGravity": 6.188904381429631e+48,
+              "compressedGravity": 2.042586126954671e+38
+            },
+            "advancedComponents": {
+              "F_U_Bi_i_results": {
+                "Ub1_result": {
+                  "totalBuoyancy": 1.815313362619724e+54,
+                  "F_U_Bi_i": 4.3e+33,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": -8.663738027603669e+49,
+                  "integrandComponents": {
+                    "F_LENR": 0.0000010000000061685028,
+                    "F_vac_rep": 2.34859086e-76,
+                    "F_neutron_phonon": 6.168502750680847e-20,
+                    "F_thz_shock": 0,
+                    "F_conduit": 0,
+                    "F_spooky": 1.0000000000000001e-44,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub2_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 4.3e+33,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 0.0000010000000061685028,
+                    "F_vac_rep": 2.34859086e-76,
+                    "F_neutron_phonon": 6.168502750680847e-20,
+                    "F_thz_shock": 0,
+                    "F_conduit": 0,
+                    "F_spooky": 1.0000000000000001e-44,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub3_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 4.3e+33,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": -64649416624777.94,
+                  "integrandComponents": {
+                    "F_LENR": 0.0000010000000061685028,
+                    "F_vac_rep": 2.34859086e-76,
+                    "F_neutron_phonon": 6.168502750680847e-20,
+                    "F_thz_shock": 0,
+                    "F_conduit": 0,
+                    "F_spooky": 1.0000000000000001e-44,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub4_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 4.3e+33,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": -8.423848658053576e+33,
+                  "integrandComponents": {
+                    "F_LENR": 0.0000010000000061685028,
+                    "F_vac_rep": 2.34859086e-76,
+                    "F_neutron_phonon": 6.168502750680847e-20,
+                    "F_thz_shock": 0,
+                    "F_conduit": 0,
+                    "F_spooky": 1.0000000000000001e-44,
+                    "F_rel": 4.3e+33
+                  }
+                }
+              },
+              "magnetarComponents": {
+                "g_newton": 3.8992993586293e-17,
+                "g_SMBH": 8.364951941560938e-15,
+                "Ug_total": 6.188904381429631e+48,
+                "g_DE": 3.2956014666666664e-36,
+                "g_quantum": 1.4829291589780003e-34,
+                "g_lorentz": 9.57561267184698e+24,
+                "g_fluid": 0.039899807390625396,
+                "g_wave1": 0.000002,
+                "g_wave2": 4.553032831289555e-7,
+                "g_DM": 3.357026133752978e-32,
+                "M_mag": 100000000000000000000,
+                "D_t": 1
+              }
+            }
+          },
+          {
+            "time_days": 182.5,
+            "time_seconds": 15768000,
+            "system": "UQFF Hydrogen Atom Evolution",
+            "totalField": 7.2616e+54,
+            "components": {
+              "Ug1": 0,
+              "Ug2": 0,
+              "Ug3": 0,
+              "Ug4": 0,
+              "Ub1": 1.8154e+54,
+              "Ub2": 1.8154e+54,
+              "Ub3": 1.8154e+54,
+              "Ub4": 1.8154e+54,
+              "Um": 0,
+              "UA": 1.1101270000000001e-15,
+              "magnetarGravity": 9.575712671846981e+24,
+              "compressedGravity": 0
+            },
+            "advancedComponents": {
+              "F_U_Bi_i_results": {
+                "Ub1_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 4.3e+33,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 0.0000010000000061657817,
+                    "F_vac_rep": 2.34859086e-76,
+                    "F_neutron_phonon": 6.168502750680847e-20,
+                    "F_thz_shock": 0,
+                    "F_conduit": 0,
+                    "F_spooky": 1.0000000000000001e-44,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub2_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 4.3e+33,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 0.0000010000000061657817,
+                    "F_vac_rep": 2.34859086e-76,
+                    "F_neutron_phonon": 6.168502750680847e-20,
+                    "F_thz_shock": 0,
+                    "F_conduit": 0,
+                    "F_spooky": 1.0000000000000001e-44,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub3_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 4.3e+33,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 0.0000010000000061657817,
+                    "F_vac_rep": 2.34859086e-76,
+                    "F_neutron_phonon": 6.168502750680847e-20,
+                    "F_thz_shock": 0,
+                    "F_conduit": 0,
+                    "F_spooky": 1.0000000000000001e-44,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub4_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 4.3e+33,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 0.0000010000000061657817,
+                    "F_vac_rep": 2.34859086e-76,
+                    "F_neutron_phonon": 6.168502750680847e-20,
+                    "F_thz_shock": 0,
+                    "F_conduit": 0,
+                    "F_spooky": 1.0000000000000001e-44,
+                    "F_rel": 4.3e+33
+                  }
+                }
+              },
+              "magnetarComponents": {
+                "g_newton": 3.899299358768765e-17,
+                "g_SMBH": 8.364951941560938e-15,
+                "Ug_total": 0,
+                "g_DE": 3.2956014666666664e-36,
+                "g_quantum": 1.4829291589780003e-34,
+                "g_lorentz": 9.57561267184698e+24,
+                "g_fluid": 0.039899807390625396,
+                "g_wave1": 0.0000019999993306176524,
+                "g_wave2": 4.5530313074296524e-7,
+                "g_DM": 3.357026133752978e-32,
+                "M_mag": 100000000000000000000,
+                "D_t": 0.9843556640804206
+              }
+            }
+          },
+          {
+            "time_days": 365,
+            "time_seconds": 31536000,
+            "system": "UQFF Hydrogen Atom Evolution",
+            "totalField": 7.2616e+54,
+            "components": {
+              "Ug1": 0,
+              "Ug2": 0,
+              "Ug3": 0,
+              "Ug4": 0,
+              "Ub1": 1.8154e+54,
+              "Ub2": 1.8154e+54,
+              "Ub3": 1.8154e+54,
+              "Ub4": 1.8154e+54,
+              "Um": 0,
+              "UA": 1.1101270000000001e-15,
+              "magnetarGravity": 9.575712671846981e+24,
+              "compressedGravity": 0
+            },
+            "advancedComponents": {
+              "F_U_Bi_i_results": {
+                "Ub1_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 4.3e+33,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 0.0000010000000061576184,
+                    "F_vac_rep": 2.34859086e-76,
+                    "F_neutron_phonon": 6.168502750680847e-20,
+                    "F_thz_shock": 0,
+                    "F_conduit": 0,
+                    "F_spooky": 1.0000000000000001e-44,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub2_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 4.3e+33,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 0.0000010000000061576184,
+                    "F_vac_rep": 2.34859086e-76,
+                    "F_neutron_phonon": 6.168502750680847e-20,
+                    "F_thz_shock": 0,
+                    "F_conduit": 0,
+                    "F_spooky": 1.0000000000000001e-44,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub3_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 4.3e+33,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 0.0000010000000061576184,
+                    "F_vac_rep": 2.34859086e-76,
+                    "F_neutron_phonon": 6.168502750680847e-20,
+                    "F_thz_shock": 0,
+                    "F_conduit": 0,
+                    "F_spooky": 1.0000000000000001e-44,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub4_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 4.3e+33,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 0.0000010000000061576184,
+                    "F_vac_rep": 2.34859086e-76,
+                    "F_neutron_phonon": 6.168502750680847e-20,
+                    "F_thz_shock": 0,
+                    "F_conduit": 0,
+                    "F_spooky": 1.0000000000000001e-44,
+                    "F_rel": 4.3e+33
+                  }
+                }
+              },
+              "magnetarComponents": {
+                "g_newton": 3.899299358908231e-17,
+                "g_SMBH": 8.364951941560938e-15,
+                "Ug_total": 0,
+                "g_DE": 3.2956014666666664e-36,
+                "g_quantum": 1.4829291589780003e-34,
+                "g_lorentz": 9.57561267184698e+24,
+                "g_fluid": 0.039899807390625396,
+                "g_wave1": 0.0000019999973224710576,
+                "g_wave2": 4.5530267358509644e-7,
+                "g_DM": 3.357026133752978e-32,
+                "M_mag": 100000000000000000000,
+                "D_t": 0.9689560734072059
+              }
+            }
+          },
+          {
+            "time_days": 2007.5,
+            "time_seconds": 173448000,
+            "system": "UQFF Hydrogen Atom Evolution",
+            "totalField": 7.2616e+54,
+            "components": {
+              "Ug1": 0,
+              "Ug2": 0,
+              "Ug3": 0,
+              "Ug4": 0,
+              "Ub1": 1.8154e+54,
+              "Ub2": 1.8154e+54,
+              "Ub3": 1.8154e+54,
+              "Ub4": 1.8154e+54,
+              "Um": 0,
+              "UA": 1.1101270000000001e-15,
+              "magnetarGravity": 9.575712671846981e+24,
+              "compressedGravity": 0
+            },
+            "advancedComponents": {
+              "F_U_Bi_i_results": {
+                "Ub1_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 4.3e+33,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 0.000001000000006005927,
+                    "F_vac_rep": 2.34859086e-76,
+                    "F_neutron_phonon": 6.168502750680847e-20,
+                    "F_thz_shock": 0,
+                    "F_conduit": 0,
+                    "F_spooky": 1.0000000000000001e-44,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub2_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 4.3e+33,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 0.000001000000006005927,
+                    "F_vac_rep": 2.34859086e-76,
+                    "F_neutron_phonon": 6.168502750680847e-20,
+                    "F_thz_shock": 0,
+                    "F_conduit": 0,
+                    "F_spooky": 1.0000000000000001e-44,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub3_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 4.3e+33,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 0.000001000000006005927,
+                    "F_vac_rep": 2.34859086e-76,
+                    "F_neutron_phonon": 6.168502750680847e-20,
+                    "F_thz_shock": 0,
+                    "F_conduit": 0,
+                    "F_spooky": 1.0000000000000001e-44,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub4_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 4.3e+33,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 0.000001000000006005927,
+                    "F_vac_rep": 2.34859086e-76,
+                    "F_neutron_phonon": 6.168502750680847e-20,
+                    "F_thz_shock": 0,
+                    "F_conduit": 0,
+                    "F_spooky": 1.0000000000000001e-44,
+                    "F_rel": 4.3e+33
+                  }
+                }
+              },
+              "magnetarComponents": {
+                "g_newton": 3.8992993601634144e-17,
+                "g_SMBH": 8.364951941560938e-15,
+                "Ug_total": 0,
+                "g_DE": 3.2956014666666664e-36,
+                "g_quantum": 1.4829291589780003e-34,
+                "g_lorentz": 9.57561267184698e+24,
+                "g_fluid": 0.039899807390625396,
+                "g_wave1": 0.000001998380177359586,
+                "g_wave2": 4.549345278458219e-7,
+                "g_DM": 3.357026133752978e-32,
+                "M_mag": 100000000000000000000,
+                "D_t": 0.840760869590411
+              }
+            }
+          }
+        ]
+      },
+      {
+        "systemName": "Vela Pulsar",
+        "systemParams": {
+          "name": "Vela Pulsar",
+          "mass": 2.7846e+30,
+          "radius": 12000,
+          "temperature": 1000000,
+          "luminosity": 1e+28,
+          "magneticField": 320000000,
+          "velocity": 200000,
+          "omega0": 1e-8,
+          "neutronFactor": 1,
+          "conduitScale": 0.8
+        },
+        "timeAnalysis": [
+          {
+            "time_days": 0,
+            "time_seconds": 0,
+            "system": "Vela Pulsar",
+            "totalField": 7.261600000000006e+54,
+            "components": {
+              "Ug1": 2.3372839502298032e-9,
+              "Ug2": 0,
+              "Ug3": 0.01745021201381353,
+              "Ug4": 17541.193040299382,
+              "Ub1": 1.8154e+54,
+              "Ub2": 1.8154e+54,
+              "Ub3": 1.8154e+54,
+              "Ub4": 1.8154e+54,
+              "Um": 0,
+              "UA": 1.1101270000000001e-15,
+              "magnetarGravity": 5.525409528333182e+39,
+              "compressedGravity": 0.031467952386749584
+            },
+            "advancedComponents": {
+              "F_U_Bi_i_results": {
+                "Ub1_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 4.361685644357084e+33,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": -3.271922555739345e-8,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680847e+31,
+                    "F_vac_rep": 3.55370652e-20,
+                    "F_neutron_phonon": 6.1685027506808476e+26,
+                    "F_thz_shock": 4.934802200544679e-34,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 1.0000000000000001e-21,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub2_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 4.361685644357084e+33,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680847e+31,
+                    "F_vac_rep": 3.55370652e-20,
+                    "F_neutron_phonon": 6.1685027506808476e+26,
+                    "F_thz_shock": 4.934802200544679e-34,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 1.0000000000000001e-21,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub3_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 4.361685644357084e+33,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": -0.28499617828756285,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680847e+31,
+                    "F_vac_rep": 3.55370652e-20,
+                    "F_neutron_phonon": 6.1685027506808476e+26,
+                    "F_thz_shock": 4.934802200544679e-34,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 1.0000000000000001e-21,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub4_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 4.361685644357084e+33,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": -163704.04391099795,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680847e+31,
+                    "F_vac_rep": 3.55370652e-20,
+                    "F_neutron_phonon": 6.1685027506808476e+26,
+                    "F_thz_shock": 4.934802200544679e-34,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 1.0000000000000001e-21,
+                    "F_rel": 4.3e+33
+                  }
+                }
+              },
+              "magnetarComponents": {
+                "g_newton": 1261253278409.0906,
+                "g_SMBH": 8.364951941560938e-15,
+                "Ug_total": 17541.210490513735,
+                "g_DE": 3.2956014666666664e-36,
+                "g_quantum": 1.4829291589780003e-34,
+                "g_lorentz": 5.753070458952812e-33,
+                "g_fluid": 1.2905847499999996e+27,
+                "g_wave1": 0.0000016877079174649842,
+                "g_wave2": 3.842094778922698e-7,
+                "g_DM": 5.525409528331891e+39,
+                "M_mag": 100000000000000000000,
+                "D_t": 1
+              }
+            }
+          },
+          {
+            "time_days": 182.5,
+            "time_seconds": 15768000,
+            "system": "Vela Pulsar",
+            "totalField": 7.261600000000006e+54,
+            "components": {
+              "Ug1": 0,
+              "Ug2": 0,
+              "Ug3": 0,
+              "Ug4": 0,
+              "Ub1": 1.8154e+54,
+              "Ub2": 1.8154e+54,
+              "Ub3": 1.8154e+54,
+              "Ub4": 1.8154e+54,
+              "Um": 0,
+              "UA": 1.1101270000000001e-15,
+              "magnetarGravity": 5.525409528333182e+39,
+              "compressedGravity": 0
+            },
+            "advancedComponents": {
+              "F_U_Bi_i_results": {
+                "Ub1_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 4.361685644357084e+33,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680847e+31,
+                    "F_vac_rep": 3.55370652e-20,
+                    "F_neutron_phonon": 6.1685027506808476e+26,
+                    "F_thz_shock": 4.934802200544679e-34,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 1.0000000000000001e-21,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub2_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 4.361685644357084e+33,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680847e+31,
+                    "F_vac_rep": 3.55370652e-20,
+                    "F_neutron_phonon": 6.1685027506808476e+26,
+                    "F_thz_shock": 4.934802200544679e-34,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 1.0000000000000001e-21,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub3_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 4.361685644357084e+33,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680847e+31,
+                    "F_vac_rep": 3.55370652e-20,
+                    "F_neutron_phonon": 6.1685027506808476e+26,
+                    "F_thz_shock": 4.934802200544679e-34,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 1.0000000000000001e-21,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub4_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 4.361685644357084e+33,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680847e+31,
+                    "F_vac_rep": 3.55370652e-20,
+                    "F_neutron_phonon": 6.1685027506808476e+26,
+                    "F_thz_shock": 4.934802200544679e-34,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 1.0000000000000001e-21,
+                    "F_rel": 4.3e+33
+                  }
+                }
+              },
+              "magnetarComponents": {
+                "g_newton": 1261253278454.2014,
+                "g_SMBH": 8.364951941560938e-15,
+                "Ug_total": 0,
+                "g_DE": 3.2956014666666664e-36,
+                "g_quantum": 1.4829291589780003e-34,
+                "g_lorentz": 5.753070458952812e-33,
+                "g_fluid": 1.2905847499999996e+27,
+                "g_wave1": 0.0000016877073526040403,
+                "g_wave2": 3.844092280496326e-7,
+                "g_DM": 5.525409528331891e+39,
+                "M_mag": 100000000000000000000,
+                "D_t": 0.9843556640804206
+              }
+            }
+          },
+          {
+            "time_days": 365,
+            "time_seconds": 31536000,
+            "system": "Vela Pulsar",
+            "totalField": 7.261600000000006e+54,
+            "components": {
+              "Ug1": 0,
+              "Ug2": 0,
+              "Ug3": 0,
+              "Ug4": 0,
+              "Ub1": 1.8154e+54,
+              "Ub2": 1.8154e+54,
+              "Ub3": 1.8154e+54,
+              "Ub4": 1.8154e+54,
+              "Um": 0,
+              "UA": 1.1101270000000001e-15,
+              "magnetarGravity": 5.525409528333182e+39,
+              "compressedGravity": 0
+            },
+            "advancedComponents": {
+              "F_U_Bi_i_results": {
+                "Ub1_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 4.361685644357084e+33,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680847e+31,
+                    "F_vac_rep": 3.55370652e-20,
+                    "F_neutron_phonon": 6.1685027506808476e+26,
+                    "F_thz_shock": 4.934802200544679e-34,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 1.0000000000000001e-21,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub2_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 4.361685644357084e+33,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680847e+31,
+                    "F_vac_rep": 3.55370652e-20,
+                    "F_neutron_phonon": 6.1685027506808476e+26,
+                    "F_thz_shock": 4.934802200544679e-34,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 1.0000000000000001e-21,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub3_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 4.361685644357084e+33,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680847e+31,
+                    "F_vac_rep": 3.55370652e-20,
+                    "F_neutron_phonon": 6.1685027506808476e+26,
+                    "F_thz_shock": 4.934802200544679e-34,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 1.0000000000000001e-21,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub4_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 4.361685644357084e+33,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680847e+31,
+                    "F_vac_rep": 3.55370652e-20,
+                    "F_neutron_phonon": 6.1685027506808476e+26,
+                    "F_thz_shock": 4.934802200544679e-34,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 1.0000000000000001e-21,
+                    "F_rel": 4.3e+33
+                  }
+                }
+              },
+              "magnetarComponents": {
+                "g_newton": 1261253278499.3125,
+                "g_SMBH": 8.364951941560938e-15,
+                "Ug_total": 0,
+                "g_DE": 3.2956014666666664e-36,
+                "g_quantum": 1.4829291589780003e-34,
+                "g_lorentz": 5.753070458952812e-33,
+                "g_fluid": 1.2905847499999996e+27,
+                "g_wave1": 0.0000016877056580215868,
+                "g_wave2": 3.84608720890244e-7,
+                "g_DM": 5.525409528331891e+39,
+                "M_mag": 100000000000000000000,
+                "D_t": 0.9689560734072059
+              }
+            }
+          },
+          {
+            "time_days": 2007.5,
+            "time_seconds": 173448000,
+            "system": "Vela Pulsar",
+            "totalField": 7.261600000000006e+54,
+            "components": {
+              "Ug1": 0,
+              "Ug2": 0,
+              "Ug3": 0,
+              "Ug4": 0,
+              "Ub1": 1.8154e+54,
+              "Ub2": 1.8154e+54,
+              "Ub3": 1.8154e+54,
+              "Ub4": 1.8154e+54,
+              "Um": 0,
+              "UA": 1.1101270000000001e-15,
+              "magnetarGravity": 5.525409528333182e+39,
+              "compressedGravity": 0
+            },
+            "advancedComponents": {
+              "F_U_Bi_i_results": {
+                "Ub1_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 4.361685644357084e+33,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680847e+31,
+                    "F_vac_rep": 3.55370652e-20,
+                    "F_neutron_phonon": 6.1685027506808476e+26,
+                    "F_thz_shock": 4.934802200544679e-34,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 1.0000000000000001e-21,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub2_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 4.361685644357084e+33,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680847e+31,
+                    "F_vac_rep": 3.55370652e-20,
+                    "F_neutron_phonon": 6.1685027506808476e+26,
+                    "F_thz_shock": 4.934802200544679e-34,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 1.0000000000000001e-21,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub3_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 4.361685644357084e+33,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680847e+31,
+                    "F_vac_rep": 3.55370652e-20,
+                    "F_neutron_phonon": 6.1685027506808476e+26,
+                    "F_thz_shock": 4.934802200544679e-34,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 1.0000000000000001e-21,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub4_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 4.361685644357084e+33,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680847e+31,
+                    "F_vac_rep": 3.55370652e-20,
+                    "F_neutron_phonon": 6.1685027506808476e+26,
+                    "F_thz_shock": 4.934802200544679e-34,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 1.0000000000000001e-21,
+                    "F_rel": 4.3e+33
+                  }
+                }
+              },
+              "magnetarComponents": {
+                "g_newton": 1261253278905.31,
+                "g_SMBH": 8.364951941560938e-15,
+                "Ug_total": 0,
+                "g_DE": 3.2956014666666664e-36,
+                "g_quantum": 1.4829291589780003e-34,
+                "g_lorentz": 5.753070458952812e-33,
+                "g_fluid": 1.2905847499999996e+27,
+                "g_wave1": 0.0000016863410237174262,
+                "g_wave2": 3.9372879556724546e-7,
+                "g_DM": 5.525409528331891e+39,
+                "M_mag": 100000000000000000000,
+                "D_t": 0.840760869590411
+              }
+            }
+          }
+        ]
+      },
+      {
+        "systemName": "SGR Magnetar",
+        "systemParams": {
+          "name": "SGR Magnetar",
+          "mass": 2.8e+30,
+          "radius": 10000,
+          "temperature": 1000000,
+          "luminosity": 1e+32,
+          "magneticField": 1000000000000000,
+          "velocity": 100000,
+          "omega0": 1e-10,
+          "neutronFactor": 1,
+          "conduitScale": 0.1
+        },
+        "timeAnalysis": [
+          {
+            "time_days": 0,
+            "time_seconds": 0,
+            "system": "SGR Magnetar",
+            "totalField": 7.2616e+54,
+            "components": {
+              "Ug1": 4.8465919991965216e-9,
+              "Ug2": 0,
+              "Ug3": 0.020940254416576227,
+              "Ug4": 25259.317978031115,
+              "Ub1": 1.8154e+54,
+              "Ub2": 1.8154e+54,
+              "Ub3": 1.8154e+54,
+              "Ub4": 1.8154e+54,
+              "Um": 0,
+              "UA": 1.1101270000000001e-15,
+              "magnetarGravity": 5343626873368.708,
+              "compressedGravity": 0.04530191966802112
+            },
+            "advancedComponents": {
+              "F_U_Bi_i_results": {
+                "Ub1_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 6.211564435708354e+35,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": -6.784658611581109e-8,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680847e+35,
+                    "F_vac_rep": 1.7866799999999998e-20,
+                    "F_neutron_phonon": 6.168502750680847e+30,
+                    "F_thz_shock": 6.168502750680847e-31,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 1e-19,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub2_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 6.211564435708354e+35,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680847e+35,
+                    "F_vac_rep": 1.7866799999999998e-20,
+                    "F_neutron_phonon": 6.168502750680847e+30,
+                    "F_thz_shock": 6.168502750680847e-31,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 1e-19,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub3_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 6.211564435708354e+35,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": -0.34199541394507527,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680847e+35,
+                    "F_vac_rep": 1.7866799999999998e-20,
+                    "F_neutron_phonon": 6.168502750680847e+30,
+                    "F_thz_shock": 6.168502750680847e-31,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 1e-19,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub4_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 6.211564435708354e+35,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": -235733.8232318371,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680847e+35,
+                    "F_vac_rep": 1.7866799999999998e-20,
+                    "F_neutron_phonon": 6.168502750680847e+30,
+                    "F_thz_shock": 6.168502750680847e-31,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 1e-19,
+                    "F_rel": 4.3e+33
+                  }
+                }
+              },
+              "magnetarComponents": {
+                "baseGravity": 1494976000000,
+                "blackHole": 6.629917217095979e-7,
+                "universalGravity": 3363696000000,
+                "darkEnergy": 3.2956014666666664e-36,
+                "electromagnetic": 191512253436.9396,
+                "gravitationalWave": 1.8161506214190898e-10,
+                "quantumUncertainty": 1.4829291589780003e-34,
+                "fluidDynamics": 279559858267.4437,
+                "oscillatoryWaves": 13266060254.801888,
+                "darkMatterDensity": 616677600.0000108,
+                "magneticEnergy": 23809.523809523813,
+                "decayEnergy": 0
+              }
+            }
+          },
+          {
+            "time_days": 182.5,
+            "time_seconds": 15768000,
+            "system": "SGR Magnetar",
+            "totalField": 7.2616e+54,
+            "components": {
+              "Ug1": 0,
+              "Ug2": 0,
+              "Ug3": 0,
+              "Ug4": 0,
+              "Ub1": 1.8154e+54,
+              "Ub2": 1.8154e+54,
+              "Ub3": 1.8154e+54,
+              "Ub4": 1.8154e+54,
+              "Um": 0,
+              "UA": 1.1101270000000001e-15,
+              "magnetarGravity": 5344019161852.557,
+              "compressedGravity": 0
+            },
+            "advancedComponents": {
+              "F_U_Bi_i_results": {
+                "Ub1_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 6.211564435708354e+35,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680847e+35,
+                    "F_vac_rep": 1.7866799999999998e-20,
+                    "F_neutron_phonon": 6.168502750680847e+30,
+                    "F_thz_shock": 6.168502750680847e-31,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 1e-19,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub2_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 6.211564435708354e+35,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680847e+35,
+                    "F_vac_rep": 1.7866799999999998e-20,
+                    "F_neutron_phonon": 6.168502750680847e+30,
+                    "F_thz_shock": 6.168502750680847e-31,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 1e-19,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub3_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 6.211564435708354e+35,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680847e+35,
+                    "F_vac_rep": 1.7866799999999998e-20,
+                    "F_neutron_phonon": 6.168502750680847e+30,
+                    "F_thz_shock": 6.168502750680847e-31,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 1e-19,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub4_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 6.211564435708354e+35,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680847e+35,
+                    "F_vac_rep": 1.7866799999999998e-20,
+                    "F_neutron_phonon": 6.168502750680847e+30,
+                    "F_thz_shock": 6.168502750680847e-31,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 1e-19,
+                    "F_rel": 4.3e+33
+                  }
+                }
+              },
+              "magnetarComponents": {
+                "baseGravity": 1494976000053.4866,
+                "blackHole": 6.629917217095979e-7,
+                "universalGravity": 3363696000000,
+                "darkEnergy": 3.2956014666666664e-36,
+                "electromagnetic": 191512253436.9396,
+                "gravitationalWave": 1.8159691397337077e-10,
+                "quantumUncertainty": 1.4829291589780003e-34,
+                "fluidDynamics": 279559858267.4437,
+                "oscillatoryWaves": 13658348658.924454,
+                "darkMatterDensity": 616677600.0000108,
+                "magneticEnergy": 23809.523809523813,
+                "decayEnergy": 26.239618265887284
+              }
+            }
+          },
+          {
+            "time_days": 365,
+            "time_seconds": 31536000,
+            "system": "SGR Magnetar",
+            "totalField": 7.2616e+54,
+            "components": {
+              "Ug1": 0,
+              "Ug2": 0,
+              "Ug3": 0,
+              "Ug4": 0,
+              "Ub1": 1.8154e+54,
+              "Ub2": 1.8154e+54,
+              "Ub3": 1.8154e+54,
+              "Ub4": 1.8154e+54,
+              "Um": 0,
+              "UA": 1.1101270000000001e-15,
+              "magnetarGravity": 5344167716777.839,
+              "compressedGravity": 0
+            },
+            "advancedComponents": {
+              "F_U_Bi_i_results": {
+                "Ub1_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 6.211564435708354e+35,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680847e+35,
+                    "F_vac_rep": 1.7866799999999998e-20,
+                    "F_neutron_phonon": 6.168502750680847e+30,
+                    "F_thz_shock": 6.168502750680847e-31,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 1e-19,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub2_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 6.211564435708354e+35,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680847e+35,
+                    "F_vac_rep": 1.7866799999999998e-20,
+                    "F_neutron_phonon": 6.168502750680847e+30,
+                    "F_thz_shock": 6.168502750680847e-31,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 1e-19,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub3_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 6.211564435708354e+35,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680847e+35,
+                    "F_vac_rep": 1.7866799999999998e-20,
+                    "F_neutron_phonon": 6.168502750680847e+30,
+                    "F_thz_shock": 6.168502750680847e-31,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 1e-19,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub4_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 6.211564435708354e+35,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680847e+35,
+                    "F_vac_rep": 1.7866799999999998e-20,
+                    "F_neutron_phonon": 6.168502750680847e+30,
+                    "F_thz_shock": 6.168502750680847e-31,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 1e-19,
+                    "F_rel": 4.3e+33
+                  }
+                }
+              },
+              "magnetarComponents": {
+                "baseGravity": 1494976000106.9731,
+                "blackHole": 6.629917217095979e-7,
+                "universalGravity": 3363696000000,
+                "darkEnergy": 3.2956014666666664e-36,
+                "electromagnetic": 191512253436.9396,
+                "gravitationalWave": 1.8157876761831663e-10,
+                "quantumUncertainty": 1.4829291589780003e-34,
+                "fluidDynamics": 279559858267.4437,
+                "oscillatoryWaves": 13806903507.971504,
+                "darkMatterDensity": 616677600.0000108,
+                "magneticEnergy": 23809.523809523813,
+                "decayEnergy": 48.9883877131598
+              }
+            }
+          },
+          {
+            "time_days": 2007.5,
+            "time_seconds": 173448000,
+            "system": "SGR Magnetar",
+            "totalField": 7.2616e+54,
+            "components": {
+              "Ug1": 0,
+              "Ug2": 0,
+              "Ug3": 0,
+              "Ug4": 0,
+              "Ub1": 1.8154e+54,
+              "Ub2": 1.8154e+54,
+              "Ub3": 1.8154e+54,
+              "Ub4": 1.8154e+54,
+              "Um": 0,
+              "UA": 1.1101270000000001e-15,
+              "magnetarGravity": 5335500693003.258,
+              "compressedGravity": 0
+            },
+            "advancedComponents": {
+              "F_U_Bi_i_results": {
+                "Ub1_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 6.211564435708354e+35,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680847e+35,
+                    "F_vac_rep": 1.7866799999999998e-20,
+                    "F_neutron_phonon": 6.168502750680847e+30,
+                    "F_thz_shock": 6.168502750680847e-31,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 1e-19,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub2_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 6.211564435708354e+35,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680847e+35,
+                    "F_vac_rep": 1.7866799999999998e-20,
+                    "F_neutron_phonon": 6.168502750680847e+30,
+                    "F_thz_shock": 6.168502750680847e-31,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 1e-19,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub3_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 6.211564435708354e+35,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680847e+35,
+                    "F_vac_rep": 1.7866799999999998e-20,
+                    "F_neutron_phonon": 6.168502750680847e+30,
+                    "F_thz_shock": 6.168502750680847e-31,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 1e-19,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub4_result": {
+                  "totalBuoyancy": 1.8154e+54,
+                  "F_U_Bi_i": 6.211564435708354e+35,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680847e+35,
+                    "F_vac_rep": 1.7866799999999998e-20,
+                    "F_neutron_phonon": 6.168502750680847e+30,
+                    "F_thz_shock": 6.168502750680847e-31,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 1e-19,
+                    "F_rel": 4.3e+33
+                  }
+                }
+              },
+              "magnetarComponents": {
+                "baseGravity": 1494976000588.3528,
+                "blackHole": 6.629917217095979e-7,
+                "universalGravity": 3363696000000,
+                "darkEnergy": 3.2956014666666664e-36,
+                "electromagnetic": 191512253436.9396,
+                "gravitationalWave": 1.8141553199971755e-10,
+                "quantumUncertainty": 1.4829291589780003e-34,
+                "fluidDynamics": 279559858267.4437,
+                "oscillatoryWaves": 5139879144.783499,
+                "darkMatterDensity": 616677600.0000108,
+                "magneticEnergy": 23809.523809523813,
+                "decayEnergy": 156.21569030451263
+              }
+            }
+          }
+        ]
+      },
+      {
+        "systemName": "SGR 1745-2900 Magnetar",
+        "systemParams": {
+          "name": "SGR 1745-2900 (Galactic Center Magnetar)",
+          "mass": 2.7846e+30,
+          "radius": 10000,
+          "temperature": 1000000,
+          "luminosity": 5e+28,
+          "magneticField": 20000000000,
+          "velocity": 1000000,
+          "omega0": 1.6710599221222304,
+          "neutronFactor": 1,
+          "conduitScale": 1,
+          "hubbleParam": 2.269e-18,
+          "B_crit": 100000000000,
+          "blackHoleMass": 7.956e+36,
+          "blackHoleDistance": 28300000000000000,
+          "pulsePeriod": 3.76,
+          "tauOmega": 315576000000,
+          "tauDecay": 110451600,
+          "initialLuminosity": 5e+28,
+          "fluidDensity": 100000000000000000,
+          "oscillatoryAmplitude": 10000000000,
+          "darkMatterFraction": 0.1,
+          "densityPerturbation": 0.00001
+        },
+        "timeAnalysis": [
+          {
+            "time_days": 0,
+            "time_seconds": 0,
+            "system": "SGR 1745-2900",
+            "g_Magnetar": 7040511066706.04,
+            "components": {
+              "baseGravity": 1486753631999.9998,
+              "blackHole": 6.629917217095979e-7,
+              "universalGravity": 3345195671999.999,
+              "darkEnergy": 3.2956014666666664e-36,
+              "electromagnetic": 1915122534369.396,
+              "gravitationalWave": 1.796227903139778e-10,
+              "quantumUncertainty": 1.4829291589780003e-34,
+              "fluidDynamics": 279559858267.44366,
+              "oscillatoryWaves": 13266060254.801888,
+              "darkMatterDensity": 613285873.2000109,
+              "magneticEnergy": 23941.200411788646,
+              "decayEnergy": 0
+            },
+            "diagnostics": {
+              "f_sc": 0.8,
+              "magneticField": 20000000000,
+              "rotationalFreq": 1.6710599221222304,
+              "rotationalDerivative": -5.295269355471362e-12,
+              "magneticEnergy": 6.6666666666666665e+38,
+              "cumulativeDecay": 0
+            }
+          },
+          {
+            "time_days": 182.5,
+            "time_seconds": 15768000,
+            "system": "SGR 1745-2900",
+            "g_Magnetar": 7040903355189.741,
+            "components": {
+              "baseGravity": 1486753632053.1924,
+              "blackHole": 6.629917217095979e-7,
+              "universalGravity": 3345195671999.999,
+              "darkEnergy": 3.2956014666666664e-36,
+              "electromagnetic": 1915122534369.396,
+              "gravitationalWave": 1.796048412263114e-10,
+              "quantumUncertainty": 1.4829291589780003e-34,
+              "fluidDynamics": 279559858267.44366,
+              "oscillatoryWaves": 13658348658.924454,
+              "darkMatterDensity": 613285873.2000109,
+              "magneticEnergy": 23941.200411788646,
+              "decayEnergy": 26.384734304562375
+            },
+            "diagnostics": {
+              "f_sc": 0.8,
+              "magneticField": 20000000000,
+              "rotationalFreq": 1.6709764284009652,
+              "rotationalDerivative": -5.295004779834224e-12,
+              "magneticEnergy": 6.6666666666666665e+38,
+              "cumulativeDecay": 7.347093114448439e+35
+            }
+          },
+          {
+            "time_days": 365,
+            "time_seconds": 31536000,
+            "system": "SGR 1745-2900",
+            "g_Magnetar": 7041051910114.8545,
+            "components": {
+              "baseGravity": 1486753632106.3848,
+              "blackHole": 6.629917217095979e-7,
+              "universalGravity": 3345195671999.999,
+              "darkEnergy": 3.2956014666666664e-36,
+              "electromagnetic": 1915122534369.396,
+              "gravitationalWave": 1.795868939322356e-10,
+              "quantumUncertainty": 1.4829291589780003e-34,
+              "fluidDynamics": 279559858267.44366,
+              "oscillatoryWaves": 13806903507.971504,
+              "darkMatterDensity": 613285873.2000109,
+              "magneticEnergy": 23941.200411788646,
+              "decayEnergy": 49.25931393982886
+            },
+            "diagnostics": {
+              "f_sc": 0.8,
+              "magneticField": 20000000000,
+              "rotationalFreq": 1.6708929388514242,
+              "rotationalDerivative": -5.294740217416484e-12,
+              "magneticEnergy": 6.6666666666666665e+38,
+              "cumulativeDecay": 1.3716748559684744e+36
+            }
+          },
+          {
+            "time_days": 2007.5,
+            "time_seconds": 173448000,
+            "system": "SGR 1745-2900",
+            "g_Magnetar": 7032384886338.219,
+            "components": {
+              "baseGravity": 1486753632585.1167,
+              "blackHole": 6.629917217095979e-7,
+              "universalGravity": 3345195671999.999,
+              "darkEnergy": 3.2956014666666664e-36,
+              "electromagnetic": 1915122534369.396,
+              "gravitationalWave": 1.7942544896756366e-10,
+              "quantumUncertainty": 1.4829291589780003e-34,
+              "fluidDynamics": 279559858267.44366,
+              "oscillatoryWaves": 5139879144.783499,
+              "darkMatterDensity": 613285873.2000109,
+              "magneticEnergy": 23941.200411788646,
+              "decayEnergy": 157.07962825994233
+            },
+            "diagnostics": {
+              "f_sc": 0.8,
+              "magneticField": 20000000000,
+              "rotationalFreq": 1.6701417205987656,
+              "rotationalDerivative": -5.292359750420709e-12,
+              "magneticEnergy": 6.6666666666666665e+38,
+              "cumulativeDecay": 4.3740393285263534e+36
+            }
+          }
+        ],
+        "magnetarClass": {
+          "G": 6.674e-11,
+          "M": 2.7846e+30,
+          "r": 10000,
+          "Hz": 2.269e-18,
+          "B0": 20000000000,
+          "B": 20000000000,
+          "B_crit": 100000000000,
+          "Lambda": 1.1e-52,
+          "c_light": 299800000,
+          "q_charge": 1.602e-19,
+          "v_surf": 1000000,
+          "M_BH": 7.956e+36,
+          "r_BH": 28300000000000000,
+          "mu0": 0.0000012566370614359173,
+          "L0_W": 5e+28,
+          "tau_decay": 110451600,
+          "hbar": 1.055e-34,
+          "t_Hubble": 435196800000000000,
+          "t_Hubble_gyr": 13.8,
+          "delta_x": 1e-10,
+          "delta_p": 1.055e-24,
+          "integral_psi": 1,
+          "rho_fluid": 100000000000000000,
+          "A_osc": 10000000000,
+          "P_init": 3.76,
+          "tau_Omega": 315576000000,
+          "scale_EM": 1e-12,
+          "proton_mass": 1.673e-27,
+          "M_DM_factor": 0.1,
+          "delta_rho_over_rho": 0.00001,
+          "k_osc": 0.0001,
+          "omega_osc": 1.6710599221222304,
+          "x_pos": 10000,
+          "ug1_base": 1858442039999.9995,
+          "f_sc": 0.8
+        }
+      },
+      {
+        "systemName": "SGR 0501+4516 Magnetar",
+        "systemParams": {
+          "name": "SGR 0501+4516 (Time-Reversal Magnetar)",
+          "mass": 2.7846e+30,
+          "radius": 20000,
+          "temperature": 1000000,
+          "luminosity": 1e+32,
+          "magneticField": 10000000000,
+          "velocity": 1000000,
+          "omega0": 1.2566370614359172,
+          "neutronFactor": 1,
+          "conduitScale": 1,
+          "hubbleParam": 2.184e-18,
+          "B_crit": 100000000000,
+          "pulsePeriod": 5,
+          "tauB": 126230400000,
+          "tauOmega": 315576000000,
+          "f_TRZ": 0.1,
+          "fluidDensity": 100000000000000000,
+          "oscillatoryAmplitude": 10000000000,
+          "darkMatterFraction": 0.1,
+          "densityPerturbation": 0.00001
+        },
+        "timeAnalysis": [
+          {
+            "time_days": 0,
+            "time_years": 0,
+            "time_seconds": 0,
+            "system": "SGR 0501+4516",
+            "g_Magnetar": 12492361787318.078,
+            "components": {
+              "baseGravity": 418149458999.9999,
+              "universalGravity": 971035965899.9998,
+              "darkEnergy": 3.2956014666666664e-36,
+              "electromagnetic": 10533173939031.678,
+              "gravitationalWave": 5.078870320685785e-11,
+              "quantumUncertainty": 1.4829291589780003e-34,
+              "fluidDynamics": 559119716534.8873,
+              "oscillatoryWaves": 10806046117.362795,
+              "darkMatterDensity": 76660734.15001099
+            },
+            "diagnostics": {
+              "magneticField": 10000000000,
+              "magneticDecay": 1,
+              "f_TRZ": 0.1,
+              "rotationalFreq": 1.2566370614359172,
+              "rotationalDerivative": -3.982042555314464e-12,
+              "hubbleCorrection": 1,
+              "magneticCorrection": 0.9,
+              "vacuumCorrection": 11
+            }
+          },
+          {
+            "time_days": 182.5,
+            "time_years": 0.4996577686516085,
+            "time_seconds": 15768000,
+            "system": "SGR 0501+4516",
+            "g_Magnetar": 12491058310877.053,
+            "components": {
+              "baseGravity": 418155262308.2028,
+              "universalGravity": 971042349523.1829,
+              "darkEnergy": 3.2956014666666664e-36,
+              "electromagnetic": 10531858275659.268,
+              "gravitationalWave": 5.078362806642201e-11,
+              "quantumUncertainty": 1.4829291589780003e-34,
+              "fluidDynamics": 559119716534.8873,
+              "oscillatoryWaves": 10806046117.362795,
+              "darkMatterDensity": 76660734.15001099
+            },
+            "diagnostics": {
+              "magneticField": 9998750933.593212,
+              "magneticDecay": 0.9998750933593212,
+              "f_TRZ": 0.1,
+              "rotationalFreq": 1.2565742741575257,
+              "rotationalDerivative": -3.981843594435337e-12,
+              "hubbleCorrection": 1.0000000000344373,
+              "magneticCorrection": 0.9000124906640679,
+              "vacuumCorrection": 11
+            }
+          },
+          {
+            "time_days": 365,
+            "time_years": 0.999315537303217,
+            "time_seconds": 31536000,
+            "system": "SGR 0501+4516",
+            "g_Magnetar": 12489754997248.896,
+            "components": {
+              "baseGravity": 418161064891.5363,
+              "universalGravity": 971048732349.0092,
+              "darkEnergy": 3.2956014666666664e-36,
+              "electromagnetic": 10530542776621.951,
+              "gravitationalWave": 5.077855343312749e-11,
+              "quantumUncertainty": 1.4829291589780003e-34,
+              "fluidDynamics": 559119716534.8873,
+              "oscillatoryWaves": 10806046117.362795,
+              "darkMatterDensity": 76660734.15001099
+            },
+            "diagnostics": {
+              "magneticField": 9997502023.203114,
+              "magneticDecay": 0.9997502023203113,
+              "f_TRZ": 0.1,
+              "rotationalFreq": 1.256511490016271,
+              "rotationalDerivative": -3.981644643497196e-12,
+              "hubbleCorrection": 1.0000000000688747,
+              "magneticCorrection": 0.9000249797679689,
+              "vacuumCorrection": 11
+            }
+          },
+          {
+            "time_days": 2007.5,
+            "time_years": 5.496235455167693,
+            "time_seconds": 173448000,
+            "system": "SGR 0501+4516",
+            "g_Magnetar": 12478032497819.758,
+            "components": {
+              "baseGravity": 418213255537.3436,
+              "universalGravity": 971106141916.812,
+              "darkEnergy": 3.2956014666666664e-36,
+              "electromagnetic": 10518710676979.201,
+              "gravitationalWave": 5.0732904546476566e-11,
+              "quantumUncertainty": 1.4829291589780003e-34,
+              "fluidDynamics": 559119716534.8873,
+              "oscillatoryWaves": 10806046117.362795,
+              "darkMatterDensity": 76660734.15001099
+            },
+            "diagnostics": {
+              "magneticField": 9986268847.22858,
+              "magneticDecay": 0.9986268847228581,
+              "f_TRZ": 0.1,
+              "rotationalFreq": 1.2559465738902718,
+              "rotationalDerivative": -3.979854532316373e-12,
+              "hubbleCorrection": 1.0000000003788105,
+              "magneticCorrection": 0.9001373115277143,
+              "vacuumCorrection": 11
+            }
+          }
+        ],
+        "magnetarClass": {
+          "G": 6.674e-11,
+          "M": 2.7846e+30,
+          "r": 20000,
+          "H0": 2.184e-18,
+          "B0": 10000000000,
+          "tau_B": 126230400000,
+          "B_crit": 100000000000,
+          "Lambda": 1.1e-52,
+          "c_light": 299800000,
+          "q_charge": 1.602e-19,
+          "v_surf": 1000000,
+          "f_TRZ": 0.1,
+          "P_init": 5,
+          "tau_Omega": 315576000000,
+          "scale_EM": 1e-12,
+          "proton_mass": 1.673e-27,
+          "hbar": 1.055e-34,
+          "t_Hubble": 435196800000000000,
+          "t_Hubble_gyr": 13.8,
+          "delta_x": 1e-10,
+          "delta_p": 1.055e-24,
+          "integral_psi": 1,
+          "rho_fluid": 100000000000000000,
+          "A_osc": 10000000000,
+          "M_DM_factor": 0.1,
+          "delta_rho_over_rho": 0.00001,
+          "k_osc": 0.00005,
+          "omega_osc": 1.2566370614359172,
+          "x_pos": 20000,
+          "ug1_base": 464610509999.9999
+        }
+      },
+      {
+        "systemName": "SN 1006 (Supernova Remnant)",
+        "systemParams": {
+          "name": "SN 1006 (Supernova Remnant)",
+          "mass": 1.989e+31,
+          "radius": 61700000000000000,
+          "temperature": 1000000,
+          "luminosity": 1e+30,
+          "magneticField": 0.001,
+          "velocity": 7000000,
+          "omega0": 1e-15,
+          "neutronFactor": 1,
+          "conduitScale": 1
+        },
+        "timeAnalysis": [
+          {
+            "time_days": 0,
+            "time_seconds": 0,
+            "system": "SN 1006 (Supernova Remnant)",
+            "totalField": 7.261600024674258e+54,
+            "components": {
+              "Ug1": 3.3442274313884315e-60,
+              "Ug2": 1.0705361823665484e-58,
+              "Ug3": 3.3938824013899893e-15,
+              "Ug4": 6.63515835183867e-22,
+              "Ub1": 1.8154000061685646e+54,
+              "Ub2": 1.8154000061685646e+54,
+              "Ub3": 1.8154000061685646e+54,
+              "Ub4": 1.8154000061685646e+54,
+              "Um": 0,
+              "UA": 1.1101270000000001e-15,
+              "magnetarGravity": 1.2232359999999997e+26,
+              "compressedGravity": 9.669180631929141e-18
+            },
+            "advancedComponents": {
+              "F_U_Bi_i_results": {
+                "Ub1_result": {
+                  "totalBuoyancy": 1.8154000061685646e+54,
+                  "F_U_Bi_i": 6.168564435712655e+45,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": -4.681524965422465e-59,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680848e+45,
+                    "F_vac_rep": 8.884266299999999e-18,
+                    "F_neutron_phonon": 6.168502750680848e+40,
+                    "F_thz_shock": 6.168502750680848e-20,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 9.999999999999998e-15,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub2_result": {
+                  "totalBuoyancy": 1.8154000061685646e+54,
+                  "F_U_Bi_i": 6.168564435712655e+45,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": -1.248853924899957e-57,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680848e+45,
+                    "F_vac_rep": 8.884266299999999e-18,
+                    "F_neutron_phonon": 6.168502750680848e+40,
+                    "F_thz_shock": 6.168502750680848e-20,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 9.999999999999998e-15,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub3_result": {
+                  "totalBuoyancy": 1.8154000061685646e+54,
+                  "F_U_Bi_i": 6.168564435712655e+45,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": -5.5428754286073807e-14,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680848e+45,
+                    "F_vac_rep": 8.884266299999999e-18,
+                    "F_neutron_phonon": 6.168502750680848e+40,
+                    "F_thz_shock": 6.168502750680848e-20,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 9.999999999999998e-15,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub4_result": {
+                  "totalBuoyancy": 1.8154000061685646e+54,
+                  "F_U_Bi_i": 6.168564435712655e+45,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": -6.192294057139479e-21,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680848e+45,
+                    "F_vac_rep": 8.884266299999999e-18,
+                    "F_neutron_phonon": 6.168502750680848e+40,
+                    "F_thz_shock": 6.168502750680848e-20,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 9.999999999999998e-15,
+                    "F_rel": 4.3e+33
+                  }
+                }
+              },
+              "magnetarComponents": {
+                "g_newton": 3.407739877862603e-13,
+                "g_SMBH": 8.364951941560938e-15,
+                "Ug_total": 3.3938830649058243e-15,
+                "g_DE": 3.2956014666666664e-36,
+                "g_quantum": 1.4829291589780003e-34,
+                "g_lorentz": 8.054298642533937e-34,
+                "g_fluid": 348.6989642464058,
+                "g_wave1": 0.000001869627780915894,
+                "g_wave2": 4.2562383344005506e-7,
+                "g_DM": 1.2232349999999998e+26,
+                "M_mag": 100000000000000000000,
+                "D_t": 1
+              }
+            }
+          },
+          {
+            "time_days": 182.5,
+            "time_seconds": 15768000,
+            "system": "SN 1006 (Supernova Remnant)",
+            "totalField": 7.261600024674258e+54,
+            "components": {
+              "Ug1": 0,
+              "Ug2": 0,
+              "Ug3": 0,
+              "Ug4": 0,
+              "Ub1": 1.8154000061685646e+54,
+              "Ub2": 1.8154000061685646e+54,
+              "Ub3": 1.8154000061685646e+54,
+              "Ub4": 1.8154000061685646e+54,
+              "Um": 0,
+              "UA": 1.1101270000000001e-15,
+              "magnetarGravity": 1.2232359999999997e+26,
+              "compressedGravity": 0
+            },
+            "advancedComponents": {
+              "F_U_Bi_i_results": {
+                "Ub1_result": {
+                  "totalBuoyancy": 1.8154000061685646e+54,
+                  "F_U_Bi_i": 6.168564435712655e+45,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680848e+45,
+                    "F_vac_rep": 8.884266299999999e-18,
+                    "F_neutron_phonon": 6.168502750680848e+40,
+                    "F_thz_shock": 6.168502750680848e-20,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 9.999999999999998e-15,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub2_result": {
+                  "totalBuoyancy": 1.8154000061685646e+54,
+                  "F_U_Bi_i": 6.168564435712655e+45,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680848e+45,
+                    "F_vac_rep": 8.884266299999999e-18,
+                    "F_neutron_phonon": 6.168502750680848e+40,
+                    "F_thz_shock": 6.168502750680848e-20,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 9.999999999999998e-15,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub3_result": {
+                  "totalBuoyancy": 1.8154000061685646e+54,
+                  "F_U_Bi_i": 6.168564435712655e+45,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680848e+45,
+                    "F_vac_rep": 8.884266299999999e-18,
+                    "F_neutron_phonon": 6.168502750680848e+40,
+                    "F_thz_shock": 6.168502750680848e-20,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 9.999999999999998e-15,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub4_result": {
+                  "totalBuoyancy": 1.8154000061685646e+54,
+                  "F_U_Bi_i": 6.168564435712655e+45,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680848e+45,
+                    "F_vac_rep": 8.884266299999999e-18,
+                    "F_neutron_phonon": 6.168502750680848e+40,
+                    "F_thz_shock": 6.168502750680848e-20,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 9.999999999999998e-15,
+                    "F_rel": 4.3e+33
+                  }
+                }
+              },
+              "magnetarComponents": {
+                "g_newton": 3.407739877984486e-13,
+                "g_SMBH": 8.364951941560938e-15,
+                "Ug_total": 0,
+                "g_DE": 3.2956014666666664e-36,
+                "g_quantum": 1.4829291589780003e-34,
+                "g_lorentz": 8.054298642533937e-34,
+                "g_fluid": 348.6989642464058,
+                "g_wave1": 0.0000018696271551679774,
+                "g_wave2": 4.25755983420198e-7,
+                "g_DM": 1.2232349999999998e+26,
+                "M_mag": 100000000000000000000,
+                "D_t": 0.9843556640804206
+              }
+            }
+          },
+          {
+            "time_days": 365,
+            "time_seconds": 31536000,
+            "system": "SN 1006 (Supernova Remnant)",
+            "totalField": 7.261600024674258e+54,
+            "components": {
+              "Ug1": 0,
+              "Ug2": 0,
+              "Ug3": 0,
+              "Ug4": 0,
+              "Ub1": 1.8154000061685646e+54,
+              "Ub2": 1.8154000061685646e+54,
+              "Ub3": 1.8154000061685646e+54,
+              "Ub4": 1.8154000061685646e+54,
+              "Um": 0,
+              "UA": 1.1101270000000001e-15,
+              "magnetarGravity": 1.2232359999999997e+26,
+              "compressedGravity": 0
+            },
+            "advancedComponents": {
+              "F_U_Bi_i_results": {
+                "Ub1_result": {
+                  "totalBuoyancy": 1.8154000061685646e+54,
+                  "F_U_Bi_i": 6.168564435712655e+45,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680848e+45,
+                    "F_vac_rep": 8.884266299999999e-18,
+                    "F_neutron_phonon": 6.168502750680848e+40,
+                    "F_thz_shock": 6.168502750680848e-20,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 9.999999999999998e-15,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub2_result": {
+                  "totalBuoyancy": 1.8154000061685646e+54,
+                  "F_U_Bi_i": 6.168564435712655e+45,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680848e+45,
+                    "F_vac_rep": 8.884266299999999e-18,
+                    "F_neutron_phonon": 6.168502750680848e+40,
+                    "F_thz_shock": 6.168502750680848e-20,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 9.999999999999998e-15,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub3_result": {
+                  "totalBuoyancy": 1.8154000061685646e+54,
+                  "F_U_Bi_i": 6.168564435712655e+45,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680848e+45,
+                    "F_vac_rep": 8.884266299999999e-18,
+                    "F_neutron_phonon": 6.168502750680848e+40,
+                    "F_thz_shock": 6.168502750680848e-20,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 9.999999999999998e-15,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub4_result": {
+                  "totalBuoyancy": 1.8154000061685646e+54,
+                  "F_U_Bi_i": 6.168564435712655e+45,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680848e+45,
+                    "F_vac_rep": 8.884266299999999e-18,
+                    "F_neutron_phonon": 6.168502750680848e+40,
+                    "F_thz_shock": 6.168502750680848e-20,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 9.999999999999998e-15,
+                    "F_rel": 4.3e+33
+                  }
+                }
+              },
+              "magnetarComponents": {
+                "g_newton": 3.40773987810637e-13,
+                "g_SMBH": 8.364951941560938e-15,
+                "Ug_total": 0,
+                "g_DE": 3.2956014666666664e-36,
+                "g_quantum": 1.4829291589780003e-34,
+                "g_lorentz": 8.054298642533937e-34,
+                "g_fluid": 348.6989642464058,
+                "g_wave1": 0.0000018696252779246467,
+                "g_wave2": 4.258878484068013e-7,
+                "g_DM": 1.2232349999999998e+26,
+                "M_mag": 100000000000000000000,
+                "D_t": 0.9689560734072059
+              }
+            }
+          },
+          {
+            "time_days": 2007.5,
+            "time_seconds": 173448000,
+            "system": "SN 1006 (Supernova Remnant)",
+            "totalField": 7.261600024674258e+54,
+            "components": {
+              "Ug1": 0,
+              "Ug2": 0,
+              "Ug3": 0,
+              "Ug4": 0,
+              "Ub1": 1.8154000061685646e+54,
+              "Ub2": 1.8154000061685646e+54,
+              "Ub3": 1.8154000061685646e+54,
+              "Ub4": 1.8154000061685646e+54,
+              "Um": 0,
+              "UA": 1.1101270000000001e-15,
+              "magnetarGravity": 1.2232359999999997e+26,
+              "compressedGravity": 0
+            },
+            "advancedComponents": {
+              "F_U_Bi_i_results": {
+                "Ub1_result": {
+                  "totalBuoyancy": 1.8154000061685646e+54,
+                  "F_U_Bi_i": 6.168564435712655e+45,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680848e+45,
+                    "F_vac_rep": 8.884266299999999e-18,
+                    "F_neutron_phonon": 6.168502750680848e+40,
+                    "F_thz_shock": 6.168502750680848e-20,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 9.999999999999998e-15,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub2_result": {
+                  "totalBuoyancy": 1.8154000061685646e+54,
+                  "F_U_Bi_i": 6.168564435712655e+45,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680848e+45,
+                    "F_vac_rep": 8.884266299999999e-18,
+                    "F_neutron_phonon": 6.168502750680848e+40,
+                    "F_thz_shock": 6.168502750680848e-20,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 9.999999999999998e-15,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub3_result": {
+                  "totalBuoyancy": 1.8154000061685646e+54,
+                  "F_U_Bi_i": 6.168564435712655e+45,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680848e+45,
+                    "F_vac_rep": 8.884266299999999e-18,
+                    "F_neutron_phonon": 6.168502750680848e+40,
+                    "F_thz_shock": 6.168502750680848e-20,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 9.999999999999998e-15,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub4_result": {
+                  "totalBuoyancy": 1.8154000061685646e+54,
+                  "F_U_Bi_i": 6.168564435712655e+45,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680848e+45,
+                    "F_vac_rep": 8.884266299999999e-18,
+                    "F_neutron_phonon": 6.168502750680848e+40,
+                    "F_thz_shock": 6.168502750680848e-20,
+                    "F_conduit": 7.500000000000001e-31,
+                    "F_spooky": 9.999999999999998e-15,
+                    "F_rel": 4.3e+33
+                  }
+                }
+              },
+              "magnetarComponents": {
+                "g_newton": 3.4077398792033215e-13,
+                "g_SMBH": 8.364951941560938e-15,
+                "Ug_total": 0,
+                "g_DE": 3.2956014666666664e-36,
+                "g_quantum": 1.4829291589780003e-34,
+                "g_lorentz": 8.054298642533937e-34,
+                "g_fluid": 348.6989642464058,
+                "g_wave1": 0.0000018681135482115566,
+                "g_wave2": 4.317855597998789e-7,
+                "g_DM": 1.2232349999999998e+26,
+                "M_mag": 100000000000000000000,
+                "D_t": 0.840760869590411
+              }
+            }
+          }
+        ]
+      },
+      {
+        "systemName": "ESO 137-001 (Galaxy with Jet)",
+        "systemParams": {
+          "name": "ESO 137-001 (Galaxy with Jet)",
+          "mass": 6.39e+40,
+          "radius": 3e+22,
+          "temperature": 10000000,
+          "luminosity": 1e+38,
+          "magneticField": 0.000001,
+          "velocity": 670000,
+          "omega0": 1e-12,
+          "neutronFactor": 0,
+          "conduitScale": 0.5
+        },
+        "timeAnalysis": [
+          {
+            "time_days": 0,
+            "time_seconds": 0,
+            "system": "ESO 137-001 (Galaxy with Jet)",
+            "totalField": 7.261600000000025e+54,
+            "components": {
+              "Ug1": 5.9834469125882975e-83,
+              "Ug2": 1.9153889939045807e-81,
+              "Ug3": 6.98008480552541e-21,
+              "Ug4": 2.8065908864479013e-33,
+              "Ub1": 1.8154000000000062e+54,
+              "Ub2": 1.8154000000000062e+54,
+              "Ub3": 1.8154000000000062e+54,
+              "Ub4": 1.8154000000000062e+54,
+              "Um": 0,
+              "UA": 1.1101270000000001e-15,
+              "magnetarGravity": 3.929850000000001e+35,
+              "compressedGravity": 1.9886281497223396e-23
+            },
+            "advancedComponents": {
+              "F_U_Bi_i_results": {
+                "Ub1_result": {
+                  "totalBuoyancy": 1.8154000000000062e+54,
+                  "F_U_Bi_i": 6.168568735708356e+39,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": -8.376121742692725e-82,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680849e+39,
+                    "F_vac_rep": 2.73189753e-9,
+                    "F_neutron_phonon": 6.168502750680849e+34,
+                    "F_thz_shock": 0,
+                    "F_conduit": 0,
+                    "F_spooky": 1e-17,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub2_result": {
+                  "totalBuoyancy": 1.8154000000000062e+54,
+                  "F_U_Bi_i": 6.168568735708356e+39,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": -2.2344327096539814e-80,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680849e+39,
+                    "F_vac_rep": 2.73189753e-9,
+                    "F_neutron_phonon": 6.168502750680849e+34,
+                    "F_thz_shock": 0,
+                    "F_conduit": 0,
+                    "F_spooky": 1e-17,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub3_result": {
+                  "totalBuoyancy": 1.8154000000000062e+54,
+                  "F_U_Bi_i": 6.168568735708356e+39,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": -1.1399847131502513e-19,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680849e+39,
+                    "F_vac_rep": 2.73189753e-9,
+                    "F_neutron_phonon": 6.168502750680849e+34,
+                    "F_thz_shock": 0,
+                    "F_conduit": 0,
+                    "F_spooky": 1e-17,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub4_result": {
+                  "totalBuoyancy": 1.8154000000000062e+54,
+                  "F_U_Bi_i": 6.168568735708356e+39,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": -2.6192647025759674e-32,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680849e+39,
+                    "F_vac_rep": 2.73189753e-9,
+                    "F_neutron_phonon": 6.168502750680849e+34,
+                    "F_thz_shock": 0,
+                    "F_conduit": 0,
+                    "F_spooky": 1e-17,
+                    "F_rel": 4.3e+33
+                  }
+                }
+              },
+              "magnetarComponents": {
+                "g_newton": 4.6308459090909094e-15,
+                "g_SMBH": 8.364951941560938e-15,
+                "Ug_total": 6.980084805528217e-21,
+                "g_DE": 3.2956014666666664e-36,
+                "g_quantum": 1.4829291589780003e-34,
+                "g_lorentz": 2.5070422535211264e-43,
+                "g_fluid": 4.7385399999999995,
+                "g_wave1": 0.0000018278759891421295,
+                "g_wave2": 4.161189695044993e-7,
+                "g_DM": 3.9298500000000004e+35,
+                "M_mag": 100000000000000000000,
+                "D_t": 1
+              }
+            }
+          },
+          {
+            "time_days": 182.5,
+            "time_seconds": 15768000,
+            "system": "ESO 137-001 (Galaxy with Jet)",
+            "totalField": 7.261600000000025e+54,
+            "components": {
+              "Ug1": 0,
+              "Ug2": 0,
+              "Ug3": 0,
+              "Ug4": 0,
+              "Ub1": 1.8154000000000062e+54,
+              "Ub2": 1.8154000000000062e+54,
+              "Ub3": 1.8154000000000062e+54,
+              "Ub4": 1.8154000000000062e+54,
+              "Um": 0,
+              "UA": 1.1101270000000001e-15,
+              "magnetarGravity": 3.929850000000001e+35,
+              "compressedGravity": 0
+            },
+            "advancedComponents": {
+              "F_U_Bi_i_results": {
+                "Ub1_result": {
+                  "totalBuoyancy": 1.8154000000000062e+54,
+                  "F_U_Bi_i": 6.168568735708356e+39,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680849e+39,
+                    "F_vac_rep": 2.73189753e-9,
+                    "F_neutron_phonon": 6.168502750680849e+34,
+                    "F_thz_shock": 0,
+                    "F_conduit": 0,
+                    "F_spooky": 1e-17,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub2_result": {
+                  "totalBuoyancy": 1.8154000000000062e+54,
+                  "F_U_Bi_i": 6.168568735708356e+39,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680849e+39,
+                    "F_vac_rep": 2.73189753e-9,
+                    "F_neutron_phonon": 6.168502750680849e+34,
+                    "F_thz_shock": 0,
+                    "F_conduit": 0,
+                    "F_spooky": 1e-17,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub3_result": {
+                  "totalBuoyancy": 1.8154000000000062e+54,
+                  "F_U_Bi_i": 6.168568735708356e+39,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680849e+39,
+                    "F_vac_rep": 2.73189753e-9,
+                    "F_neutron_phonon": 6.168502750680849e+34,
+                    "F_thz_shock": 0,
+                    "F_conduit": 0,
+                    "F_spooky": 1e-17,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub4_result": {
+                  "totalBuoyancy": 1.8154000000000062e+54,
+                  "F_U_Bi_i": 6.168568735708356e+39,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680849e+39,
+                    "F_vac_rep": 2.73189753e-9,
+                    "F_neutron_phonon": 6.168502750680849e+34,
+                    "F_thz_shock": 0,
+                    "F_conduit": 0,
+                    "F_spooky": 1e-17,
+                    "F_rel": 4.3e+33
+                  }
+                }
+              },
+              "magnetarComponents": {
+                "g_newton": 4.6308459092565395e-15,
+                "g_SMBH": 8.364951941560938e-15,
+                "Ug_total": 0,
+                "g_DE": 3.2956014666666664e-36,
+                "g_quantum": 1.4829291589780003e-34,
+                "g_lorentz": 2.5070422535211264e-43,
+                "g_fluid": 4.7385399999999995,
+                "g_wave1": 0.0000018278753773681693,
+                "g_wave2": -1.5043271615668702e-7,
+                "g_DM": 3.9298500000000004e+35,
+                "M_mag": 100000000000000000000,
+                "D_t": 0.9843556640804206
+              }
+            }
+          },
+          {
+            "time_days": 365,
+            "time_seconds": 31536000,
+            "system": "ESO 137-001 (Galaxy with Jet)",
+            "totalField": 7.261600000000025e+54,
+            "components": {
+              "Ug1": 0,
+              "Ug2": 0,
+              "Ug3": 0,
+              "Ug4": 0,
+              "Ub1": 1.8154000000000062e+54,
+              "Ub2": 1.8154000000000062e+54,
+              "Ub3": 1.8154000000000062e+54,
+              "Ub4": 1.8154000000000062e+54,
+              "Um": 0,
+              "UA": 1.1101270000000001e-15,
+              "magnetarGravity": 3.929850000000001e+35,
+              "compressedGravity": 0
+            },
+            "advancedComponents": {
+              "F_U_Bi_i_results": {
+                "Ub1_result": {
+                  "totalBuoyancy": 1.8154000000000062e+54,
+                  "F_U_Bi_i": 6.168568735708356e+39,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680849e+39,
+                    "F_vac_rep": 2.73189753e-9,
+                    "F_neutron_phonon": 6.168502750680849e+34,
+                    "F_thz_shock": 0,
+                    "F_conduit": 0,
+                    "F_spooky": 1e-17,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub2_result": {
+                  "totalBuoyancy": 1.8154000000000062e+54,
+                  "F_U_Bi_i": 6.168568735708356e+39,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680849e+39,
+                    "F_vac_rep": 2.73189753e-9,
+                    "F_neutron_phonon": 6.168502750680849e+34,
+                    "F_thz_shock": 0,
+                    "F_conduit": 0,
+                    "F_spooky": 1e-17,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub3_result": {
+                  "totalBuoyancy": 1.8154000000000062e+54,
+                  "F_U_Bi_i": 6.168568735708356e+39,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680849e+39,
+                    "F_vac_rep": 2.73189753e-9,
+                    "F_neutron_phonon": 6.168502750680849e+34,
+                    "F_thz_shock": 0,
+                    "F_conduit": 0,
+                    "F_spooky": 1e-17,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub4_result": {
+                  "totalBuoyancy": 1.8154000000000062e+54,
+                  "F_U_Bi_i": 6.168568735708356e+39,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680849e+39,
+                    "F_vac_rep": 2.73189753e-9,
+                    "F_neutron_phonon": 6.168502750680849e+34,
+                    "F_thz_shock": 0,
+                    "F_conduit": 0,
+                    "F_spooky": 1e-17,
+                    "F_rel": 4.3e+33
+                  }
+                }
+              },
+              "magnetarComponents": {
+                "g_newton": 4.6308459094221695e-15,
+                "g_SMBH": 8.364951941560938e-15,
+                "Ug_total": 0,
+                "g_DE": 3.2956014666666664e-36,
+                "g_quantum": 1.4829291589780003e-34,
+                "g_lorentz": 2.5070422535211264e-43,
+                "g_fluid": 4.7385399999999995,
+                "g_wave1": 0.0000018278735420466978,
+                "g_wave2": -2.85736006047224e-7,
+                "g_DM": 3.9298500000000004e+35,
+                "M_mag": 100000000000000000000,
+                "D_t": 0.9689560734072059
+              }
+            }
+          },
+          {
+            "time_days": 2007.5,
+            "time_seconds": 173448000,
+            "system": "ESO 137-001 (Galaxy with Jet)",
+            "totalField": 7.261600000000025e+54,
+            "components": {
+              "Ug1": 0,
+              "Ug2": 0,
+              "Ug3": 0,
+              "Ug4": 0,
+              "Ub1": 1.8154000000000062e+54,
+              "Ub2": 1.8154000000000062e+54,
+              "Ub3": 1.8154000000000062e+54,
+              "Ub4": 1.8154000000000062e+54,
+              "Um": 0,
+              "UA": 1.1101270000000001e-15,
+              "magnetarGravity": 3.929850000000001e+35,
+              "compressedGravity": 0
+            },
+            "advancedComponents": {
+              "F_U_Bi_i_results": {
+                "Ub1_result": {
+                  "totalBuoyancy": 1.8154000000000062e+54,
+                  "F_U_Bi_i": 6.168568735708356e+39,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680849e+39,
+                    "F_vac_rep": 2.73189753e-9,
+                    "F_neutron_phonon": 6.168502750680849e+34,
+                    "F_thz_shock": 0,
+                    "F_conduit": 0,
+                    "F_spooky": 1e-17,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub2_result": {
+                  "totalBuoyancy": 1.8154000000000062e+54,
+                  "F_U_Bi_i": 6.168568735708356e+39,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680849e+39,
+                    "F_vac_rep": 2.73189753e-9,
+                    "F_neutron_phonon": 6.168502750680849e+34,
+                    "F_thz_shock": 0,
+                    "F_conduit": 0,
+                    "F_spooky": 1e-17,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub3_result": {
+                  "totalBuoyancy": 1.8154000000000062e+54,
+                  "F_U_Bi_i": 6.168568735708356e+39,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680849e+39,
+                    "F_vac_rep": 2.73189753e-9,
+                    "F_neutron_phonon": 6.168502750680849e+34,
+                    "F_thz_shock": 0,
+                    "F_conduit": 0,
+                    "F_spooky": 1e-17,
+                    "F_rel": 4.3e+33
+                  }
+                },
+                "Ub4_result": {
+                  "totalBuoyancy": 1.8154000000000062e+54,
+                  "F_U_Bi_i": 6.168568735708356e+39,
+                  "U_Bi": 1.8154e+54,
+                  "traditionalBuoyancy": 0,
+                  "integrandComponents": {
+                    "F_LENR": 6.168502750680849e+39,
+                    "F_vac_rep": 2.73189753e-9,
+                    "F_neutron_phonon": 6.168502750680849e+34,
+                    "F_thz_shock": 0,
+                    "F_conduit": 0,
+                    "F_spooky": 1e-17,
+                    "F_rel": 4.3e+33
+                  }
+                }
+              },
+              "magnetarComponents": {
+                "g_newton": 4.63084591091284e-15,
+                "g_SMBH": 8.364951941560938e-15,
+                "Ug_total": 0,
+                "g_DE": 3.2956014666666664e-36,
+                "g_quantum": 1.4829291589780003e-34,
+                "g_lorentz": 2.5070422535211264e-43,
+                "g_fluid": 4.7385399999999995,
+                "g_wave1": 0.0000018263955716865887,
+                "g_wave2": 3.9926683322659174e-7,
+                "g_DM": 3.9298500000000004e+35,
+                "M_mag": 100000000000000000000,
+                "D_t": 0.840760869590411
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "breakthroughDiscoveries": [
+      {
+        "system": "UQFF Hydrogen Atom Evolution",
+        "time_days": 0,
+        "discovery": "Extreme Unified Field Value",
+        "value": 7.261525740428486e+54,
+        "significance": "Indicates novel gravitational or quantum effects"
+      },
+      {
+        "system": "UQFF Hydrogen Atom Evolution",
+        "time_days": 182.5,
+        "discovery": "Extreme Unified Field Value",
+        "value": 7.2616e+54,
+        "significance": "Indicates novel gravitational or quantum effects"
+      },
+      {
+        "system": "UQFF Hydrogen Atom Evolution",
+        "time_days": 365,
+        "discovery": "Extreme Unified Field Value",
+        "value": 7.2616e+54,
+        "significance": "Indicates novel gravitational or quantum effects"
+      },
+      {
+        "system": "UQFF Hydrogen Atom Evolution",
+        "time_days": 2007.5,
+        "discovery": "Extreme Unified Field Value",
+        "value": 7.2616e+54,
+        "significance": "Indicates novel gravitational or quantum effects"
+      },
+      {
+        "system": "Vela Pulsar",
+        "time_days": 0,
+        "discovery": "Extreme Unified Field Value",
+        "value": 7.261600000000006e+54,
+        "significance": "Indicates novel gravitational or quantum effects"
+      },
+      {
+        "system": "Vela Pulsar",
+        "time_days": 182.5,
+        "discovery": "Extreme Unified Field Value",
+        "value": 7.261600000000006e+54,
+        "significance": "Indicates novel gravitational or quantum effects"
+      },
+      {
+        "system": "Vela Pulsar",
+        "time_days": 365,
+        "discovery": "Extreme Unified Field Value",
+        "value": 7.261600000000006e+54,
+        "significance": "Indicates novel gravitational or quantum effects"
+      },
+      {
+        "system": "Vela Pulsar",
+        "time_days": 2007.5,
+        "discovery": "Extreme Unified Field Value",
+        "value": 7.261600000000006e+54,
+        "significance": "Indicates novel gravitational or quantum effects"
+      },
+      {
+        "system": "SGR Magnetar",
+        "time_days": 0,
+        "discovery": "Extreme Unified Field Value",
+        "value": 7.2616e+54,
+        "significance": "Indicates novel gravitational or quantum effects"
+      },
+      {
+        "system": "SGR Magnetar",
+        "time_days": 182.5,
+        "discovery": "Extreme Unified Field Value",
+        "value": 7.2616e+54,
+        "significance": "Indicates novel gravitational or quantum effects"
+      },
+      {
+        "system": "SGR Magnetar",
+        "time_days": 365,
+        "discovery": "Extreme Unified Field Value",
+        "value": 7.2616e+54,
+        "significance": "Indicates novel gravitational or quantum effects"
+      },
+      {
+        "system": "SGR Magnetar",
+        "time_days": 2007.5,
+        "discovery": "Extreme Unified Field Value",
+        "value": 7.2616e+54,
+        "significance": "Indicates novel gravitational or quantum effects"
+      },
+      {
+        "system": "SN 1006 (Supernova Remnant)",
+        "time_days": 0,
+        "discovery": "Extreme Unified Field Value",
+        "value": 7.261600024674258e+54,
+        "significance": "Indicates novel gravitational or quantum effects"
+      },
+      {
+        "system": "SN 1006 (Supernova Remnant)",
+        "time_days": 182.5,
+        "discovery": "Extreme Unified Field Value",
+        "value": 7.261600024674258e+54,
+        "significance": "Indicates novel gravitational or quantum effects"
+      },
+      {
+        "system": "SN 1006 (Supernova Remnant)",
+        "time_days": 365,
+        "discovery": "Extreme Unified Field Value",
+        "value": 7.261600024674258e+54,
+        "significance": "Indicates novel gravitational or quantum effects"
+      },
+      {
+        "system": "SN 1006 (Supernova Remnant)",
+        "time_days": 2007.5,
+        "discovery": "Extreme Unified Field Value",
+        "value": 7.261600024674258e+54,
+        "significance": "Indicates novel gravitational or quantum effects"
+      },
+      {
+        "system": "ESO 137-001 (Galaxy with Jet)",
+        "time_days": 0,
+        "discovery": "Extreme Unified Field Value",
+        "value": 7.261600000000025e+54,
+        "significance": "Indicates novel gravitational or quantum effects"
+      },
+      {
+        "system": "ESO 137-001 (Galaxy with Jet)",
+        "time_days": 182.5,
+        "discovery": "Extreme Unified Field Value",
+        "value": 7.261600000000025e+54,
+        "significance": "Indicates novel gravitational or quantum effects"
+      },
+      {
+        "system": "ESO 137-001 (Galaxy with Jet)",
+        "time_days": 365,
+        "discovery": "Extreme Unified Field Value",
+        "value": 7.261600000000025e+54,
+        "significance": "Indicates novel gravitational or quantum effects"
+      },
+      {
+        "system": "ESO 137-001 (Galaxy with Jet)",
+        "time_days": 2007.5,
+        "discovery": "Extreme Unified Field Value",
+        "value": 7.261600000000025e+54,
+        "significance": "Indicates novel gravitational or quantum effects"
+      }
+    ],
+    "constants": {
+      "SOLAR_MASS": 1.989e+30,
+      "SOLAR_RADIUS": 696000000,
+      "GALACTIC_SPIN_RATE": 7.3e-16,
+      "BLACK_HOLE_MASS": 8.15e+36,
+      "GALACTIC_DISTANCE": 255000000000000000000,
+      "AETHER_DENSITY": 1e-23,
+      "SCM_DENSITY": 1000000000000000,
+      "HELIOSPHERE_RADIUS": 14960000000000,
+      "OMEGA_C": 1.8112590826010062e-8,
+      "PLANCK_CONSTANT": 1.055e-34,
+      "SPEED_OF_LIGHT": 299800000,
+      "GRAVITATIONAL_CONSTANT": 6.674e-11,
+      "BOHR_RADIUS": 5.29e-11,
+      "RHO_VAC_UA": 7.09e-36,
+      "RHO_VAC_SCM": 7.09e-37,
+      "HUBBLE_TIME": 435196800000000000,
+      "LAMBDA_COSMO": 1.1e-52,
+      "COLMAN_GILLESPIE_FREQ": 300,
+      "THZ_RESONANCE_LOW": 1200000000000,
+      "THZ_RESONANCE_HIGH": 1300000000000,
+      "B_CRIT_MAGNETAR": 44000000000000,
+      "LEP_F_REL": 4.3e+33
+    },
+    "coupling": {
+      "k1": 1.5,
+      "k2": 1.2,
+      "k3": 1.8,
+      "k4": 2.1,
+      "beta1": 0.6,
+      "beta2": 0.5,
+      "beta3": 0.7,
+      "beta4": 0.4,
+      "gamma": 1e-22,
+      "alpha": 0.0005,
+      "epsilon": 0.00001,
+      "k_LENR": 1e-10,
+      "k_act": 0.000001,
+      "k_DE": 1e-15,
+      "k_neutron": 1e-15,
+      "k_rel": 1e-20,
+      "k_vac": 1e-20,
+      "k_thz": 1e-25,
+      "k_conduit": 1e-30,
+      "k_spooky": 1e-35,
+      "k_phonon": 1e-15,
+      "k_Ub": 0.1,
+      "Delta_k_eta": 725000000
+    }
+  }
+}

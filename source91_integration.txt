@@ -1,0 +1,120 @@
+﻿// DPMModule class implementation (Source91.mm)
+class DPMModule {
+    constructor() {
+        this.variables = new Map();
+        
+        // Universal constants for Pre-Big Bang DPM
+        this.variables.set('num_states', 26.0);          // 26 EM fields/states
+        this.variables.set('r', 1.0);                    // Sphere radius (normalized)
+        this.variables.set('SCm_amount', 1e42);          // Raw [SCm] amount (arbitrary J)
+        this.variables.set('UA_amount', 1e42);           // Raw [UA] amount (arbitrary J)
+        this.variables.set('ACP_massive', 1.0);          // 26-field envelope factor
+        this.variables.set('a_over_b', 6.6743e-11);      // G M / r^2 analog
+        this.variables.set('e', 1.602e-19);              // Elementary charge q analog
+        this.variables.set('half_state_barrier', -0.5);  // High energy superconductive barrier
+        this.variables.set('decay_rate', 1e-10);         // Trapped UA breakdown rate (s^-1)
+        this.variables.set('t_pre_bigbang', 0.0);        // Time at birth (s)
+        this.variables.set('Higgs_support', 1.0);        // Proton stability factor
+    }
+
+    // Update variable
+    updateVariable(name, value) {
+        if (name === 'num_states') {
+            value = Math.round(value); // Ensure integer for centers
+        }
+        this.variables.set(name, value);
+    }
+
+    // Add delta to variable
+    addToVariable(name, delta) {
+        const current = this.variables.get(name) || 0;
+        this.variables.set(name, current + delta);
+    }
+
+    // Subtract delta from variable
+    subtractFromVariable(name, delta) {
+        this.addToVariable(name, -delta);
+    }
+
+    // Compute 26 sphere centers distributed on unit sphere
+    computeSphereCenters() {
+        const n = Math.floor(this.variables.get('num_states'));
+        const centers = [];
+        const r_sphere = this.variables.get('r');
+
+        // Distribute centers on unit sphere using Fibonacci spiral
+        const golden_ratio = (1 + Math.sqrt(5)) / 2;
+        
+        for (let i = 0; i < n; i++) {
+            const theta = 2 * Math.PI * i / golden_ratio;
+            const phi = Math.acos(1 - 2 * (i + 0.5) / n);
+            
+            const x = r_sphere * Math.sin(phi) * Math.cos(theta); // h
+            const y = r_sphere * Math.sin(phi) * Math.sin(theta); // k  
+            const z = r_sphere * Math.cos(phi);                   // l
+            
+            centers.push([x, y, z]);
+        }
+        
+        return centers;
+    }
+
+    // Compute resonant points for a single sphere
+    computeResonantPoints(h, k, l, r) {
+        // Simplified: Return sample point on sphere
+        return [h + r, k, l];
+    }
+
+    // Compute DPM: 26 centers
+    computeDPM() {
+        return this.computeSphereCenters();
+    }
+
+    // [SCm] energy (massless metal, extra-universal)
+    computeSCmEnergy() {
+        return this.variables.get('SCm_amount') * this.variables.get('ACP_massive');
+    }
+
+    // [UA] energy (self-plasmotic vacuum pressed)
+    computeUAEnergy() {
+        const ua_base = this.variables.get('UA_amount');
+        const breakdown = Math.exp(-this.variables.get('decay_rate') * 
+                                  this.variables.get('t_pre_bigbang'));
+        return ua_base * breakdown * this.variables.get('ACP_massive');
+    }
+
+    // Belly Button cosmic standing resonance factor
+    computeResonanceFactor() {
+        const scm = this.computeSCmEnergy();
+        const ua = this.computeUAEnergy();
+        const r_sq = this.variables.get('r') * this.variables.get('r');
+        const attraction = this.variables.get('a_over_b') * (scm * ua) / r_sq;
+        return attraction * this.variables.get('e') * this.variables.get('Higgs_support');
+    }
+
+    // Get equation text
+    getEquationText() {
+        return 'Birth of DPM: (x - h) + (y - k) + (z - l) = r for 26 states (centers [h,k,l]).\n[SCm] + [UA] in 26-shell EM field  Resonant DPM spheres.\nResonance Factor = (G M / r) * q * Higgs_support (a/b: GM/r, e: q).\nInflation: -1/2 states as high energy barriers; Trapped UA decays exp(-γ t).\nUQFF Model: 26 quantum levels; plasma mediates; Higgs proton stability; [SCm] builds matter.\nAt t_pre=0: Resonance ~1e-11 (normalized); 26 centers on unit sphere.';
+    }
+
+    // Print all current variables
+    printVariables() {
+        console.log(' Current DPM Variables:');
+        for (const [key, value] of this.variables) {
+            console.log('   ' + key + ' = ' + value.toExponential(3));
+        }
+    }
+
+    // Print DPM sphere centers
+    printDPMSpheres() {
+        const centers = this.computeDPM();
+        console.log(' DPM Sphere Centers (26 states, [h,k,l]):');
+        centers.forEach((center, i) => {
+            console.log('   State ' + (i+1) + ': [' + center[0].toFixed(3) + ', ' + center[1].toFixed(3) + ', ' + center[2].toFixed(3) + ']');
+        });
+        console.log(' Resonance Factor: ' + this.computeResonanceFactor().toExponential(3));
+        console.log(' [SCm] Energy: ' + this.computeSCmEnergy().toExponential(3) + ' J');
+        console.log(' [UA] Energy: ' + this.computeUAEnergy().toExponential(3) + ' J');
+    }
+}
+
