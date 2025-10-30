@@ -1,4 +1,4 @@
-// OrionUQFFModule.h
+﻿// OrionUQFFModule.h
 // Modular C++ implementation of the full Master Universal Gravity Equation (MUGE & UQFF & SM Integration) for Orion Nebula Evolution.
 // This module can be plugged into a base program (e.g., 'ziqn233h.cpp') by including this header and linking the .cpp.
 // Usage in base: #include "OrionUQFFModule.h"

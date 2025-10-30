@@ -1,4 +1,4 @@
-// SombreroUQFFModule.h
+﻿// SombreroUQFFModule.h
 // Modular C++ implementation of the full Master Universal Gravity Equation (UQFF) for Sombrero Galaxy (M104) Evolution.
 // This module can be plugged into a base program (e.g., 'ziqn233h.cpp') by including this header and linking the .cpp.
 // Usage in base: #include "SombreroUQFFModule.h"

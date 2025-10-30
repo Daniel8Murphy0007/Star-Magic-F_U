@@ -1,4 +1,4 @@
-// CrabNebulaUQFFModule.h
+﻿// CrabNebulaUQFFModule.h
 // Modular C++ implementation of the full Master Unified Field Equation (F_U_Bi_i & UQFF Integration) for Crab Nebula Supernova Remnant Evolution.
 // This module can be plugged into a base program (e.g., 'crab_sim.cpp') by including this header and linking the .cpp.
 // Usage in base: #include "CrabNebulaUQFFModule.h"

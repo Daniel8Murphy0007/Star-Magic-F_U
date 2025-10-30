@@ -1,11 +1,11 @@
 // Star-Magic: Unified Quantum Field Force (UQFF) Computational Engine
 // Author: Daniel T. Murphy - Advanced Theoretical Physics Research
-// Enhanced with MAIN_1.mm mathematical frameworks
+// Enhanced with MAIN_1.cpp mathematical frameworks
 
 console.log('Star-Magic UQFF Computational Engine v2.0 - Enhanced Edition (71 Systems)');
 console.log('Initializing Advanced Unified Quantum Field Force calculations...\n');
 
-// Fundamental Constants (Enhanced from MAIN_1.mm)
+// Fundamental Constants (Enhanced from MAIN_1.cpp)
 const CONSTANTS = {
     // Basic Physical Constants
     SOLAR_MASS: 1.989e30,           // kg
@@ -18,7 +18,7 @@ const CONSTANTS = {
     HELIOSPHERE_RADIUS: 1.496e13,  // m
     OMEGA_C: 2 * Math.PI / (11 * 365 * 86400), // Solar cycle frequency
     
-    // Enhanced Physical Constants from MAIN_1.mm
+    // Enhanced Physical Constants from MAIN_1.cpp
     PLANCK_CONSTANT: 1.055e-34,    // h (J�s)
     SPEED_OF_LIGHT: 2.998e8,       // c (m/s)
     GRAVITATIONAL_CONSTANT: 6.674e-11, // G (m�/kg�s�)
@@ -40,7 +40,7 @@ const CONSTANTS = {
     LEP_F_REL: 4.30e33             // N (Relativistic coherence force from LEP 1998)
 };
 
-// Enhanced UQFF Theory Coupling Constants (from MAIN_1.mm comprehensive framework)
+// Enhanced UQFF Theory Coupling Constants (from MAIN_1.cpp comprehensive framework)
 const COUPLING = {
     // Original Universal Gravity Couplings
     k1: 1.5,     // Internal dipole coupling
@@ -55,7 +55,7 @@ const COUPLING = {
     alpha: 0.0005, // Refined non-linear time decay rate
     epsilon: 0.00001, // Reciprocation decay rate (near-lossless)
     
-    // Enhanced F_U_Bi_i Integrand Constants from MAIN_1.mm
+    // Enhanced F_U_Bi_i Integrand Constants from MAIN_1.cpp
     k_LENR: 1e-10,      // LENR coupling constant (N)
     k_act: 1e-6,        // Activation coupling constant (N)
     k_DE: 1e-15,        // Dark energy coupling constant (N)
@@ -72,7 +72,7 @@ const COUPLING = {
     Delta_k_eta: 7.25e8  // Buoyancy scaling factor
 };
 
-// 26-Layer Compressed Gravity Framework from MAIN_1.mm
+// 26-Layer Compressed Gravity Framework from MAIN_1.cpp
 // g(r,t) = sum_{i=1 to 26} (Ug1_i + Ug2_i + Ug3_i + Ug4_i)
 
 // Dipole Momentum Energy Calculation: E_DPM,i = (h*c/r_i�)*Q_i*[SCm]_i
@@ -185,7 +185,7 @@ function calculateUg4(r, t, blackHoleMass = CONSTANTS.BLACK_HOLE_MASS, layers = 
            * nonLinearDecay * piCycles * negativeTime * feedbackFactor;
 }
 
-// Advanced F_U_Bi_i Integrand Calculations from MAIN_1.mm
+// Advanced F_U_Bi_i Integrand Calculations from MAIN_1.cpp
 // Integrates LENR, vacuum energy, neutron dynamics, and relativistic coherence
 
 // Colman-Gillespie LENR Integration: 300 Hz activation, 1.2-1.3 THz resonance
@@ -312,11 +312,11 @@ function calculateUm(t, stringCount = 1e9) {
            * reciprocationDecay * scmPresence * reactorEfficiency;
 }
 
-// SGR 0501+4516 Master Universal Gravity Equation (MUGE) from Source14.mm  
+// SGR 0501+4516 Master Universal Gravity Equation (MUGE) from Source14.cpp  
 // Time-reversal magnetar with magnetic field decay and f_TRZ factor
 class MagnetarSGR0501_4516 {
     constructor(params = {}) {
-        // Initialize default parameters from Source14.mm
+        // Initialize default parameters from Source14.cpp
         this.G = CONSTANTS.GRAVITATIONAL_CONSTANT;
         this.M = params.mass || (1.4 * CONSTANTS.SOLAR_MASS);
         this.r = params.radius || 20e3; // 20 km (larger than SGR 1745-2900)
@@ -476,11 +476,11 @@ class MagnetarSGR0501_4516 {
     }
 }
 
-// SGR 1745-2900 Master Universal Gravity Equation (MUGE) from Source13.mm
+// SGR 1745-2900 Master Universal Gravity Equation (MUGE) from Source13.cpp
 // Complete magnetar gravity calculation with ALL terms included
 class MagnetarSGR1745_2900 {
     constructor(params = {}) {
-        // Initialize default parameters from Source13.mm
+        // Initialize default parameters from Source13.cpp
         this.G = CONSTANTS.GRAVITATIONAL_CONSTANT;
         this.M = params.mass || (1.4 * CONSTANTS.SOLAR_MASS);
         this.r = params.radius || 1e4;
@@ -670,13 +670,13 @@ class MagnetarSGR1745_2900 {
     }
 }
 
-// Sagittarius A* Supermassive Black Hole (SMBH) Master Universal Gravity Equation (MUGE) from Source15.mm
+// Sagittarius A* Supermassive Black Hole (SMBH) Master Universal Gravity Equation (MUGE) from Source15.cpp
 // Complete SMBH gravity calculation with ALL terms including mass growth M(t), cosmic expansion, magnetic decay,
 // UQFF Ug components with f_TRZ, Lambda, quantum uncertainty, EM, fluid dynamics, oscillatory waves, 
 // DM/density perturbations with precession, and GW terms
 class SMBHSgrAStar {
     constructor(params = {}) {
-        // Initialize default parameters from Source15.mm
+        // Initialize default parameters from Source15.cpp
         this.G = CONSTANTS.GRAVITATIONAL_CONSTANT || 6.6743e-11;
         this.M_initial = params.mass || (4.3e6 * CONSTANTS.SOLAR_MASS);
         this.r = params.radius || 1.27e10; // Schwarzschild radius
@@ -847,7 +847,7 @@ class SMBHSgrAStar {
         };
     }
 
-    // Analysis at 4.5 Gyr (example from Source15.mm)
+    // Analysis at 4.5 Gyr (example from Source15.cpp)
     exampleAt4_5Gyr() {
         const t_example = 4.5e9 * 3.156e7; // 4.5 billion years in seconds
         return this.compute_g_SgrA(t_example);
@@ -860,11 +860,11 @@ class SMBHSgrAStar {
     }
 }
 
-// "Tapestry of Blazing Starbirth" Star-Forming Region Master Universal Gravity Equation (MUGE) from Source16.mm
+// "Tapestry of Blazing Starbirth" Star-Forming Region Master Universal Gravity Equation (MUGE) from Source16.cpp
 // Complete star formation gravity calculation with mass growth M(t), stellar wind feedback, and ALL MUGE terms
 class StarbirthTapestry {
     constructor(params = {}) {
-        // Initialize default parameters from Source16.mm
+        // Initialize default parameters from Source16.cpp
         this.G = CONSTANTS.GRAVITATIONAL_CONSTANT || 6.6743e-11;
         this.M_initial = params.mass || (240 * CONSTANTS.SOLAR_MASS);
         this.r = params.radius || (10 * 9.461e15); // 10 light years
@@ -1015,7 +1015,7 @@ class StarbirthTapestry {
         };
     }
 
-    // Analysis at 2.5 Myr (example from Source16.mm)
+    // Analysis at 2.5 Myr (example from Source16.cpp)
     exampleAt2_5Myr() {
         const t_example = 2.5e6 * 3.156e7; // 2.5 million years in seconds
         return this.compute_g_Starbirth(t_example);
@@ -1028,10 +1028,10 @@ class StarbirthTapestry {
     }
 }
 
-// Westerlund 2 Super Star Cluster Class (from Source17.mm)
+// Westerlund 2 Super Star Cluster Class (from Source17.cpp)
 class Westerlund2 {
     constructor(params = {}) {
-        // Core parameters with defaults from Source17.mm
+        // Core parameters with defaults from Source17.cpp
         this.G = params.G || 6.6743e-11;
         this.M_initial = params.mass || 30000 * 1.989e30; // 30,000 solar masses in kg
         this.r = params.radius || 10 * 9.461e15; // 10 light years in meters
@@ -1182,7 +1182,7 @@ class Westerlund2 {
         };
     }
 
-    // Analysis at 1 Myr (example from Source17.mm)
+    // Analysis at 1 Myr (example from Source17.cpp)
     exampleAt1Myr() {
         const t_example = 1e6 * 3.156e7; // 1 million years in seconds
         return this.compute_g_Westerlund2(t_example);
@@ -1195,10 +1195,10 @@ class Westerlund2 {
     }
 }
 
-// Pillars of Creation (Eagle Nebula) Class (from Source18.mm)
+// Pillars of Creation (Eagle Nebula) Class (from Source18.cpp)
 class PillarsOfCreation {
     constructor(params = {}) {
-        // Core parameters with defaults from Source18.mm
+        // Core parameters with defaults from Source18.cpp
         this.G = params.G || 6.6743e-11;
         this.M_initial = params.mass || 10100 * 1.989e30; // 10,100 solar masses in kg
         this.r = params.radius || 5 * 9.461e15; // 5 light years in meters
@@ -1361,7 +1361,7 @@ class PillarsOfCreation {
         };
     }
 
-    // Analysis at 500k years (example from Source18.mm)
+    // Analysis at 500k years (example from Source18.cpp)
     exampleAt500kYears() {
         const t_example = 5e5 * 3.156e7; // 500 thousand years in seconds
         return this.compute_g_Pillars(t_example);
@@ -1374,10 +1374,10 @@ class PillarsOfCreation {
     }
 }
 
-// Rings of Relativity (Einstein Ring Galaxy Cluster) Class (from Source19.mm)
+// Rings of Relativity (Einstein Ring Galaxy Cluster) Class (from Source19.cpp)
 class RingsOfRelativity {
     constructor(params = {}) {
-        // Core parameters with defaults from Source19.mm
+        // Core parameters with defaults from Source19.cpp
         this.G = params.G || 6.6743e-11;
         this.M = params.mass || 1e14 * 1.989e30; // 1e14 solar masses in kg (galaxy cluster)
         this.r = params.radius || 3.086e20; // 10 kpc Einstein radius in meters
@@ -1540,7 +1540,7 @@ class RingsOfRelativity {
         };
     }
 
-    // Analysis at 5 Gyr (example from Source19.mm)
+    // Analysis at 5 Gyr (example from Source19.cpp)
     exampleAt5Gyr() {
         const t_example = 5e9 * 3.156e7; // 5 billion years in seconds
         return this.compute_g_Rings(t_example);
@@ -1553,10 +1553,10 @@ class RingsOfRelativity {
     }
 }
 
-// Galaxy NGC 2525 (Barred Spiral Galaxy) Class (from Source20.mm)
+// Galaxy NGC 2525 (Barred Spiral Galaxy) Class (from Source20.cpp)
 class GalaxyNGC2525 {
     constructor(params = {}) {
-        // Core parameters with defaults from Source20.mm
+        // Core parameters with defaults from Source20.cpp
         this.G = params.G || 6.6743e-11;
         this.M = params.mass || (1e10 + 2.25e7) * 1.989e30; // Total galaxy + SMBH mass in kg
         this.r = params.radius || 2.836e20; // Galaxy radius in meters
@@ -1712,7 +1712,7 @@ class GalaxyNGC2525 {
         };
     }
 
-    // Analysis at 7 years (example from Source20.mm)
+    // Analysis at 7 years (example from Source20.cpp)
     exampleAt7Years() {
         const t_example = 7 * 3.156e7; // 7 years in seconds
         return this.compute_g_NGC2525(t_example);
@@ -1725,10 +1725,10 @@ class GalaxyNGC2525 {
     }
 }
 
-// NGC 3603 (Extreme Young Massive Star Cluster) Class (from Source21.mm)
+// NGC 3603 (Extreme Young Massive Star Cluster) Class (from Source21.cpp)
 class NGC3603 {
     constructor(params = {}) {
-        // Core parameters with defaults from Source21.mm
+        // Core parameters with defaults from Source21.cpp
         this.G = params.G || 6.6743e-11;
         this.M0 = params.mass || 400000 * 1.989e30; // 400,000 solar masses in kg
         this.r = params.radius || 9.5 * 9.461e15; // 9.5 light years in meters
@@ -1895,7 +1895,7 @@ class NGC3603 {
         };
     }
 
-    // Analysis at 500k years (example from Source21.mm)
+    // Analysis at 500k years (example from Source21.cpp)
     exampleAt500kYears() {
         const t_example = 5e5 * 3.156e7; // 500 thousand years in seconds
         return this.compute_g_NGC3603(t_example);
@@ -1908,10 +1908,10 @@ class NGC3603 {
     }
 }
 
-// Bubble Nebula NGC 7635 (Emission Nebula) Class (from Source22.mm)
+// Bubble Nebula NGC 7635 (Emission Nebula) Class (from Source22.cpp)
 class BubbleNebula {
     constructor(params = {}) {
-        // Core parameters with defaults from Source22.mm
+        // Core parameters with defaults from Source22.cpp
         this.G = params.G || 6.6743e-11;
         this.M = params.mass || 46 * 1.989e30; // 46 solar masses in kg
         this.r = params.radius || 5 * 9.461e15; // 5 light years in meters
@@ -2063,7 +2063,7 @@ class BubbleNebula {
         };
     }
 
-    // Analysis at 2 Myr (example from Source22.mm)
+    // Analysis at 2 Myr (example from Source22.cpp)
     exampleAt2Myr() {
         const t_example = 2e6 * 3.156e7; // 2 million years in seconds
         return this.compute_g_Bubble(t_example);
@@ -2076,10 +2076,10 @@ class BubbleNebula {
     }
 }
 
-// Antennae Galaxies NGC 4038/4039 (Interacting Galaxy Merger) Class (from Source23.mm)
+// Antennae Galaxies NGC 4038/4039 (Interacting Galaxy Merger) Class (from Source23.cpp)
 class AntennaeGalaxies {
     constructor(params = {}) {
-        // Core parameters with defaults from Source23.mm
+        // Core parameters with defaults from Source23.cpp
         this.G = params.G || 6.6743e-11;
         this.M0 = params.mass || 2e11 * 1.989e30; // 200 billion solar masses in kg
         this.r = params.radius || 30000 * 9.461e15; // 30,000 light years in meters
@@ -2249,7 +2249,7 @@ class AntennaeGalaxies {
         };
     }
 
-    // Analysis at 300 Myr (example from Source23.mm)
+    // Analysis at 300 Myr (example from Source23.cpp)
     exampleAt300Myr() {
         const t_example = 300e6 * 3.156e7; // 300 million years in seconds
         return this.compute_g_Antennae(t_example);
@@ -2262,10 +2262,10 @@ class AntennaeGalaxies {
     }
 }
 
-// Horsehead Nebula Barnard 33 (Dark Nebula) Class (from Source24.mm)
+// Horsehead Nebula Barnard 33 (Dark Nebula) Class (from Source24.cpp)
 class HorseheadNebula {
     constructor(params = {}) {
-        // Core parameters with defaults from Source24.mm
+        // Core parameters with defaults from Source24.cpp
         this.G = params.G || 6.6743e-11;
         this.M = params.mass || 1000 * 1.989e30; // 1000 solar masses in kg
         this.r = params.radius || 2.5 * 9.461e15; // 2.5 light years in meters
@@ -2418,7 +2418,7 @@ class HorseheadNebula {
         };
     }
 
-    // Analysis at 3 Myr (example from Source24.mm)
+    // Analysis at 3 Myr (example from Source24.cpp)
     exampleAt3Myr() {
         const t_example = 3e6 * 3.156e7; // 3 million years in seconds
         return this.compute_g_Horsehead(t_example);
@@ -2431,10 +2431,10 @@ class HorseheadNebula {
     }
 }
 
-// NGC 1275 Perseus A (Active Galactic Nucleus) Class (from Source25.mm)
+// NGC 1275 Perseus A (Active Galactic Nucleus) Class (from Source25.cpp)
 class NGC1275 {
     constructor(params = {}) {
-        // Core parameters with defaults from Source25.mm
+        // Core parameters with defaults from Source25.cpp
         this.G = params.G || 6.6743e-11;
         this.M = params.mass || 1e11 * 1.989e30; // 100 billion solar masses in kg
         this.r = params.radius || 200000 * 9.461e15; // 200,000 light years in meters
@@ -2609,7 +2609,7 @@ class NGC1275 {
         };
     }
 
-    // Analysis at 50 Myr (example from Source25.mm)
+    // Analysis at 50 Myr (example from Source25.cpp)
     exampleAt50Myr() {
         const t_example = 50e6 * 3.156e7; // 50 million years in seconds
         return this.compute_g_NGC1275(t_example);
@@ -2622,10 +2622,10 @@ class NGC1275 {
     }
 }
 
-// HUDF Galaxies (Hubble Ultra Deep Field "Galaxies Galore") Class (from Source26.mm)
+// HUDF Galaxies (Hubble Ultra Deep Field "Galaxies Galore") Class (from Source26.cpp)
 class HUDFGalaxies {
     constructor(params = {}) {
-        // Core parameters with defaults from Source26.mm
+        // Core parameters with defaults from Source26.cpp
         this.G = params.G || 6.6743e-11;
         this.M0 = params.mass || (1e12 * 1.989e30); // 1 trillion solar masses in kg
         this.r = params.radius || (1.3e11 * 9.461e15); // 130 billion light years in meters
@@ -2794,7 +2794,7 @@ class HUDFGalaxies {
         };
     }
 
-    // Analysis at 5 Gyr (example from Source26.mm)
+    // Analysis at 5 Gyr (example from Source26.cpp)
     exampleAt5Gyr() {
         const t_example = 5e9 * 3.156e7; // 5 billion years in seconds
         return this.compute_g_HUDF(t_example);
@@ -2807,10 +2807,10 @@ class HUDFGalaxies {
     }
 }
 
-// Galaxy NGC 1792 "The Stellar Forge" (Starburst Galaxy) Class (from Source27.mm)
+// Galaxy NGC 1792 "The Stellar Forge" (Starburst Galaxy) Class (from Source27.cpp)
 class GalaxyNGC1792 {
     constructor(params = {}) {
-        // Core parameters with defaults from Source27.mm
+        // Core parameters with defaults from Source27.cpp
         this.G = params.G || 6.6743e-11;
         this.M0 = params.mass || (1e10 * 1.989e30); // 10 billion solar masses in kg
         this.r = params.radius || (80000 * 9.461e15); // 80,000 light years in meters
@@ -2968,7 +2968,7 @@ class GalaxyNGC1792 {
         };
     }
 
-    // Analysis at 50 Myr (example from Source27.mm)
+    // Analysis at 50 Myr (example from Source27.cpp)
     exampleAt50Myr() {
         const t_example = 50e6 * 3.156e7; // 50 million years in seconds
         return this.compute_g_NGC1792(t_example);
@@ -2981,7 +2981,7 @@ class GalaxyNGC1792 {
     }
 }
 
-// Andromeda Galaxy M31 (Advanced UQFF Module) Class (from Source28.mm)
+// Andromeda Galaxy M31 (Advanced UQFF Module) Class (from Source28.cpp)
 class AndromedaUQFFModule {
     constructor(params = {}) {
         // Initialize variables map for dynamic management
@@ -3244,7 +3244,7 @@ class AndromedaUQFFModule {
     }
 }
 
-// Sombrero Galaxy M104 UQFF Module Class (from Source29.mm)
+// Sombrero Galaxy M104 UQFF Module Class (from Source29.cpp)
 class SombreroUQFFModule {
     constructor(params = {}) {
         // Initialize all variables with Sombrero-specific defaults
@@ -3532,7 +3532,7 @@ class SombreroUQFFModule {
     }
 }
 
-// Saturn Planet UQFF Module Class (from Source30.mm)
+// Saturn Planet UQFF Module Class (from Source30.cpp)
 class SaturnUQFFModule {
     constructor(params = {}) {
         // Initialize all variables with Saturn-specific defaults
@@ -4001,7 +4001,7 @@ function analyzeTimeEvolution(r, theta, timePoints) {
     return evolution;
 }
 
-// Advanced Unified Field Equation Calculator with MAIN_1.mm Integration
+// Advanced Unified Field Equation Calculator with MAIN_1.cpp Integration
 // F_U = S[k_i Delta_Ug_i - �_i ?Ug_i O_g M_bh/d_g E_react] + Um + A + F_U_Bi_i + g_Magnetar
 function calculateUnifiedField(r, theta, t, stellarMass = CONSTANTS.SOLAR_MASS, systemParams = {}) {
     console.log(`\n=== Advanced UQFF Calculation ===`);
@@ -4088,7 +4088,7 @@ function calculateUnifiedField(r, theta, t, stellarMass = CONSTANTS.SOLAR_MASS, 
     };
 }
 
-// Predefined Astrophysical Systems from MAIN_1.mm
+// Predefined Astrophysical Systems from MAIN_1.cpp
 const PREDEFINED_SYSTEMS = {
     'SN_1006': {
         name: 'SN 1006 (Supernova Remnant)',
@@ -4137,7 +4137,7 @@ const PREDEFINED_SYSTEMS = {
         omega0: 2 * Math.PI / 3.76, // s^-1� (from pulse period 3.76s)
         neutronFactor: 1,
         conduitScale: 1,
-        // SGR 1745-2900 Specific Parameters from Source13.mm
+        // SGR 1745-2900 Specific Parameters from Source13.cpp
         hubbleParam: 2.269e-18, // s^-1� (computed H(z))
         B_crit: 1e11, // T (critical magnetic field)
         blackHoleMass: 4e6 * CONSTANTS.SOLAR_MASS, // Sgr A* mass
@@ -4162,7 +4162,7 @@ const PREDEFINED_SYSTEMS = {
         omega0: 2 * Math.PI / 5.0, // s^-1� (from pulse period 5.0s)
         neutronFactor: 1,
         conduitScale: 1,
-        // SGR 0501+4516 Specific Parameters from Source14.mm
+        // SGR 0501+4516 Specific Parameters from Source14.cpp
         hubbleParam: 2.184e-18, // s^-1� (H0 Hubble constant)
         B_crit: 1e11, // T (critical magnetic field)
         pulsePeriod: 5.0, // s (longer period than SGR 1745-2900)
@@ -4209,7 +4209,7 @@ const PREDEFINED_SYSTEMS = {
         omega0: 0.3 * CONSTANTS.SPEED_OF_LIGHT / 1.27e10, // s^-1� (spin factor * c/r)
         neutronFactor: 0, // Not applicable for SMBH
         conduitScale: 0.1,
-        // SMBH Sgr A* Specific Parameters from Source15.mm
+        // SMBH Sgr A* Specific Parameters from Source15.cpp
         hubbleParam: 2.184e-18, // s^-1� (H0 Hubble constant)
         B0_G: 1e4, // G (initial magnetic field in Gauss)
         tauB: 1e6 * 3.156e7, // s (1 million year B decay timescale)
@@ -4242,7 +4242,7 @@ const PREDEFINED_SYSTEMS = {
         omega0: 1e-14, // s^-1� (slow rotation for large scale)
         neutronFactor: 0, // Not applicable for star-forming region
         conduitScale: 0.5,
-        // Star-forming region specific parameters from Source16.mm
+        // Star-forming region specific parameters from Source16.cpp
         hubbleParam: 2.184e-18, // s^-1� (H0 Hubble constant)
         B_crit: 1e11, // T (critical magnetic field)
         f_TRZ: 0.1, // Time-reversal factor
@@ -4274,7 +4274,7 @@ const PREDEFINED_SYSTEMS = {
         omega0: 1e-14, // s^-1� (slow rotation for large scale)
         neutronFactor: 0, // Not applicable for star cluster
         conduitScale: 0.3,
-        // Westerlund 2 specific parameters from Source17.mm
+        // Westerlund 2 specific parameters from Source17.cpp
         hubbleParam: 2.184e-18, // s^-1� (H0 Hubble constant)
         B_crit: 1e11, // T (critical magnetic field)
         Lambda: 1.1e-52, // Cosmological constant
@@ -4314,7 +4314,7 @@ const PREDEFINED_SYSTEMS = {
         omega0: 1e-15, // s^-1� (very slow rotation for pillar scale)
         neutronFactor: 0, // Not applicable for nebula
         conduitScale: 0.2,
-        // Pillars of Creation specific parameters from Source18.mm
+        // Pillars of Creation specific parameters from Source18.cpp
         hubbleParam: 2.184e-18, // s^-1� (H0 Hubble constant)
         B_crit: 1e11, // T (critical magnetic field)
         Lambda: 1.1e-52, // Cosmological constant
@@ -4356,7 +4356,7 @@ const PREDEFINED_SYSTEMS = {
         omega0: 1e-18, // s^-1� (extremely slow rotation for cluster scale)
         neutronFactor: 0, // Not applicable for galaxy cluster
         conduitScale: 0.1,
-        // Einstein Ring specific parameters from Source19.mm
+        // Einstein Ring specific parameters from Source19.cpp
         hubbleParam: 2.184e-18, // s^-1� (H0 Hubble constant)
         Hz: 7.309e-19, // s^-1� (Hubble parameter at z=0.5)
         z_lens: 0.5, // Redshift of Einstein ring system
@@ -4398,7 +4398,7 @@ const PREDEFINED_SYSTEMS = {
         omega0: 1e-16, // s^-1� (extremely slow rotation for galaxy scale)
         neutronFactor: 0, // Not applicable for spiral galaxy
         conduitScale: 0.05,
-        // Galaxy NGC 2525 specific parameters from Source20.mm
+        // Galaxy NGC 2525 specific parameters from Source20.cpp
         hubbleParam: 2.19e-18, // s^-1� (H(z) at z=0.016)
         z_gal: 0.016, // Galaxy redshift
         B_crit: 1e11, // T (critical magnetic field)
@@ -4439,7 +4439,7 @@ const PREDEFINED_SYSTEMS = {
         omega0: 1e-14, // s^-1� (slow rotation for cluster scale)
         neutronFactor: 0, // Not applicable for star cluster
         conduitScale: 0.2,
-        // NGC 3603 specific parameters from Source21.mm
+        // NGC 3603 specific parameters from Source21.cpp
         hubbleParam: 2.184e-18, // s^-1� (H0 Hubble constant)
         B_crit: 1e11, // T (critical magnetic field)
         Lambda: 1.1e-52, // Cosmological constant
@@ -4481,7 +4481,7 @@ const PREDEFINED_SYSTEMS = {
         omega0: 1e-14, // s^-1� (slow rotation for nebula scale)
         neutronFactor: 0, // Not applicable for emission nebula
         conduitScale: 0.3,
-        // Bubble Nebula specific parameters from Source22.mm
+        // Bubble Nebula specific parameters from Source22.cpp
         hubbleParam: 2.184e-18, // s^-1� (H0 Hubble constant)
         B_crit: 1e11, // T (critical magnetic field)
         Lambda: 1.1e-52, // Cosmological constant
@@ -4521,7 +4521,7 @@ const PREDEFINED_SYSTEMS = {
         omega0: 1e-16, // s^-1� (galactic rotation)
         neutronFactor: 0, // Not applicable for galaxy merger
         conduitScale: 1.0, // Galactic scale
-        // Antennae Galaxies specific parameters from Source23.mm
+        // Antennae Galaxies specific parameters from Source23.cpp
         z_gal: 0.0105, // Galaxy redshift
         hubbleParam: 2.19e-18, // s^-1� (Hubble parameter at z)
         B_crit: 1e11, // T (critical magnetic field)
@@ -4564,7 +4564,7 @@ const PREDEFINED_SYSTEMS = {
         omega0: 1e-15, // s^-1� (very slow rotation for nebula scale)
         neutronFactor: 0, // Not applicable for dark nebula
         conduitScale: 0.2, // Small nebula scale
-        // Horsehead Nebula specific parameters from Source24.mm
+        // Horsehead Nebula specific parameters from Source24.cpp
         hubbleParam: 2.184e-18, // s^-1� (H0 Hubble constant)
         B_crit: 1e11, // T (critical magnetic field)
         Lambda: 1.1e-52, // Cosmological constant
@@ -4604,7 +4604,7 @@ const PREDEFINED_SYSTEMS = {
         omega0: 1e-17, // s^-1� (very slow rotation for galaxy cluster scale)
         neutronFactor: 0, // Not applicable for AGN
         conduitScale: 2.0, // Large galaxy cluster scale
-        // NGC 1275 specific parameters from Source25.mm
+        // NGC 1275 specific parameters from Source25.cpp
         z_gal: 0.0176, // Galaxy redshift
         hubbleParam: 2.20e-18, // s^-1� (Hubble parameter at z)
         B0: 5e-9, // T (initial magnetic field)
@@ -4649,7 +4649,7 @@ const PREDEFINED_SYSTEMS = {
         omega0: 1e-19, // s^-1� (cosmic timescale rotation)
         neutronFactor: 0, // Not applicable for galaxy field
         conduitScale: 0.01, // Very large cosmic scale
-        // HUDF Galaxies specific parameters from Source26.mm
+        // HUDF Galaxies specific parameters from Source26.cpp
         z_avg: 3.5, // Average redshift of HUDF galaxies (early universe)
         hubbleParam: 2.5e-18, // s^-1� (Hubble parameter at z~3.5)
         B_crit: 1e11, // T (critical magnetic field)
@@ -4692,7 +4692,7 @@ const PREDEFINED_SYSTEMS = {
         omega0: 1e-16, // s^-1� (galaxy rotation timescale)
         neutronFactor: 0, // Not applicable for starburst galaxy
         conduitScale: 1.5, // Galaxy scale
-        // NGC 1792 specific parameters from Source27.mm
+        // NGC 1792 specific parameters from Source27.cpp
         z_gal: 0.0095, // Galaxy redshift (nearby galaxy)
         hubbleParam: 2.19e-18, // s^-1� (Hubble parameter at z=0.0095)
         B_crit: 1e11, // T (critical magnetic field)
@@ -4733,7 +4733,7 @@ const PREDEFINED_SYSTEMS = {
         omega0: 1e-16, // s^-1� (galaxy rotation timescale)
         neutronFactor: 0, // Not applicable for galaxy
         conduitScale: 2.0, // Large galaxy scale
-        // Andromeda specific parameters from Source28.mm
+        // Andromeda specific parameters from Source28.cpp
         z_gal: -0.001, // Blueshift (Andromeda approaching us)
         hubbleParam: 2.269e-18, // s^-1� (H(z) at blueshift z=-0.001)
         B_crit: 1e11, // T (critical magnetic field)
@@ -4779,7 +4779,7 @@ const PREDEFINED_SYSTEMS = {
         omega0: 1e-16, // s^-1� (galaxy rotation timescale)
         neutronFactor: 0, // Not applicable for galaxy
         conduitScale: 1.5, // Major galaxy scale
-        // Sombrero specific parameters from Source29.mm
+        // Sombrero specific parameters from Source29.cpp
         z_gal: 0.0063, // Redshift (in Virgo Cluster)
         hubbleParam: 2.269e-18, // s^-1� (H(z) at z=0.0063)
         B_crit: 1e11, // T (critical magnetic field - 10^15 G converted)
@@ -4822,7 +4822,7 @@ const PREDEFINED_SYSTEMS = {
         omega0: 1.638e-4, // s^-1� (rotation frequency, 10.7 hour day)
         neutronFactor: 0, // Not applicable for gas giant
         conduitScale: 3.0, // Large planet scale
-        // Saturn specific parameters from Source30.mm
+        // Saturn specific parameters from Source30.cpp
         z_planet: 0.0, // No redshift (Solar System)
         hubbleParam: 2.184e-18, // s^-1� (H0 Hubble constant)
         B_crit: 1e11, // T (critical magnetic field)
@@ -4867,7 +4867,7 @@ const PREDEFINED_SYSTEMS = {
         omega0: 1e15, // rad/s (optical frequency)
         neutronFactor: 0, // Not applicable for nebula
         conduitScale: 2.5, // Large nebula scale
-        // M16 specific parameters from Source31.mm
+        // M16 specific parameters from Source31.cpp
         z_nebula: 0.0015, // Redshift (nearby nebula)
         hubbleParam: 70.0, // km/s/Mpc (Hubble constant)
         B_crit: 1e11, // T (critical magnetic field)
@@ -4919,7 +4919,7 @@ const PREDEFINED_SYSTEMS = {
         omega0: 1e15, // rad/s (synchrotron frequency)
         neutronFactor: 1, // Contains neutron star
         conduitScale: 2.0, // Supernova remnant scale
-        // Crab specific parameters from Source32.mm
+        // Crab specific parameters from Source32.cpp
         z_crab: 0.0015, // Redshift (nearby supernova remnant)
         hubbleParam: 70.0, // km/s/Mpc (Hubble constant)
         B_crit: 1e11, // T (critical magnetic field)
@@ -4971,7 +4971,7 @@ const PREDEFINED_SYSTEMS = {
         omega0: 2 * Math.PI / 3.76, // s^-1� (spin frequency from 3.76s period)
         neutronFactor: 1, // Pure neutron star
         conduitScale: 0.1, // Compact object scale
-        // SGR 1745-2900 Enhanced specific parameters from Source33.mm
+        // SGR 1745-2900 Enhanced specific parameters from Source33.cpp
         z_magnetar: 0.0, // Redshift (Galactic Center, approximately z=0)
         hubbleParam: 70.0, // km/s/Mpc (Hubble constant)
         B_crit: 1e11, // T (quantum critical magnetic field)
@@ -5018,16 +5018,16 @@ const PREDEFINED_SYSTEMS = {
     },
     'SGR_1745_2900_FREQUENCY': {
         name: 'SGR 1745-2900 Frequency (UQFF Module)',
-        mass: 1.5 * CONSTANTS.SOLAR_MASS, // kg (1.5 solar masses neutron star from Source34.mm)
+        mass: 1.5 * CONSTANTS.SOLAR_MASS, // kg (1.5 solar masses neutron star from Source34.cpp)
         radius: 1e4, // m (10 km neutron star radius)
         temperature: 1e6, // K (neutron star surface temperature)
         luminosity: 5e28, // W (magnetar X-ray luminosity)
         magneticField: 2e10, // T (2�10^10 T ultra-high field as frequency proxy)
-        velocity: 1e3, // m/s (expansion velocity from Source34.mm)
+        velocity: 1e3, // m/s (expansion velocity from Source34.cpp)
         omega0: 2 * Math.PI / 3.76, // s^-1� (spin frequency)
         neutronFactor: 1, // Pure neutron star
         conduitScale: 0.1, // Compact object scale
-        // SGR 1745-2900 Frequency-specific parameters from Source34.mm
+        // SGR 1745-2900 Frequency-specific parameters from Source34.cpp
         z_magnetar: 0.0, // Redshift (Galactic Center)
         c: 3e8, // m/s (speed of light)
         pi: Math.PI, // Pi constant
@@ -5045,7 +5045,7 @@ const PREDEFINED_SYSTEMS = {
         // THz hole pipeline parameters
         f_THz: 1e12, // Hz (THz frequency component)
         v_exp: 1e3, // m/s (expansion velocity)
-        // Frequency domain terms from Source34.mm
+        // Frequency domain terms from Source34.cpp
         f_vac_diff: 0.143, // Hz (vacuum differential frequency)
         f_super: 1.411e16, // Hz (superconductor frequency)
         f_aether: 1e4, // Hz (Aether-mediated frequency)
@@ -5083,11 +5083,11 @@ const PREDEFINED_SYSTEMS = {
         temperature: 6e6, // K (SMBH temperature estimate)
         luminosity: 1e36, // W (Sgr A* X-ray luminosity)
         magneticField: 1e3, // T (estimated SMBH magnetic field)
-        velocity: 1e5, // m/s (accretion/outflow velocity from Source35.mm)
+        velocity: 1e5, // m/s (accretion/outflow velocity from Source35.cpp)
         omega0: 1e-3, // s^-1� (low spin frequency for SMBH)
         neutronFactor: 0, // Not a neutron star - SMBH
         conduitScale: 10.0, // Large-scale SMBH
-        // Sagittarius A* Frequency-specific parameters from Source35.mm
+        // Sagittarius A* Frequency-specific parameters from Source35.cpp
         z_smbh: 0.0, // Redshift (Galactic Center)
         c: 3e8, // m/s (speed of light)
         pi: Math.PI, // Pi constant
@@ -5105,7 +5105,7 @@ const PREDEFINED_SYSTEMS = {
         // THz hole pipeline parameters - scaled for SMBH
         f_THz: 1e9, // Hz (scaled THz frequency component)
         v_exp: 1e5, // m/s (accretion/outflow velocity)
-        // Frequency domain terms from Source35.mm - SMBH scaled
+        // Frequency domain terms from Source35.cpp - SMBH scaled
         f_vac_diff: 0.143, // Hz (vacuum differential frequency)
         f_super: 1.411e13, // Hz (superconductor frequency - scaled down)
         f_aether: 1e3, // Hz (Aether-mediated frequency - scaled down)
@@ -5155,7 +5155,7 @@ const PREDEFINED_SYSTEMS = {
         omega0: 1e-2, // s^-1� (characteristic frequency for star formation)
         neutronFactor: 0, // Not a neutron star - starbirth region
         conduitScale: 100.0, // Very large-scale region
-        // NGC 2014/2020 Tapestry-specific parameters from Source36.mm
+        // NGC 2014/2020 Tapestry-specific parameters from Source36.cpp
         z_region: 0.00015, // Redshift (~500 kpc - Large Magellanic Cloud)
         c: 3e8, // m/s (speed of light)
         pi: Math.PI, // Pi constant
@@ -5173,7 +5173,7 @@ const PREDEFINED_SYSTEMS = {
         // THz hole pipeline parameters - scaled for starbirth
         f_THz: 1e11, // Hz (THz frequency component for stellar processes)
         v_exp: 1e6, // m/s (stellar wind expansion velocity)
-        // Frequency domain terms from Source36.mm - starbirth scaled
+        // Frequency domain terms from Source36.cpp - starbirth scaled
         f_vac_diff: 0.143, // Hz (vacuum differential frequency)
         f_super: 1.411e15, // Hz (superconductor frequency)
         f_aether: 1e2, // Hz (Aether-mediated frequency)
@@ -5224,14 +5224,14 @@ const PREDEFINED_SYSTEMS = {
         omega0: 1e-3, // s^-1� (general frequency)
         neutronFactor: 0, // General purpose - not neutron-specific
         conduitScale: 1.0, // General scale factor
-        // UQFF Resonance & Superconductive parameters from Source37.mm
+        // UQFF Resonance & Superconductive parameters from Source37.cpp
         z_general: 0.0, // Redshift (general application)
         c: 3e8, // m/s (speed of light)
         pi: Math.PI, // Pi constant
         E_vac: 7.09e-36, // J/m� (plasmotic vacuum energy density)
         hbar: 1.0546e-34, // J�s (reduced Planck constant)
         f_TRZ: 0.1, // Time-reversal correction factor
-        // Resonance parameters from Source37.mm
+        // Resonance parameters from Source37.cpp
         f_DPM: 1e12, // Hz (DPM intrinsic frequency - 1 THz)
         f_THz: 1e12, // Hz (THz hole frequency)
         f_aether: 1e4, // Hz (Aether-mediated frequency)
@@ -5245,7 +5245,7 @@ const PREDEFINED_SYSTEMS = {
         E_0: 6.381e-36, // J/m� (differential energy)
         f_vac_diff: 0.143, // Hz (vacuum differential frequency)
         V_sys: 4.189e12, // m� (system volume proxy)
-        // Superconductive parameters from Source37.mm
+        // Superconductive parameters from Source37.cpp
         B_crit: 1e11, // T (critical magnetic field)
         f_super: 1.411e16, // Hz (superconductor frequency)
         f_sc: 1.0, // Superconductive factor
@@ -5271,7 +5271,7 @@ const PREDEFINED_SYSTEMS = {
         // General-purpose parameters
         scalingFactor: 1.0, // General scaling factor for adaptation
         systemType: 'general', // System type identifier
-        applicableRange: '1-8 systems (galaxies, planets, nebulae, magnetars)', // Usage range per Source37.mm
+        applicableRange: '1-8 systems (galaxies, planets, nebulae, magnetars)', // Usage range per Source37.cpp
         frequencyScaling: 'per object', // Frequency scaling approach
         resonanceMode: 'oscillatory_frequency', // Primary mode
         superconductiveMode: 'field_correction' // SC correction mode
@@ -5287,7 +5287,7 @@ const PREDEFINED_SYSTEMS = {
         omega0: 1e-3, // s^-1� (general frequency)
         neutronFactor: 0, // General purpose - not neutron-specific
         conduitScale: 1.0, // General scale factor
-        // UQFF Compressed & Resonance parameters from Source38.mm
+        // UQFF Compressed & Resonance parameters from Source38.cpp
         z_general: 0.0, // Redshift (general application)
         c: 3e8, // m/s (speed of light)
         pi: Math.PI, // Pi constant
@@ -5334,11 +5334,11 @@ const PREDEFINED_SYSTEMS = {
         defaultTimeYears: 1e9, // years (1 Gyr default analysis time)
         defaultTimeSeconds: 1e9 * 3.156e7, // s (default time in seconds)
         // Compressed & Resonance specific parameters
-        systemRange: '10-16', // Target system range per Source38.mm
+        systemRange: '10-16', // Target system range per Source38.cpp
         compressedMode: 'streamlined_DPM_THz_vac_super', // Compressed approach
         resonanceMode: 'aether_U_g4i_osc_quantum_fluid_exp', // Resonance approach
         integrationMode: 'compressed_plus_resonance', // Combined integration
-        applicableObjects: 'nebulae, SMBH, starbirth', // Target objects per Source38.mm
+        applicableObjects: 'nebulae, SMBH, starbirth', // Target objects per Source38.cpp
         scalingApproach: 'frequency_per_system_type' // Scaling methodology
     },
     'CRAB_RESONANCE': {
@@ -5352,7 +5352,7 @@ const PREDEFINED_SYSTEMS = {
         omega0: 30.2 * 2 * Math.PI, // rad/s (30.2 Hz pulsar frequency)
         neutronFactor: 1.0, // Pulsar-driven system
         conduitScale: 1.0, // Standard scale
-        // UQFF Crab Resonance parameters from Source39.mm
+        // UQFF Crab Resonance parameters from Source39.cpp
         z_general: 0.0002, // Redshift for Crab Nebula (6500 ly)
         c: 3e8, // m/s (speed of light)
         pi: Math.PI, // Pi constant
@@ -5424,7 +5424,7 @@ const PREDEFINED_SYSTEMS = {
         omega0: 1e-2, // s^-1� (system frequency)
         neutronFactor: 0, // General purpose - not neutron-specific
         conduitScale: 1.0, // General scale factor
-        // UQFF Compressed & Resonance parameters for systems 18-24 from Source40.mm
+        // UQFF Compressed & Resonance parameters for systems 18-24 from Source40.cpp
         z_general: 0.0, // Redshift (general application)
         c: 3e8, // m/s (speed of light)
         pi: Math.PI, // Pi constant
@@ -5471,11 +5471,11 @@ const PREDEFINED_SYSTEMS = {
         defaultTimeYears: 1e9, // years (1 Gyr default analysis time)
         defaultTimeSeconds: 1e9 * 3.156e7, // s (default time in seconds)
         // Systems 18-24 specific parameters
-        systemRange: '18-24', // Target system range per Source40.mm
+        systemRange: '18-24', // Target system range per Source40.cpp
         compressedMode: 'scaled_DPM_THz_vac_super', // Compressed approach for 18-24
         resonanceMode: 'scaled_aether_U_g4i_osc_quantum_fluid_exp', // Resonance approach for 18-24
         integrationMode: 'compressed_plus_resonance_scaled', // Combined integration for 18-24
-        applicableObjects: 'Sombrero, Saturn, M16, Crab', // Target objects per Source40.mm
+        applicableObjects: 'Sombrero, Saturn, M16, Crab', // Target objects per Source40.cpp
         scalingApproach: 'frequency_scaled_per_system_18_24', // Scaling methodology for systems 18-24
         targetSystems: ['Sombrero Galaxy', 'Saturn Planet', 'M16 Eagle Nebula', 'Crab Nebula'], // Specific targets
         frequencyScaling: 'nebula_planet_remnant_optimized' // Frequency optimization
@@ -5491,7 +5491,7 @@ const PREDEFINED_SYSTEMS = {
         omega0: 0, // s^-1� (not applicable for universe)
         neutronFactor: 0, // Not neutron-specific
         conduitScale: 1.0, // Universe scale
-        // UQFF Universe Diameter parameters from Source41.mm
+        // UQFF Universe Diameter parameters from Source41.cpp
         z_general: 0.0, // Redshift (z=0 for observable universe)
         c: 3e8, // m/s (speed of light)
         pi: Math.PI, // Pi constant
@@ -5502,13 +5502,13 @@ const PREDEFINED_SYSTEMS = {
         Lambda: 1.1e-52, // m^-2� (cosmological constant)
         q: 1.602e-19, // C (proton charge)
         t_Hubble: 13.8e9 * 3.156e7, // s (13.8 Gyr)
-        // Universe-specific parameters from Source41.mm
+        // Universe-specific parameters from Source41.cpp
         M_sun: CONSTANTS.SOLAR_MASS, // kg (solar mass reference)
         M: 1e53 * CONSTANTS.SOLAR_MASS, // kg (total mass - baryonic + DM)
         M_visible: 0.73 * 1e53 * CONSTANTS.SOLAR_MASS, // kg (baryonic fraction ~4.9%, but incl. stars/galaxies)
         M_DM: 0.27 * 1e53 * CONSTANTS.SOLAR_MASS, // kg (dark matter fraction)
         r: 4.4e26, // m (half observable diameter)
-        // Hubble/cosmology parameters from Source41.mm
+        // Hubble/cosmology parameters from Source41.cpp
         H_0: 70.0, // km/s/Mpc (Hubble constant)
         H0: 70.0, // km/s/Mpc (Hubble constant)
         Mpc_to_m: 3.086e22, // m/Mpc (conversion factor)
@@ -5518,29 +5518,29 @@ const PREDEFINED_SYSTEMS = {
         Omega_b: 0.049, // Baryon density parameter
         Omega_Lambda: 0.7, // Dark energy density parameter
         t: 13.8e9 * 3.156e7, // s (default t=13.8 Gyr)
-        // Cosmic dynamics parameters from Source41.mm
+        // Cosmic dynamics parameters from Source41.cpp
         rho_fluid: 8.6e-27, // kg/m� (critical density)
         V_volume: 1e3, // m� (arbitrary, scaled irrelevant)
         v_exp: 70.0 * 1e3 / 3.086e22 * 4.4e26, // m/s (Hubble flow v = H0 * r)
         delta_rho: 0.1 * 8.6e-27, // kg/m� (density perturbation)
         rho_mean: 8.6e-27, // kg/m� (mean density)
-        // EM/magnetic/superconductivity (cosmic fields) from Source41.mm
+        // EM/magnetic/superconductivity (cosmic fields) from Source41.cpp
         B: 1e-15, // T (cosmic magnetic field estimate)
         B_crit: 1e11, // T (critical magnetic field)
-        // Quantum terms from Source41.mm
+        // Quantum terms from Source41.cpp
         Delta_x: 1e-10, // m (fundamental scale proxy)
         integral_psi: 1.0, // Normalized wavefunction integral
-        // Resonant/oscillatory terms (cosmic microwave background scale) from Source41.mm
+        // Resonant/oscillatory terms (cosmic microwave background scale) from Source41.cpp
         A_amplitude: 1e-10, // Amplitude
         k_wave: 1e20, // m^-2� (short wavelength proxy)
         omega_osc: 1e11, // rad/s (CMB frequency proxy)
         x_position: 0.0, // m (position coordinate)
-        // Ug subterms (initialized placeholders) from Source41.mm
+        // Ug subterms (initialized placeholders) from Source41.cpp
         Ug1: 0.0, // Initialized in computation
         Ug2: 0.0, // Set to 0 for universe
         Ug3: 0.0, // Set to 0 for universe
         Ug4: 0.0, // Computed as Ug1 * f_sc
-        // Scale factors from Source41.mm
+        // Scale factors from Source41.cpp
         scale_macro: 1e-12, // Macro scale factor
         f_sc: 1.0, // Superconductive factor
         // Physical constants for universe calculations
@@ -5587,7 +5587,7 @@ const PREDEFINED_SYSTEMS = {
         omega0: 1e15, // rad/s (Lyman alpha frequency)
         neutronFactor: 0, // Not neutron-specific
         conduitScale: 1.0, // Atomic scale
-        // UQFF Hydrogen Atom parameters from Source42.mm
+        // UQFF Hydrogen Atom parameters from Source42.cpp
         z_general: 0.0, // Redshift (z=0 for atomic scale)
         c: 3e8, // m/s (speed of light)
         pi: Math.PI, // Pi constant
@@ -5598,42 +5598,42 @@ const PREDEFINED_SYSTEMS = {
         Lambda: 1.1e-52, // m^-2� (cosmological constant, negligible)
         q: 1.602e-19, // C (electron charge)
         t_Hubble: 13.8e9 * 3.156e7, // s (13.8 Gyr, irrelevant but included)
-        // Hydrogen-specific parameters from Source42.mm
+        // Hydrogen-specific parameters from Source42.cpp
         M_sun: CONSTANTS.SOLAR_MASS, // kg (solar mass reference)
         M: 1.673e-27, // kg (proton mass)
         M_visible: 1.673e-27, // kg (visible mass = proton)
         M_DM: 0.0, // kg (no dark matter at atomic scale)
         r: 5.29e-11, // m (Bohr radius)
-        // Hubble/cosmology parameters (negligible at atomic scale) from Source42.mm
+        // Hubble/cosmology parameters (negligible at atomic scale) from Source42.cpp
         H0: 70.0, // km/s/Mpc (Hubble constant)
         Mpc_to_m: 3.086e22, // m/Mpc (conversion factor)
         z: 0.0, // Redshift (z=0 for atomic)
         Omega_m: 0.3, // Matter density parameter
         Omega_Lambda: 0.7, // Dark energy density parameter
         t: 1e-15, // s (atomic timescale proxy)
-        // Electron/orbital dynamics from Source42.mm
+        // Electron/orbital dynamics from Source42.cpp
         rho_fluid: 1e-25, // kg/m� (electron cloud density estimate)
         V_volume: (4.0/3.0) * Math.PI * Math.pow(5.29e-11, 3), // m� (orbital volume)
         v_orbital: 2.2e6, // m/s (electron orbital velocity)
         delta_rho: 0.1 * 1e-25, // kg/m� (density perturbation)
         rho_mean: 1e-25, // kg/m� (mean electron density)
-        // EM/magnetic/superconductivity (atomic scale) from Source42.mm
+        // EM/magnetic/superconductivity (atomic scale) from Source42.cpp
         B: 1e-4, // T (internal atomic magnetic field estimate)
         B_crit: 1e11, // T (critical magnetic field)
-        // Quantum terms (dominant at atomic scale) from Source42.mm
+        // Quantum terms (dominant at atomic scale) from Source42.cpp
         Delta_x: 1e-10, // m (Compton wavelength proxy)
         integral_psi: 1.0, // Normalized ground state wavefunction
-        // Resonant/oscillatory terms (atomic transitions) from Source42.mm
+        // Resonant/oscillatory terms (atomic transitions) from Source42.cpp
         A_amplitude: 1e-10, // Amplitude
         k_wave: 1e11, // m^-2� (UV wavelength ~1e-8 m)
         omega_osc: 1e15, // rad/s (Lyman alpha frequency)
         x_position: 0.0, // m (position coordinate)
-        // Ug subterms (initialized placeholders) from Source42.mm
+        // Ug subterms (initialized placeholders) from Source42.cpp
         Ug1: 0.0, // Computed dynamically
         Ug2: 0.0, // Weak for hydrogen atom
         Ug3: 0.0, // Weak for hydrogen atom
         Ug4: 0.0, // Computed as Ug1 * f_sc
-        // Scale factors from Source42.mm
+        // Scale factors from Source42.cpp
         scale_macro: 1e-12, // Adjusted for atomic scale
         f_sc: 1.0, // Superconductive factor
         // Physical constants for atomic calculations
@@ -5666,17 +5666,17 @@ const PREDEFINED_SYSTEMS = {
         omega0: 2.47e15, // rad/s (Lyman alpha frequency)
         neutronFactor: 0, // Not neutron-specific
         conduitScale: 1.0, // Atomic resonance scale
-        // UQFF Hydrogen PToE Resonance parameters from Source43.mm
+        // UQFF Hydrogen PToE Resonance parameters from Source43.cpp
         z_general: 0.0, // Redshift (z=0 for atomic scale)
         c: 3e8, // m/s (speed of light)
         pi: Math.PI, // Pi constant
         E_vac: 7.09e-36, // J/m� (plasmotic vacuum energy density)
         hbar: 1.0546e-34, // J�s (reduced Planck constant)
         f_TRZ: 0.1, // Time-reversal correction factor
-        // Hydrogen Atom parameters from Source43.mm
+        // Hydrogen Atom parameters from Source43.cpp
         r: 5.29e-11, // m (Bohr radius)
         V_sys: (4.0/3.0) * Math.PI * Math.pow(5.29e-11, 3), // m� (orbital volume)
-        // Resonance parameters (spectral lines) from Source43.mm
+        // Resonance parameters (spectral lines) from Source43.cpp
         f_DPM: 1e15, // Hz (Lyman alpha ~2.47e15 Hz scaled)
         f_THz: 1e15, // Hz (THz proxy for transitions)
         f_aether: 1e4, // Hz (Aether-mediated resonance)
@@ -5690,21 +5690,21 @@ const PREDEFINED_SYSTEMS = {
         v_exp: 2.2e6, // m/s (electron velocity)
         E_0: 6.381e-36, // J/m� (energy density)
         f_vac_diff: 0.143, // Hz (vacuum differential frequency)
-        // Superconductive resonance integrated from Source43.mm
+        // Superconductive resonance integrated from Source43.cpp
         B_crit: 1e11, // T (critical magnetic field)
         f_sc: 1.0, // Superconductive factor
         B_atomic: 1e-4, // T (internal atomic field)
-        // Oscillatory/resonant from Source43.mm
+        // Oscillatory/resonant from Source43.cpp
         k_wave: 1e11, // m^-2� (UV wavelength)
         omega_osc: 2.47e15, // rad/s (Lyman alpha)
         x_position: 0.0, // m (position coordinate)
         A_amplitude: 1e-10, // Amplitude
-        // Fluid/quantum proxies from Source43.mm
+        // Fluid/quantum proxies from Source43.cpp
         rho_fluid: 1e-25, // kg/m� (electron cloud density)
         V_volume: (4.0/3.0) * Math.PI * Math.pow(5.29e-11, 3), // m� (volume)
         delta_rho: 0.1 * 1e-25, // kg/m� (density perturbation)
         rho_mean: 1e-25, // kg/m� (mean density)
-        // Quantum from Source43.mm
+        // Quantum from Source43.cpp
         Delta_x: 5.29e-11, // m (Bohr radius scale)
         integral_psi: 1.0, // Normalized wavefunction integral
         // Physical constants for PToE resonance calculations
@@ -5740,7 +5740,7 @@ const PREDEFINED_SYSTEMS = {
         omega0: 1e15, // s^-1� (high frequency oscillations)
         neutronFactor: 0, // Not applicable for nebula
         conduitScale: 1e17, // Nebula scale (~55 ly)
-        // Lagoon Nebula specific parameters from Source44.mm
+        // Lagoon Nebula specific parameters from Source44.cpp
         z_nebula: 0.0013, // Redshift
         hubbleParam: 2.184e-18, // s^-1� (H0 Hubble constant)
         B_crit: 1e11, // T (critical magnetic field)
@@ -5798,7 +5798,7 @@ const PREDEFINED_SYSTEMS = {
         omega0: 1e15, // s^-1� (high frequency oscillations)
         neutronFactor: 0, // Not applicable for spiral galaxies
         conduitScale: 1e20, // Galactic scale (~30 kpc)
-        // Spiral-Supernova specific parameters from Source45.mm
+        // Spiral-Supernova specific parameters from Source45.cpp
         z_galaxy: 0.5, // Typical redshift for supernova observations
         hubbleParam: 2.367e-18, // s^-1� (H0=73 km/s/Mpc - SH0ES)
         B_crit: 1e11, // T (critical magnetic field)
@@ -5856,7 +5856,7 @@ const PREDEFINED_SYSTEMS = {
         omega0: 1e15, // s^-1� (shock front oscillations)
         neutronFactor: 0, // Not applicable for planetary nebula
         conduitScale: 9.46e15, // m (nebular scale - 1 ly)
-        // NGC 6302 Bug Nebula specific parameters from Source46.mm
+        // NGC 6302 Bug Nebula specific parameters from Source46.cpp
         z: 0.00095, // Redshift (nearby in Milky Way)
         hubbleParam: 2.18e-18, // s^-1� (H0=67.15 km/s/Mpc)
         B_crit: 1e11, // T (critical magnetic field)
@@ -5901,7 +5901,7 @@ const PREDEFINED_SYSTEMS = {
         integrationMode: 'full_UQFF_NGC6302_evolution' // Complete Bug Nebula integration
     },
     
-    // 35th System: Source47.mm - NGC 6302 Bug Nebula Resonance Evolution
+    // 35th System: Source47.cpp - NGC 6302 Bug Nebula Resonance Evolution
     NGC6302_RESONANCE: {
         name: 'NGC 6302 Bug Nebula - Resonance Evolution (UQFF Module)',
         mass: 3.98e30, // kg (~2 M? - ejected material)
@@ -5913,7 +5913,7 @@ const PREDEFINED_SYSTEMS = {
         omega0: 1e12, // s^-1� (DPM frequency)
         neutronFactor: 0, // Not applicable for planetary nebula
         conduitScale: 1.42e16, // m (nebular scale - 1.5 ly)
-        // NGC 6302 Resonance specific parameters from Source47.mm
+        // NGC 6302 Resonance specific parameters from Source47.cpp
         z: 0.00095, // Redshift (nearby in Milky Way)
         hubbleParam: 2.18e-18, // s^-1� (H0=67.15 km/s/Mpc)
         // Frequency/Resonance parameters
@@ -5969,7 +5969,7 @@ const PREDEFINED_SYSTEMS = {
         integrationMode: 'full_UQFF_NGC6302_resonance' // Complete resonance integration
     },
     
-    // 36th System: Source48.mm - Orion Nebula MUGE Evolution
+    // 36th System: Source48.cpp - Orion Nebula MUGE Evolution
     ORION_NEBULA: {
         name: 'Orion Nebula - Complete MUGE Evolution (UQFF+SM Module)',
         mass: 3.978e33, // kg (~2000 M? total mass)
@@ -5981,7 +5981,7 @@ const PREDEFINED_SYSTEMS = {
         omega0: 1e-15, // s^-1� (slow nebular rotation)
         neutronFactor: 0, // Not applicable for H II region
         conduitScale: 1.18e17, // m (nebular scale - 12.5 ly)
-        // Orion Nebula specific parameters from Source48.mm
+        // Orion Nebula specific parameters from Source48.cpp
         z: 0.0004, // Redshift (nearby)
         hubbleParam: 2.268e-18, // s^-1� (H0=70 km/s/Mpc)
         B_crit: 1e11, // T (critical magnetic field)
@@ -6000,7 +6000,7 @@ const PREDEFINED_SYSTEMS = {
         integrationMode: 'full_UQFF_orion_evolution' // Complete evolutionary integration
     },
     
-    // 37th System: Source49.mm - Multi-System Compressed+Resonance UQFF Framework
+    // 37th System: Source49.cpp - Multi-System Compressed+Resonance UQFF Framework
     COMPRESSED_RESONANCE_UQFF34: {
         name: 'Multi-System Compressed+Resonance UQFF Framework (Systems 26-28, 30-32, 34)',
         // Multi-system support - parameters set dynamically via setSystemVariables()
@@ -6040,10 +6040,10 @@ const PREDEFINED_SYSTEMS = {
         integrationMode: 'compressed_resonance_multi_system' // Multi-system integration
     },
     
-    // 38th System: Source50.mm - Dynamic Variable UQFF Compressed & Resonance Module
+    // 38th System: Source50.cpp - Dynamic Variable UQFF Compressed & Resonance Module
     COMPRESSED_RESONANCE_UQFF50: {
         name: 'Dynamic Variable UQFF Compressed & Resonance Module with Predefined Astronomical Systems',
-        // Physical constants from Source50.mm
+        // Physical constants from Source50.cpp
         G: 6.6743e-11, // m�/kg�s� (gravitational constant)
         H0: 2.269e-18, // s^-1� (Hubble parameter)
         c: 2.998e8, // m/s (speed of light)
@@ -6153,7 +6153,7 @@ const PREDEFINED_SYSTEMS = {
         integrationMode: 'dynamic_compressed_resonance_astronomical' // Dynamic multi-system framework
     },
     
-    // 39th System: Source52.mm - Multi-System UQFF Module with Compressed & Resonance Modes
+    // 39th System: Source52.cpp - Multi-System UQFF Module with Compressed & Resonance Modes
     MULTI_UQFF52: {
         name: 'Multi-System UQFF Module with Compressed & Resonance Modes for 8 Astrophysical Systems',
         // Physical constants from MultiUQFFModule
@@ -6273,7 +6273,7 @@ const PREDEFINED_SYSTEMS = {
         integrationMode: 'multi_system_compressed_resonance_uqff' // Multi-system dual-mode framework
     },
     
-    // 40th System: Source54.mm - Young Stars Outflows UQFF Module
+    // 40th System: Source54.cpp - Young Stars Outflows UQFF Module
     YOUNG_STARS_OUTFLOWS_54: {
         name: 'Young Stars Sculpting Gas with Powerful Outflows Evolution (NGC 346-like)',
         // Basic physical constants
@@ -6355,7 +6355,7 @@ const PREDEFINED_SYSTEMS = {
         integrationMode: 'young_stars_outflows_uqff' // Young stars gas sculpting framework
     },
 
-    // Big Bang Gravity Evolution UQFF Module (from Source56.mm) - 41st System
+    // Big Bang Gravity Evolution UQFF Module (from Source56.cpp) - 41st System
     BIG_BANG_GRAVITY_56: {
         // Primary cosmic evolution parameters
         M_total: 1e53, // kg - Total mass of observable universe
@@ -6404,7 +6404,7 @@ const PREDEFINED_SYSTEMS = {
         integrationMode: 'big_bang_gravity_uqff' // Cosmic evolution framework
     },
 
-    // Multi-Compressed UQFF Module (from Source57.mm) - 42nd System
+    // Multi-Compressed UQFF Module (from Source57.cpp) - 42nd System
     MULTI_COMPRESSED_UQFF_57: {
         // Multi-system framework parameters (7 systems supported)
         supportedSystems: ['MagnetarSGR1745', 'SagittariusA', 'TapestryStarbirth', 'Westerlund2', 'PillarsCreation', 'RingsRelativity', 'UniverseGuide'],
@@ -6538,7 +6538,7 @@ const PREDEFINED_SYSTEMS = {
         integrationMode: 'multi_compressed_uqff' // Multi-system compressed framework
     },
 
-    // Multi-System UQFF Compression Module (from Source60.mm) - 43rd System
+    // Multi-System UQFF Compression Module (from Source60.cpp) - 43rd System
     MULTI_UQFF_COMPRESSION_60: {
         // 19-system comprehensive framework
         supportedSystems: ['MagnetarSGR1745', 'SagittariusA', 'TapestryStarbirth', 'Westerlund2', 'PillarsCreation', 
@@ -6796,7 +6796,7 @@ const PREDEFINED_SYSTEMS = {
         integrationMode: 'comprehensive_uqff_compression' // 19-system comprehensive compression
     },
 
-    // System 45: UFE Orb Experiment Module (Source64.mm) - Red Dwarf Reactor Plasma Orb UQFF Framework
+    // System 45: UFE Orb Experiment Module (Source64.cpp) - Red Dwarf Reactor Plasma Orb UQFF Framework
     UFE_ORB_EXPERIMENT_64: {
         // Red Dwarf Reactor Plasma Orb Experiment parameters
         name: 'UFE Red Dwarf Reactor Plasma Orb Experiment',
@@ -6936,7 +6936,7 @@ const PREDEFINED_SYSTEMS = {
         quantumLevelIntegration: true // 26-level quantum framework
     },
     
-    // System 45: Nebular UQFF Module (Source65.mm) - Nebular Cloud Analysis with Drawing 32 & Red Dwarf Compression_B
+    // System 45: Nebular UQFF Module (Source65.cpp) - Nebular Cloud Analysis with Drawing 32 & Red Dwarf Compression_B
     // Advanced UQFF implementation for nebular dynamics: dust trails, pseudo-monopoles, pillars, star geometries
     // Integrates LENR, Higgs, NGC 346 star formation with equations 14-33 and 26 quantum levels
     NEBULAR_UQFF_65: {
@@ -7084,7 +7084,7 @@ const PREDEFINED_SYSTEMS = {
         }
     },
     
-    // System 46: Red Dwarf UQFF Module (Source66.mm) - Red Dwarf Compression_C with LENR, Collider Higgs, NGC 346, Pi Calculations
+    // System 46: Red Dwarf UQFF Module (Source66.cpp) - Red Dwarf Compression_C with LENR, Collider Higgs, NGC 346, Pi Calculations
     // Advanced UQFF implementation for equations 1-10, 15, 20 with Pi series, neutron rates, and magnetic energy calculations
     // Integrates LENR metallic hydride, exploding wire, solar corona, Higgs boson physics, and Basel series computations
     RED_DWARF_UQFF_66: {
@@ -7267,7 +7267,7 @@ const PREDEFINED_SYSTEMS = {
         }
     },
     
-    // System 47: Inertia UQFF Module (Source67.mm) - Inertia Papers Quantum Waves with Operator Theory
+    // System 47: Inertia UQFF Module (Source67.cpp) - Inertia Papers Quantum Waves with Operator Theory
     // Advanced UQFF implementation for equations 1-7 with wave functions, inertial operators, and bosonic energy
     // Integrates quantum waves, universal inertia, magnetic Hamiltonian, and three-leg proofset validation
     INERTIA_UQFF_67: {
@@ -7390,7 +7390,7 @@ const PREDEFINED_SYSTEMS = {
         }
     },
     
-    // System 48: Hydrogen UQFF Module (Source68.mm) - Red Dwarf Compression_E with Compressed Space Dynamics
+    // System 48: Hydrogen UQFF Module (Source68.cpp) - Red Dwarf Compression_E with Compressed Space Dynamics
     // Advanced UQFF implementation for hydrogen levels n=1-4 with E_space scaling and three-leg proofset validation
     // Integrates compressed space dynamics, matter creation, and precise Higgs/precession factor calculations
     HYDROGEN_UQFF_68: {
@@ -7508,7 +7508,7 @@ const PREDEFINED_SYSTEMS = {
         }
     },
     
-    // System 49: UQFF Compression Module (Source69.mm) - Multi-System Compressed UQFF Framework
+    // System 49: UQFF Compression Module (Source69.cpp) - Multi-System Compressed UQFF Framework
     // Advanced UQFF implementation for multi-system astrophysical evolution with compressed equations
     // Supports 19+ systems including Magnetar SGR 1745-2900, Sagittarius A*, Tapestry, Westerlund 2, Pillars of Creation
     UQFF_COMPRESSION_69: {
@@ -7674,7 +7674,7 @@ const PREDEFINED_SYSTEMS = {
         }
     },
 
-    // System 50: M51 Galaxy Module (Source70.mm) - Whirlpool Galaxy UQFF Framework  
+    // System 50: M51 Galaxy Module (Source70.cpp) - Whirlpool Galaxy UQFF Framework  
     M51_GALAXY_70: {
         mass: 1.6e11 * 1.989e30, // kg (1.6e11 solar masses - M51 total mass)
         radius: 23.58e3 * 3.086e19, // m (23.58 kpc - M51 diameter)
@@ -7810,7 +7810,7 @@ const PREDEFINED_SYSTEMS = {
         }
     },
 
-    // System 51: NGC 1316 Galaxy Module (Source71.mm) - Cosmic Dust Bunnies UQFF Framework  
+    // System 51: NGC 1316 Galaxy Module (Source71.cpp) - Cosmic Dust Bunnies UQFF Framework  
     NGC1316_GALAXY_71: {
         mass: 5e11 * 1.989e30, // kg (5e11 solar masses - NGC 1316 total mass)
         radius: 46e3 * 3.086e19, // m (46 kpc - NGC 1316 extent)
@@ -7953,7 +7953,7 @@ const PREDEFINED_SYSTEMS = {
         }
     },
 
-    // System 52: V838 Monocerotis Light Echo Module (Source72.mm) - Light Echo Intensity UQFF Framework
+    // System 52: V838 Monocerotis Light Echo Module (Source72.cpp) - Light Echo Intensity UQFF Framework
     V838MON_LIGHT_ECHO_72: {
         mass: 8 * 1.989e30, // kg (8 solar masses - V838 Mon stellar mass)
         radius: 6.1e3 * 3.086e19, // m (6.1 kpc distance for light echo calculations)
@@ -8065,7 +8065,7 @@ const PREDEFINED_SYSTEMS = {
         }
     },
 
-    // System 57: NGC 1300 Barred Spiral Galaxy Module (Source73.mm) - Barred Galaxy UQFF Framework
+    // System 57: NGC 1300 Barred Spiral Galaxy Module (Source73.cpp) - Barred Galaxy UQFF Framework
     NGC1300_BARRED_GALAXY_73: {
         mass: 1e11 * 1.989e30, // kg (1e11 solar masses total)
         radius: 11.79e3 * 3.086e19, // m (11.79 kpc galactic radius)
@@ -8193,7 +8193,7 @@ const PREDEFINED_SYSTEMS = {
         }
     },
 
-    // System 58: Multi-System UQFF Compressed & Resonance Module (Source74.mm) - Universal UQFF Framework
+    // System 58: Multi-System UQFF Compressed & Resonance Module (Source74.cpp) - Universal UQFF Framework
     UQFF_COMPRESSED_RESONANCE_74: {
         mass: 1e41, // kg (default universal scale)
         radius: 1e20, // m (default scale)
@@ -8370,7 +8370,7 @@ const PREDEFINED_SYSTEMS = {
         }
     },
 
-    // System 59: NGC 2264 Cone Nebula UQFF Module (Source76.mm) - Stellar Wind & Protostar Formation
+    // System 59: NGC 2264 Cone Nebula UQFF Module (Source76.cpp) - Stellar Wind & Protostar Formation
     NGC2264_CONE_NEBULA_76: {
         mass: 1.989e32, // kg (100 M? total)
         radius: 3.31e16, // m (~3.5 light-years)
@@ -8489,7 +8489,7 @@ const PREDEFINED_SYSTEMS = {
         }
     },
 
-    // System 60: UGC 10214 Tadpole Galaxy UQFF Module (Source77.mm) - Tidal Tail & Minor Merger
+    // System 60: UGC 10214 Tadpole Galaxy UQFF Module (Source77.cpp) - Tidal Tail & Minor Merger
     UGC10214_TADPOLE_GALAXY_77: {
         mass: 1.989e41, // kg (1�10�� M? total)
         radius: 1.69e22, // m (~55 kpc)
@@ -8613,7 +8613,7 @@ const PREDEFINED_SYSTEMS = {
         }
     },
 
-    // System 61: NGC 4676 The Mice Galaxies UQFF Module (Source78.mm) - Galactic Collision & THz Enhancement
+    // System 61: NGC 4676 The Mice Galaxies UQFF Module (Source78.cpp) - Galactic Collision & THz Enhancement
     NGC4676_MICE_GALAXIES_78: {
         mass: 1.989e41, // kg (1�10�� M? total system)
         radius: 1.543e22, // m (~50 kpc)
@@ -8749,7 +8749,7 @@ const PREDEFINED_SYSTEMS = {
         }
     },
 
-    // System 62: NGC 6537 Red Spider Nebula UQFF Module (Source79.mm) - Frequency-Driven Nebular Dynamics
+    // System 62: NGC 6537 Red Spider Nebula UQFF Module (Source79.cpp) - Frequency-Driven Nebular Dynamics
     NGC6537_RED_SPIDER_79: {
         mass: 1.989e30, // kg (1 M? - white dwarf central star)
         radius: 7.1e15, // m (nebula radius)
@@ -8850,7 +8850,7 @@ const PREDEFINED_SYSTEMS = {
         }
     },
 
-    // System 63: SMBH Binary UQFF Module (Source80.mm) - Frequency-Driven Binary Black Hole Dynamics
+    // System 63: SMBH Binary UQFF Module (Source80.cpp) - Frequency-Driven Binary Black Hole Dynamics
     SMBH_BINARY_80: {
         mass: 1.1934e37, // kg (6�106 M? total system)
         radius: 9.461e16, // m (~0.1 ly initial separation)
@@ -8971,7 +8971,7 @@ const PREDEFINED_SYSTEMS = {
         }
     },
 
-    // System 64: NGC 346 Nebula UQFF Module (Source81.mm) - Complete UQFF Nebular Dynamics
+    // System 64: NGC 346 Nebula UQFF Module (Source81.cpp) - Complete UQFF Nebular Dynamics
     NGC346_NEBULA_81: {
         mass: 2.3868e33, // kg (1200 M? total system: 1000 visible + 200 DM)
         radius: 1.543e17, // m (5 pc)
@@ -9105,7 +9105,7 @@ const PREDEFINED_SYSTEMS = {
         }
     },
 
-    // System 65: SMBH M-s Relation UQFF Module (Source82.mm) - Supermassive Black Hole M-s Relation Dynamics
+    // System 65: SMBH M-s Relation UQFF Module (Source82.cpp) - Supermassive Black Hole M-s Relation Dynamics
     SMBH_UQFF_82: {
         mass: 1.989e42, // kg (1e12 M? default SMBH mass)
         radius: 3.086e19, // m (1 kpc R_bulge)
@@ -9228,7 +9228,7 @@ const PREDEFINED_SYSTEMS = {
         }
     },
 
-    // System 66: LENR UQFF Module (Source83.mm) - Low Energy Nuclear Reactions UQFF Dynamics
+    // System 66: LENR UQFF Module (Source83.cpp) - Low Energy Nuclear Reactions UQFF Dynamics
     LENR_UQFF_83: {
         mass: 1.673e-27, // kg (proton mass reference)
         radius: 5.29e-11, // m (Bohr radius)
@@ -9370,7 +9370,7 @@ const PREDEFINED_SYSTEMS = {
         }
     },
 
-    // System 67: LENR Calibration UQFF Module (Source84.mm) - Neutron Production Calibration Constant k_?
+    // System 67: LENR Calibration UQFF Module (Source84.cpp) - Neutron Production Calibration Constant k_?
     LENR_CALIB_UQFF_84: {
         mass: 1.673e-27, // kg (neutron mass reference)
         radius: 1e-10, // m (characteristic length scale)
@@ -9490,7 +9490,7 @@ const PREDEFINED_SYSTEMS = {
         }
     },
     
-    // NGC346 UQFF Analysis (from Source85.mm)
+    // NGC346 UQFF Analysis (from Source85.cpp)
     NGC346_UQFF_85: {
         // Universal constants
         G: 6.6743e-11,                          // m� kg?� s^-1�
@@ -9565,7 +9565,7 @@ const PREDEFINED_SYSTEMS = {
         }
     },
     
-    // MUGE UQFF Analysis (from Source86.mm)
+    // MUGE UQFF Analysis (from Source86.cpp)
     MUGE_UQFF_86: {
         // Universal constants
         G: 6.6743e-11,                          // m� kg?� s^-1�
@@ -9747,7 +9747,7 @@ const PREDEFINED_SYSTEMS = {
         }
     },
     
-    // MUGE Resonance UQFF Analysis (from Source87.mm)
+    // MUGE Resonance UQFF Analysis (from Source87.cpp)
     MUGE_RESONANCE_UQFF_87: {
         // Universal constants
         G: 6.6743e-11,                          // m� kg?� s^-1�
@@ -9979,7 +9979,7 @@ const PREDEFINED_SYSTEMS = {
         }
     },
     
-    // Andromeda Enhanced UQFF Analysis (from Source88.mm)
+    // Andromeda Enhanced UQFF Analysis (from Source88.cpp)
     ANDROMEDA_ENHANCED_UQFF_88: {
         // Universal constants
         G: 6.6743e-11,                          // m� kg?� s^-1�
@@ -10065,7 +10065,7 @@ const PREDEFINED_SYSTEMS = {
         }
     },
     
-    // Aether Coupling UQFF Analysis (from Source89.mm)
+    // Aether Coupling UQFF Analysis (from Source89.cpp)
     AETHER_COUPLING_UQFF_89: {
         // Universal constants
         c: 2.998e8,                             // m/s (speed of light)
@@ -10122,7 +10122,7 @@ const PREDEFINED_SYSTEMS = {
         }
     },
     
-    // Background Aether UQFF Analysis (from Source90.mm)
+    // Background Aether UQFF Analysis (from Source90.cpp)
     BACKGROUND_AETHER_UQFF_90: {
         // Universal constants
         c: 2.998e8,                             // m/s (speed of light)
@@ -10184,11 +10184,11 @@ const PREDEFINED_SYSTEMS = {
     }
 };
 
-// SGR 0501+4516 Specialized Analysis (from Source14.mm)
+// SGR 0501+4516 Specialized Analysis (from Source14.cpp)
 function analyzeSGR0501_4516(timePoints = [0, 86400 * 365, 86400 * 365 * 10, 86400 * 365 * 5000]) {
     const system = PREDEFINED_SYSTEMS['SGR_0501_4516'];
     console.log(`\n?? ANALYZING SGR 0501+4516 MAGNETAR (Time-Reversal Magnetar)`);
-    console.log(`?? Enhanced Parameters from Source14.mm:`);
+    console.log(`?? Enhanced Parameters from Source14.cpp:`);
     console.log(`   Mass: ${system.mass.toExponential(2)} kg (1.4 M?)`);
     console.log(`   Radius: ${system.radius.toExponential(2)} m (20 km - larger)`);
     console.log(`   Magnetic Field: ${system.magneticField.toExponential(2)} T (weaker than SGR 1745-2900)`);
@@ -10243,11 +10243,11 @@ function analyzeSGR0501_4516(timePoints = [0, 86400 * 365, 86400 * 365 * 10, 864
     };
 }
 
-// SMBH Sagittarius A* Specialized Analysis (from Source15.mm)
+// SMBH Sagittarius A* Specialized Analysis (from Source15.cpp)
 function analyzeSMBHSgrAStar(timePoints = [0, 86400 * 365 * 1e6, 86400 * 365 * 4.5e9, 86400 * 365 * 13.8e9]) {
     const system = PREDEFINED_SYSTEMS['SMBH_SGR_A_STAR'];
     console.log(`\n?? ANALYZING SAGITTARIUS A* SUPERMASSIVE BLACK HOLE`);
-    console.log(`?? Enhanced Parameters from Source15.mm:`);
+    console.log(`?? Enhanced Parameters from Source15.cpp:`);
     console.log(`   Mass (initial): ${(system.mass / CONSTANTS.SOLAR_MASS).toExponential(2)} M?`);
     console.log(`   Schwarzschild Radius: ${system.radius.toExponential(2)} m`);
     console.log(`   Magnetic Field (initial): ${system.B0_G.toExponential(2)} G`);
@@ -10308,11 +10308,11 @@ function analyzeSMBHSgrAStar(timePoints = [0, 86400 * 365 * 1e6, 86400 * 365 * 4
     };
 }
 
-// Starbirth Tapestry Specialized Analysis (from Source16.mm)
+// Starbirth Tapestry Specialized Analysis (from Source16.cpp)
 function analyzeStarbirthTapestry(timePoints = [0, 86400 * 365 * 1e6, 86400 * 365 * 2.5e6, 86400 * 365 * 5e6]) {
     const system = PREDEFINED_SYSTEMS['STARBIRTH_TAPESTRY'];
     console.log(`\n?? ANALYZING TAPESTRY OF BLAZING STARBIRTH (NGC 2014 & NGC 2020)`);
-    console.log(`?? Enhanced Parameters from Source16.mm:`);
+    console.log(`?? Enhanced Parameters from Source16.cpp:`);
     console.log(`   Initial Mass: ${(system.mass / CONSTANTS.SOLAR_MASS).toFixed(0)} M?`);
     console.log(`   Region Radius: ${(system.radius / 9.461e15).toFixed(1)} ly`);
     console.log(`   Magnetic Field: ${system.magneticField.toExponential(2)} T`);
@@ -10375,11 +10375,11 @@ function analyzeStarbirthTapestry(timePoints = [0, 86400 * 365 * 1e6, 86400 * 36
     };
 }
 
-// Westerlund 2 Specialized Analysis (from Source17.mm)
+// Westerlund 2 Specialized Analysis (from Source17.cpp)
 function analyzeWesterlund2(timePoints = [0, 86400 * 365 * 0.5e6, 86400 * 365 * 1e6, 86400 * 365 * 2e6]) {
     const system = PREDEFINED_SYSTEMS['WESTERLUND_2'];
     console.log(`\n? ANALYZING WESTERLUND 2 SUPER STAR CLUSTER`);
-    console.log(`?? Enhanced Parameters from Source17.mm:`);
+    console.log(`?? Enhanced Parameters from Source17.cpp:`);
     console.log(`   Mass: ${system.mass.toExponential(2)} kg (30,000 M?)`);
     console.log(`   Radius: ${system.radius.toExponential(2)} m (10 ly)`);
     console.log(`   Magnetic Field: ${system.magneticField.toExponential(2)} T`);
@@ -10434,11 +10434,11 @@ function analyzeWesterlund2(timePoints = [0, 86400 * 365 * 0.5e6, 86400 * 365 * 
     };
 }
 
-// Pillars of Creation Specialized Analysis (from Source18.mm)
+// Pillars of Creation Specialized Analysis (from Source18.cpp)
 function analyzePillarsOfCreation(timePoints = [0, 86400 * 365 * 0.25e6, 86400 * 365 * 0.5e6, 86400 * 365 * 1e6]) {
     const system = PREDEFINED_SYSTEMS['PILLARS_OF_CREATION'];
     console.log(`\n??? ANALYZING PILLARS OF CREATION (EAGLE NEBULA)`);
-    console.log(`?? Enhanced Parameters from Source18.mm:`);
+    console.log(`?? Enhanced Parameters from Source18.cpp:`);
     console.log(`   Mass: ${system.mass.toExponential(2)} kg (10,100 M?)`);
     console.log(`   Radius: ${system.radius.toExponential(2)} m (5 ly)`);
     console.log(`   Magnetic Field: ${system.magneticField.toExponential(2)} T`);
@@ -10497,11 +10497,11 @@ function analyzePillarsOfCreation(timePoints = [0, 86400 * 365 * 0.25e6, 86400 *
     };
 }
 
-// Rings of Relativity Specialized Analysis (from Source19.mm)
+// Rings of Relativity Specialized Analysis (from Source19.cpp)
 function analyzeRingsOfRelativity(timePoints = [0, 86400 * 365 * 1e9, 86400 * 365 * 5e9, 86400 * 365 * 13.8e9]) {
     const system = PREDEFINED_SYSTEMS['RINGS_OF_RELATIVITY'];
     console.log(`\n?? ANALYZING RINGS OF RELATIVITY (EINSTEIN RING GAL-CLUS-022058s)`);
-    console.log(`?? Enhanced Parameters from Source19.mm:`);
+    console.log(`?? Enhanced Parameters from Source19.cpp:`);
     console.log(`   Mass: ${system.mass.toExponential(2)} kg (1�10�4 M? - Galaxy Cluster)`);
     console.log(`   Einstein Radius: ${system.radius.toExponential(2)} m (10 kpc)`);
     console.log(`   Redshift z: ${system.z_lens}`);
@@ -10559,11 +10559,11 @@ function analyzeRingsOfRelativity(timePoints = [0, 86400 * 365 * 1e9, 86400 * 36
     };
 }
 
-// Galaxy NGC 2525 Specialized Analysis (from Source20.mm)
+// Galaxy NGC 2525 Specialized Analysis (from Source20.cpp)
 function analyzeGalaxyNGC2525(timePoints = [0, 86400 * 365 * 7, 86400 * 365 * 100, 86400 * 365 * 1000]) {
     const system = PREDEFINED_SYSTEMS['GALAXY_NGC_2525'];
     console.log(`\n?? ANALYZING GALAXY NGC 2525 (BARRED SPIRAL GALAXY)`);
-    console.log(`?? Enhanced Parameters from Source20.mm:`);
+    console.log(`?? Enhanced Parameters from Source20.cpp:`);
     console.log(`   Total Mass: ${system.mass.toExponential(2)} kg (1�10�� M? + Central SMBH)`);
     console.log(`   Galaxy Radius: ${system.radius.toExponential(2)} m (spiral galaxy scale)`);
     console.log(`   Central SMBH Mass: ${system.M_BH.toExponential(2)} kg (2.25�107 M?)`);
@@ -10623,11 +10623,11 @@ function analyzeGalaxyNGC2525(timePoints = [0, 86400 * 365 * 7, 86400 * 365 * 10
     };
 }
 
-// NGC 3603 Specialized Analysis (from Source21.mm)
+// NGC 3603 Specialized Analysis (from Source21.cpp)
 function analyzeNGC3603(timePoints = [0, 86400 * 365 * 0.5e6, 86400 * 365 * 1e6, 86400 * 365 * 5e6]) {
     const system = PREDEFINED_SYSTEMS['NGC_3603'];
     console.log(`\n?? ANALYZING NGC 3603 (EXTREME YOUNG MASSIVE STAR CLUSTER)`);
-    console.log(`?? Enhanced Parameters from Source21.mm:`);
+    console.log(`?? Enhanced Parameters from Source21.cpp:`);
     console.log(`   Initial Mass M0: ${system.mass.toExponential(2)} kg (400,000 M?)`);
     console.log(`   Cluster Radius: ${system.radius.toExponential(2)} m (9.5 ly)`);
     console.log(`   Magnetic Field: ${system.magneticField.toExponential(2)} T`);
@@ -10687,11 +10687,11 @@ function analyzeNGC3603(timePoints = [0, 86400 * 365 * 0.5e6, 86400 * 365 * 1e6,
     };
 }
 
-// Bubble Nebula NGC 7635 Specialized Analysis (from Source22.mm)
+// Bubble Nebula NGC 7635 Specialized Analysis (from Source22.cpp)
 function analyzeBubbleNebula(timePoints = [0, 86400 * 365 * 0.5e6, 86400 * 365 * 2e6, 86400 * 365 * 4e6, 86400 * 365 * 8e6]) {
     const system = PREDEFINED_SYSTEMS['BUBBLE_NEBULA'];
     console.log(`\n?? ANALYZING BUBBLE NEBULA NGC 7635 (Emission Nebula)`);
-    console.log(`?? Enhanced Parameters from Source22.mm:`);
+    console.log(`?? Enhanced Parameters from Source22.cpp:`);
     console.log(`   Total Mass: ${system.mass.toExponential(2)} kg (46 M?)`);
     console.log(`   Nebular Radius: ${system.radius.toExponential(2)} m (5 ly)`);
     console.log(`   Central Star: BD +60�2522 (Wolf-Rayet)`);
@@ -10749,11 +10749,11 @@ function analyzeBubbleNebula(timePoints = [0, 86400 * 365 * 0.5e6, 86400 * 365 *
     };
 }
 
-// Antennae Galaxies NGC 4038/4039 Specialized Analysis (from Source23.mm)
+// Antennae Galaxies NGC 4038/4039 Specialized Analysis (from Source23.cpp)
 function analyzeAntennaeGalaxies(timePoints = [0, 86400 * 365 * 100e6, 86400 * 365 * 300e6, 86400 * 365 * 400e6, 86400 * 365 * 800e6]) {
     const system = PREDEFINED_SYSTEMS['ANTENNAE_GALAXIES'];
     console.log(`\n?? ANALYZING ANTENNAE GALAXIES NGC 4038/4039 (Interacting Galaxy Merger)`);
-    console.log(`?? Enhanced Parameters from Source23.mm:`);
+    console.log(`?? Enhanced Parameters from Source23.cpp:`);
     console.log(`   Combined Mass: ${system.mass.toExponential(2)} kg (200 billion M?)`);
     console.log(`   Galaxy Separation: ${system.radius.toExponential(2)} m (30,000 ly)`);
     console.log(`   Redshift z: ${system.z_gal}`);
@@ -10813,11 +10813,11 @@ function analyzeAntennaeGalaxies(timePoints = [0, 86400 * 365 * 100e6, 86400 * 3
     };
 }
 
-// Horsehead Nebula Barnard 33 Specialized Analysis (from Source24.mm)
+// Horsehead Nebula Barnard 33 Specialized Analysis (from Source24.cpp)
 function analyzeHorseheadNebula(timePoints = [0, 86400 * 365 * 1e6, 86400 * 365 * 3e6, 86400 * 365 * 5e6, 86400 * 365 * 10e6]) {
     const system = PREDEFINED_SYSTEMS['HORSEHEAD_NEBULA'];
     console.log(`\n?? ANALYZING HORSEHEAD NEBULA BARNARD 33 (Dark Nebula)`);
-    console.log(`?? Enhanced Parameters from Source24.mm:`);
+    console.log(`?? Enhanced Parameters from Source24.cpp:`);
     console.log(`   Nebular Mass: ${system.mass.toExponential(2)} kg (1000 M?)`);
     console.log(`   Nebular Radius: ${system.radius.toExponential(2)} m (2.5 ly)`);
     console.log(`   Temperature: ${system.temperature} K (very cold dark nebula)`);
@@ -10877,11 +10877,11 @@ function analyzeHorseheadNebula(timePoints = [0, 86400 * 365 * 1e6, 86400 * 365 
     };
 }
 
-// SGR 1745-2900 Specialized Analysis (from Source13.mm)
+// SGR 1745-2900 Specialized Analysis (from Source13.cpp)
 function analyzeSGR1745_2900(timePoints = [0, 86400 * 182.5, 86400 * 365, 86400 * 365 * 3.5]) {
     const system = PREDEFINED_SYSTEMS['SGR_1745_2900'];
     console.log(`\n?? ANALYZING SGR 1745-2900 MAGNETAR (Galactic Center)`);
-    console.log(`?? Enhanced Parameters from Source13.mm:`);
+    console.log(`?? Enhanced Parameters from Source13.cpp:`);
     console.log(`   Mass: ${system.mass.toExponential(2)} kg (1.4 M?)`);
     console.log(`   Radius: ${system.radius.toExponential(2)} m`);
     console.log(`   Magnetic Field: ${system.magneticField.toExponential(2)} T`);
@@ -11042,7 +11042,7 @@ function analyzeSystem(systemName, timePoints = [0, 86400 * 182.5, 86400 * 365])
 
 // Enhanced Demonstration with Predefined Systems
 console.log('\n?? === ADVANCED UQFF COMPUTATIONAL DEMONSTRATIONS === ??');
-console.log('Enhanced with MAIN_1.mm Mathematical Frameworks');
+console.log('Enhanced with MAIN_1.cpp Mathematical Frameworks');
 console.log('Integrating: 26-Layer Gravity, F_U_Bi_i, LENR, Vacuum Energy, Neutron Dynamics\n');
 
 // Demonstrate multiple astrophysical systems (enhanced with both SGR magnetars)
@@ -11052,7 +11052,7 @@ const timePoints = [0, 86400 * 182.5, 86400 * 365, 86400 * 365 * 5.5]; // 0, 6mo
 const allResults = [];
 
 console.log('?? Systems to Analyze:', systemsToAnalyze.join(', '));
-console.log('?? New: SGR 1745-2900 (Source13.mm) + SGR 0501+4516 (Source14.mm) with MUGE frameworks');
+console.log('?? New: SGR 1745-2900 (Source13.cpp) + SGR 0501+4516 (Source14.cpp) with MUGE frameworks');
 console.log('? Featuring: Time-reversal factors, magnetic field decay, and enhanced EM terms');
 
 systemsToAnalyze.forEach(systemName => {
@@ -11189,7 +11189,7 @@ if (breakthroughs.length > 0) {
     console.log('No breakthrough thresholds exceeded in current analysis.');
 }
 
-// NGC 1275 Perseus A Analysis Function (specialized AGN analysis from Source25.mm)
+// NGC 1275 Perseus A Analysis Function (specialized AGN analysis from Source25.cpp)
 function analyzeNGC1275(timePoints = [0, 86400 * 365.25 * 50e6, 86400 * 365.25 * 100e6]) {
     console.log('\n?? NGC 1275 Perseus A (Active Galactic Nucleus) Analysis');
     console.log('===================================================\n');
@@ -11274,7 +11274,7 @@ function analyzeNGC1275(timePoints = [0, 86400 * 365.25 * 50e6, 86400 * 365.25 *
     };
 }
 
-// HUDF Galaxies Analysis Function (specialized cosmic field analysis from Source26.mm)
+// HUDF Galaxies Analysis Function (specialized cosmic field analysis from Source26.cpp)
 function analyzeHUDFGalaxies(timePoints = [0, 1e9 * 3.156e7, 5e9 * 3.156e7, 10e9 * 3.156e7]) {
     console.log('\n?? Hubble Ultra Deep Field Galaxies Galore Analysis');
     console.log('=================================================\n');
@@ -11361,7 +11361,7 @@ function analyzeHUDFGalaxies(timePoints = [0, 1e9 * 3.156e7, 5e9 * 3.156e7, 10e9
     };
 }
 
-// Galaxy NGC 1792 Analysis Function (specialized starburst galaxy analysis from Source27.mm)
+// Galaxy NGC 1792 Analysis Function (specialized starburst galaxy analysis from Source27.cpp)
 function analyzeGalaxyNGC1792(timePoints = [0, 50e6 * 3.156e7, 100e6 * 3.156e7, 500e6 * 3.156e7]) {
     console.log('\n?? NGC 1792 "The Stellar Forge" (Starburst Galaxy) Analysis');
     console.log('=========================================================\n');
@@ -11446,7 +11446,7 @@ function analyzeGalaxyNGC1792(timePoints = [0, 50e6 * 3.156e7, 100e6 * 3.156e7, 
     };
 }
 
-// Andromeda Galaxy Analysis Function (specialized advanced galaxy analysis from Source28.mm)
+// Andromeda Galaxy Analysis Function (specialized advanced galaxy analysis from Source28.cpp)
 function analyzeAndromedaGalaxy(timePoints = [0, 1e9 * 3.156e7, 5e9 * 3.156e7, 10e9 * 3.156e7]) {
     console.log('\n?? Andromeda Galaxy M31 (Advanced UQFF Module) Analysis');
     console.log('======================================================\n');
@@ -11545,7 +11545,7 @@ function analyzeAndromedaGalaxy(timePoints = [0, 1e9 * 3.156e7, 5e9 * 3.156e7, 1
     };
 }
 
-// Sombrero Galaxy Analysis Function (specialized advanced galaxy analysis from Source29.mm)
+// Sombrero Galaxy Analysis Function (specialized advanced galaxy analysis from Source29.cpp)
 function analyzeSombreroGalaxy(timePoints = [0, 1e9 * 3.156e7, 5e9 * 3.156e7, 10e9 * 3.156e7]) {
     console.log('\n?? Sombrero Galaxy M104 (UQFF Module) Analysis');
     console.log('==============================================\n');
@@ -11650,7 +11650,7 @@ function analyzeSombreroGalaxy(timePoints = [0, 1e9 * 3.156e7, 5e9 * 3.156e7, 10
     };
 }
 
-// M16 Eagle Nebula UQFF Module Class (from Source31.mm)
+// M16 Eagle Nebula UQFF Module Class (from Source31.cpp)
 class M16UQFFModule {
     constructor(params = {}) {
         // Use provided parameters or defaults from PREDEFINED_SYSTEMS
@@ -11905,7 +11905,7 @@ class M16UQFFModule {
     }
 }
 
-// Saturn Planet Analysis Function (specialized planetary analysis from Source30.mm)
+// Saturn Planet Analysis Function (specialized planetary analysis from Source30.cpp)
 function analyzeSaturnPlanet(timePoints = [0, 1e9 * 3.156e7, 2.5e9 * 3.156e7, 4.5e9 * 3.156e7]) {
     console.log('\n?? Saturn Planet (UQFF Module) Analysis');
     console.log('======================================\n');
@@ -12017,7 +12017,7 @@ function analyzeSaturnPlanet(timePoints = [0, 1e9 * 3.156e7, 2.5e9 * 3.156e7, 4.
     };
 }
 
-// Crab Nebula UQFF Module Class (from Source32.mm)
+// Crab Nebula UQFF Module Class (from Source32.cpp)
 class CrabUQFFModule {
     constructor(params = {}) {
         // Use provided parameters or defaults from PREDEFINED_SYSTEMS
@@ -12274,7 +12274,7 @@ class CrabUQFFModule {
     }
 }
 
-// M16 Eagle Nebula Analysis Function (specialized nebular analysis from Source31.mm)
+// M16 Eagle Nebula Analysis Function (specialized nebular analysis from Source31.cpp)
 function analyzeM16EagleNebula(timePoints = [0, 1e6 * 3.156e7, 3e6 * 3.156e7, 5e6 * 3.156e7, 10e6 * 3.156e7]) {
     console.log('\n?? M16 Eagle Nebula (UQFF Module) Analysis');
     console.log('==========================================\n');
@@ -12399,7 +12399,7 @@ function analyzeM16EagleNebula(timePoints = [0, 1e6 * 3.156e7, 3e6 * 3.156e7, 5e
     };
 }
 
-// Crab Nebula Analysis Function (specialized supernova remnant analysis from Source32.mm)
+// Crab Nebula Analysis Function (specialized supernova remnant analysis from Source32.cpp)
 function analyzeCrabNebula(timePoints = [0, 100 * 3.156e7, 500 * 3.156e7, 971 * 3.156e7, 1000 * 3.156e7]) {
     console.log('\n?? Crab Nebula (UQFF Module) Analysis');
     console.log('====================================\n');
@@ -12525,7 +12525,7 @@ function analyzeCrabNebula(timePoints = [0, 100 * 3.156e7, 500 * 3.156e7, 971 * 
     };
 }
 
-// Enhanced SGR 1745-2900 Magnetar Analysis Function (from Source33.mm)
+// Enhanced SGR 1745-2900 Magnetar Analysis Function (from Source33.cpp)
 function analyzeSGR1745Enhanced(timePoints) {
     console.log('\n?? === ENHANCED SGR 1745-2900 MAGNETAR UQFF ANALYSIS ===');
     console.log('?? Enhanced ultra-high field magnetar near Sagittarius A* with quantum critical effects');
@@ -12659,7 +12659,7 @@ function analyzeSGR1745Enhanced(timePoints) {
     };
 }
 
-// Frequency-Based SGR 1745-2900 Magnetar Analysis Function (from Source34.mm)
+// Frequency-Based SGR 1745-2900 Magnetar Analysis Function (from Source34.cpp)
 function analyzeSGR1745Frequency(timePoints) {
     console.log('\n?? === FREQUENCY-BASED SGR 1745-2900 MAGNETAR UQFF ANALYSIS ===');
     console.log('?? Frequency/resonance-driven magnetar physics with DPM, THz pipeline, and vacuum differential');
@@ -12810,7 +12810,7 @@ function analyzeSGR1745Frequency(timePoints) {
     };
 }
 
-// Frequency-Based Sagittarius A* SMBH Analysis Function (from Source35.mm)
+// Frequency-Based Sagittarius A* SMBH Analysis Function (from Source35.cpp)
 function analyzeSgrAFrequency(timePoints) {
     console.log('\n?? === FREQUENCY-BASED SAGITTARIUS A* SMBH UQFF ANALYSIS ===');
     console.log('?? SMBH frequency/resonance-driven physics with scaled DPM, accretion dynamics, and galactic center effects');
@@ -12967,7 +12967,7 @@ function analyzeSgrAFrequency(timePoints) {
     };
 }
 
-// Tapestry of Blazing Starbirth NGC 2014/2020 Specialized Analysis (from Source36.mm)
+// Tapestry of Blazing Starbirth NGC 2014/2020 Specialized Analysis (from Source36.cpp)
 function analyzeTapestryStarbirth(timePoints = [0, 86400 * 365, 86400 * 365 * 10, 86400 * 365 * 5e6]) {
     console.log('\n?? === TAPESTRY OF BLAZING STARBIRTH NGC 2014/2020 UQFF ANALYSIS ===');
     console.log('?? Starbirth region frequency/resonance-driven physics with stellar winds, gas dynamics, and star formation');
@@ -13144,7 +13144,7 @@ function analyzeTapestryStarbirth(timePoints = [0, 86400 * 365, 86400 * 365 * 10
     };
 }
 
-// UQFF Resonance & Superconductive Specialized Analysis (from Source37.mm)
+// UQFF Resonance & Superconductive Specialized Analysis (from Source37.cpp)
 function analyzeResonanceSuperconductive(timePoints = [0, 86400 * 365, 86400 * 365 * 10, 86400 * 365 * 1e9]) {
     console.log('\n?? === UQFF RESONANCE & SUPERCONDUCTIVE ANALYSIS ===');
     console.log('?? General-purpose resonance/oscillatory and superconductive physics for 1-8 systems with frequency scaling');
@@ -13274,7 +13274,7 @@ function analyzeResonanceSuperconductive(timePoints = [0, 86400 * 365, 86400 * 3
     
     // Application versatility analysis
     console.log('\n?? Application Versatility Analysis:');
-    console.log('  System Scaling Applications (per Source37.mm):');
+    console.log('  System Scaling Applications (per Source37.cpp):');
     console.log('  � Galaxies: Scale f_DPM to ~1 GHz for galactic dynamics');
     console.log('  � Planets: Scale f_DPM to ~1 MHz for planetary magnetic fields');
     console.log('  � Nebulae: Scale f_DPM to ~1 THz for stellar formation regions');
@@ -13318,7 +13318,7 @@ function analyzeResonanceSuperconductive(timePoints = [0, 86400 * 365, 86400 * 3
     };
 }
 
-// UQFF Compressed & Resonance Specialized Analysis (from Source38.mm)
+// UQFF Compressed & Resonance Specialized Analysis (from Source38.cpp)
 function analyzeCompressedResonance(timePoints = [0, 86400 * 365, 86400 * 365 * 10, 86400 * 365 * 1e9]) {
     console.log('\n?? === UQFF COMPRESSED & RESONANCE ANALYSIS ===');
     console.log('?? Streamlined compressed + resonance physics for systems 10-16 (nebulae, SMBH, starbirth)');
@@ -13439,7 +13439,7 @@ function analyzeCompressedResonance(timePoints = [0, 86400 * 365, 86400 * 365 * 
     
     // Systems 10-16 application analysis
     console.log('\n?? Systems 10-16 Application Analysis:');
-    console.log('  Target System Applications (per Source38.mm):');
+    console.log('  Target System Applications (per Source38.cpp):');
     console.log('  � Nebulae: Streamlined compressed terms for gas dynamics + resonance for stellar interactions');
     console.log('  � SMBH: Compressed superconductor dominance + resonance for accretion disk physics');
     console.log('  � Starbirth: Compressed DPM+THz for formation + resonance for stellar wind feedback');
@@ -13513,7 +13513,7 @@ function analyzeCompressedResonance(timePoints = [0, 86400 * 365, 86400 * 365 * 
     };
 }
 
-// UQFF Crab Nebula Resonance Analysis (from Source39.mm)
+// UQFF Crab Nebula Resonance Analysis (from Source39.cpp)
 function analyzeCrabResonance(timePoints = [0, 86400 * 365, 86400 * 365 * 10, 86400 * 365 * 971]) {
     console.log('\n?? === UQFF CRAB NEBULA RESONANCE ANALYSIS ===');
     console.log('?? Pulsar-driven resonance physics for Crab Nebula evolution since 1054 AD');
@@ -13727,7 +13727,7 @@ function analyzeCrabResonance(timePoints = [0, 86400 * 365, 86400 * 365 * 10, 86
     };
 }
 
-// UQFF Compressed & Resonance Analysis for Systems 18-24 (from Source40.mm)
+// UQFF Compressed & Resonance Analysis for Systems 18-24 (from Source40.cpp)
 function analyzeCompressedResonance24(timePoints = [0, 86400 * 365, 86400 * 365 * 10, 86400 * 365 * 1e9]) {
     console.log('\n?? === UQFF COMPRESSED & RESONANCE SYSTEMS 18-24 ANALYSIS ===');
     console.log('?? Scaled compressed + resonance physics for systems 18-24 (Sombrero, Saturn, M16, Crab)');
@@ -13812,7 +13812,7 @@ function analyzeCompressedResonance24(timePoints = [0, 86400 * 365, 86400 * 365 
     
     // Systems 18-24 specific analysis
     console.log('\n?? Systems 18-24 Target Objects Analysis:');
-    console.log('  Target Objects (per Source40.mm):');
+    console.log('  Target Objects (per Source40.cpp):');
     console.log('  � Sombrero Galaxy: Large-scale compressed DPM + resonance for spiral structure');
     console.log('  � Saturn Planet: Atmospheric compressed terms + resonance for ring dynamics');
     console.log('  � M16 Eagle Nebula: Stellar formation compressed THz + resonance for pillar structure');
@@ -13953,7 +13953,7 @@ function analyzeCompressedResonance24(timePoints = [0, 86400 * 365, 86400 * 365 
     };
 }
 
-// SGR 1745-2900 Enhanced Magnetar UQFF Module Class (from Source33.mm)
+// SGR 1745-2900 Enhanced Magnetar UQFF Module Class (from Source33.cpp)
 class SGR1745UQFFModule {
     constructor(params = {}) {
         // Initialize all variables with enhanced SGR 1745-2900 magnetar defaults
@@ -14227,20 +14227,20 @@ class SGR1745UQFFModule {
     }
 }
 
-// SGR 1745-2900 Frequency-Based UQFF Module Class (from Source34.mm)
+// SGR 1745-2900 Frequency-Based UQFF Module Class (from Source34.cpp)
 class SGR1745FrequencyUQFFModule {
     constructor(params = {}) {
         // Initialize all variables with frequency-based SGR 1745-2900 defaults
         this.variables = new Map();
         
-        // Base constants (universal from Source34.mm)
+        // Base constants (universal from Source34.cpp)
         this.variables.set('c', 3e8);                           // m/s
         this.variables.set('pi', 3.141592653589793);            // pi
         this.variables.set('E_vac_neb', 7.09e-36);              // J/m� (plasmotic vacuum energy density, nebula)
         this.variables.set('E_vac_ISM', 7.09e-37);              // J/m� (ISM vacuum energy density)
         this.variables.set('f_TRZ', 0.1);                       // Time-reversal correction factor
         
-        // Magnetar parameters from Source34.mm
+        // Magnetar parameters from Source34.cpp
         this.variables.set('M_sun', 1.989e30);                  // kg
         this.variables.set('M', 1.5 * 1.989e30);                // Mass kg (1.5 solar masses)
         this.variables.set('r', 1e4);                           // m (radius ~10 km)
@@ -14257,7 +14257,7 @@ class SGR1745FrequencyUQFFModule {
         this.variables.set('f_THz', 1e12);                      // Hz
         this.variables.set('v_exp', 1e3);                       // m/s (expansion velocity)
         
-        // Frequency domain terms from Source34.mm
+        // Frequency domain terms from Source34.cpp
         this.variables.set('f_vac_diff', 0.143);                // Hz (vacuum differential)
         this.variables.set('f_super', 1.411e16);                // Hz (superconductor)
         this.variables.set('f_aether', 1e4);                    // Hz (Aether-mediated)
@@ -14380,7 +14380,7 @@ class SGR1745FrequencyUQFFModule {
                (this.variables.get('E_vac_ISM') * this.variables.get('c'));
     }
 
-    // Compute Oscillatory term: Simplified to ~0 per Source34.mm
+    // Compute Oscillatory term: Simplified to ~0 per Source34.cpp
     computeOscTerm() {
         return 0.0; // As per doc approximation
     }
@@ -14481,20 +14481,20 @@ class SGR1745FrequencyUQFFModule {
     }
 }
 
-// Sagittarius A* Frequency-Based UQFF Module Class (from Source35.mm)
+// Sagittarius A* Frequency-Based UQFF Module Class (from Source35.cpp)
 class SgrAFrequencyUQFFModule {
     constructor(params = {}) {
         // Initialize all variables with frequency-based Sgr A* SMBH defaults
         this.variables = new Map();
         
-        // Base constants (universal from Source35.mm)
+        // Base constants (universal from Source35.cpp)
         this.variables.set('c', 3e8);                           // m/s
         this.variables.set('pi', 3.141592653589793);            // pi
         this.variables.set('E_vac_neb', 7.09e-36);              // J/m� (plasmotic vacuum energy density, galactic center)
         this.variables.set('E_vac_ISM', 7.09e-37);              // J/m� (ISM vacuum energy density)
         this.variables.set('f_TRZ', 0.1);                       // Time-reversal correction factor
         
-        // SMBH parameters from Source35.mm
+        // SMBH parameters from Source35.cpp
         this.variables.set('M_sun', 1.989e30);                  // kg
         this.variables.set('M', 4.3e6 * 1.989e30);              // Mass kg (4.3 million solar masses)
         this.variables.set('r', 1.27e10);                       // m (Schwarzschild radius)
@@ -14511,7 +14511,7 @@ class SgrAFrequencyUQFFModule {
         this.variables.set('f_THz', 1e9);                       // Hz (scaled down)
         this.variables.set('v_exp', 1e5);                       // m/s (accretion/outflow velocity)
         
-        // Frequency domain terms from Source35.mm - SMBH scaled
+        // Frequency domain terms from Source35.cpp - SMBH scaled
         this.variables.set('f_vac_diff', 0.143);                // Hz (vacuum differential)
         this.variables.set('f_super', 1.411e13);                // Hz (superconductor - scaled down)
         this.variables.set('f_aether', 1e3);                    // Hz (Aether-mediated - scaled down)
@@ -14634,7 +14634,7 @@ class SgrAFrequencyUQFFModule {
                (this.variables.get('E_vac_ISM') * this.variables.get('c'));
     }
 
-    // Compute Oscillatory term: Simplified to ~0 per Source35.mm
+    // Compute Oscillatory term: Simplified to ~0 per Source35.cpp
     computeOscTerm() {
         return 0.0; // As per doc approximation
     }
@@ -14737,20 +14737,20 @@ class SgrAFrequencyUQFFModule {
     }
 }
 
-// Tapestry of Blazing Starbirth NGC 2014/2020 UQFF Module (from Source36.mm)
+// Tapestry of Blazing Starbirth NGC 2014/2020 UQFF Module (from Source36.cpp)
 class TapestryStarbirthUQFFModule {
     constructor(params = {}) {
         // Initialize all variables with Tapestry starbirth region defaults
         this.variables = new Map();
         
-        // Base constants (universal from Source36.mm)
+        // Base constants (universal from Source36.cpp)
         this.variables.set('c', 3e8);                           // m/s
         this.variables.set('pi', 3.141592653589793);            // pi
         this.variables.set('E_vac_neb', 7.09e-36);              // J/m� (plasmotic vacuum energy density, starbirth)
         this.variables.set('E_vac_ISM', 7.09e-37);              // J/m� (ISM vacuum energy density)
         this.variables.set('f_TRZ', 0.1);                       // Time-reversal correction factor
         
-        // Starbirth region parameters from Source36.mm
+        // Starbirth region parameters from Source36.cpp
         this.variables.set('M_sun', 1.989e30);                  // kg
         this.variables.set('M', 1000 * 1.989e30);               // Mass kg (1000 solar masses - cluster)
         this.variables.set('r', 3.5e18);                        // m (half-span ~37 ly)
@@ -14767,7 +14767,7 @@ class TapestryStarbirthUQFFModule {
         this.variables.set('f_THz', 1e11);                      // Hz (stellar process frequency)
         this.variables.set('v_exp', 1e6);                       // m/s (stellar wind velocity)
         
-        // Frequency domain terms from Source36.mm - starbirth scaled
+        // Frequency domain terms from Source36.cpp - starbirth scaled
         this.variables.set('f_vac_diff', 0.143);                // Hz (vacuum differential)
         this.variables.set('f_super', 1.411e15);                // Hz (superconductor frequency)
         this.variables.set('f_aether', 1e2);                    // Hz (Aether-mediated)
@@ -14904,7 +14904,7 @@ class TapestryStarbirthUQFFModule {
                (this.variables.get('E_vac_ISM') * this.variables.get('c'));
     }
 
-    // Compute Osc term: Simplified to ~0 per Source36.mm
+    // Compute Osc term: Simplified to ~0 per Source36.cpp
     computeOscTerm() {
         return 0.0;
     }
@@ -15006,20 +15006,20 @@ class TapestryStarbirthUQFFModule {
     }
 }
 
-// UQFF Resonance & Superconductive Module (from Source37.mm)
+// UQFF Resonance & Superconductive Module (from Source37.cpp)
 class ResonanceSuperconductiveUQFFModule {
     constructor(params = {}) {
         // Initialize all variables with UQFF resonance/superconductive defaults
         this.variables = new Map();
         
-        // Base constants (universal from Source37.mm)
+        // Base constants (universal from Source37.cpp)
         this.variables.set('c', 3e8);                           // m/s
         this.variables.set('pi', 3.141592653589793);            // pi
         this.variables.set('E_vac', 7.09e-36);                  // J/m� (plasmotic vacuum energy density)
         this.variables.set('hbar', 1.0546e-34);                 // J�s
         this.variables.set('f_TRZ', 0.1);                       // Time-reversal correction
         
-        // Resonance parameters from Source37.mm
+        // Resonance parameters from Source37.cpp
         this.variables.set('f_DPM', 1e12);                      // Hz (DPM intrinsic frequency - 1 THz)
         this.variables.set('f_THz', 1e12);                      // Hz (THz hole frequency)
         this.variables.set('f_aether', 1e4);                    // Hz (Aether-mediated)
@@ -15034,7 +15034,7 @@ class ResonanceSuperconductiveUQFFModule {
         this.variables.set('f_vac_diff', 0.143);                // Hz
         this.variables.set('V_sys', 4.189e12);                  // m� (system volume proxy)
         
-        // Superconductive parameters from Source37.mm
+        // Superconductive parameters from Source37.cpp
         this.variables.set('B_crit', 1e11);                     // T (critical field)
         this.variables.set('f_super', 1.411e16);                // Hz (superconductor frequency)
         this.variables.set('f_sc', 1.0);                        // Superconductive factor
@@ -15240,20 +15240,20 @@ class ResonanceSuperconductiveUQFFModule {
     }
 }
 
-// UQFF Compressed & Resonance Module (from Source38.mm)
+// UQFF Compressed & Resonance Module (from Source38.cpp)
 class CompressedResonanceUQFFModule {
     constructor(params = {}) {
         // Initialize all variables with UQFF compressed/resonance defaults
         this.variables = new Map();
         
-        // Base constants (universal from Source38.mm)
+        // Base constants (universal from Source38.cpp)
         this.variables.set('c', 3e8);                           // m/s
         this.variables.set('pi', 3.141592653589793);            // pi
         this.variables.set('E_vac', 7.09e-36);                  // J/m� (plasmotic vacuum)
         this.variables.set('hbar', 1.0546e-34);                 // J�s
         this.variables.set('f_TRZ', 0.1);                       // Time-reversal
         
-        // Compressed parameters (streamlined DPM, THz, vac_diff, super) from Source38.mm
+        // Compressed parameters (streamlined DPM, THz, vac_diff, super) from Source38.cpp
         this.variables.set('f_DPM', 1e12);                      // Hz
         this.variables.set('f_THz', 1e12);                      // Hz
         this.variables.set('f_vac_diff', 0.143);                // Hz
@@ -15266,7 +15266,7 @@ class CompressedResonanceUQFFModule {
         this.variables.set('E_0', 6.381e-36);                   // J/m�
         this.variables.set('V_sys', 4.189e12);                  // m�
         
-        // Resonance parameters (aether, U_g4i, osc, quantum, fluid, exp) from Source38.mm
+        // Resonance parameters (aether, U_g4i, osc, quantum, fluid, exp) from Source38.cpp
         this.variables.set('f_aether', 1e4);                    // Hz
         this.variables.set('f_react', 1e10);                    // Hz (U_g4i)
         this.variables.set('f_quantum', 1.445e-17);             // Hz
@@ -15485,26 +15485,26 @@ class CompressedResonanceUQFFModule {
     }
 }
 
-// UQFF Crab Nebula Resonance Module (from Source39.mm)
+// UQFF Crab Nebula Resonance Module (from Source39.cpp)
 class CrabResonanceUQFFModule {
     constructor(params = {}) {
         // Initialize all variables with Crab Nebula resonance defaults
         this.variables = new Map();
         
-        // Base constants (UQFF universal from Source39.mm)
+        // Base constants (UQFF universal from Source39.cpp)
         this.variables.set('c', 3e8);                           // m/s
         this.variables.set('pi', 3.141592653589793);            // pi
         this.variables.set('E_vac', 7.09e-36);                  // J/m� (plasmotic vacuum energy density)
         this.variables.set('hbar', 1.0546e-34);                 // J�s
         this.variables.set('f_TRZ', 0.1);                       // Time-reversal correction
         
-        // Crab Nebula parameters from Source39.mm
+        // Crab Nebula parameters from Source39.cpp
         this.variables.set('M_sun', 1.989e30);                  // kg
         this.variables.set('M', 4.6 * 1.989e30);               // kg (4.6 M? total mass)
         this.variables.set('r0', 5.2e16);                       // m (initial radius)
         this.variables.set('v_exp', 1.5e6);                     // m/s (expansion velocity)
         
-        // Resonance parameters (pulsar-driven from Source39.mm)
+        // Resonance parameters (pulsar-driven from Source39.cpp)
         this.variables.set('f_DPM', 1e12);                      // Hz (DPM, aligned with 30 Hz pulsar scaled)
         this.variables.set('f_THz', 1e12);                      // Hz (THz hole)
         this.variables.set('f_aether', 1e4);                    // Hz (Aether-mediated)
@@ -15521,23 +15521,23 @@ class CrabResonanceUQFFModule {
         this.variables.set('f_vac_diff', 0.143);                // Hz
         this.variables.set('V_sys', 4.189e12);                  // m� (proxy)
         
-        // Superconductive resonance integrated from Source39.mm
+        // Superconductive resonance integrated from Source39.cpp
         this.variables.set('B_crit', 1e11);                     // T
         this.variables.set('f_sc', 1.0);                        // Factor
         
-        // Oscillatory/resonant from Source39.mm
+        // Oscillatory/resonant from Source39.cpp
         this.variables.set('k', 1e20);                          // m^-2�
         this.variables.set('omega_osc', 1e15);                  // rad/s (synchrotron scale)
         this.variables.set('x', 0.0);                           // m
         this.variables.set('A', 1e-10);                         // Amplitude
         
-        // Fluid/DM proxies from Source39.mm
+        // Fluid/DM proxies from Source39.cpp
         this.variables.set('rho_fluid', 1e-21);                 // kg/m� (filaments)
         this.variables.set('V', 1e3);                           // m�
         this.variables.set('delta_rho', 0.1 * 1e-21);           // kg/m�
         this.variables.set('rho', 1e-21);                       // kg/m�
         
-        // Quantum from Source39.mm
+        // Quantum from Source39.cpp
         this.variables.set('Delta_x', 1e-10);                   // m
         this.variables.set('Delta_p', 1.0546e-34 / 1e-10);      // kg�m/s
         this.variables.set('integral_psi', 1.0);                // Normalized
@@ -15556,7 +15556,7 @@ class CrabResonanceUQFFModule {
         this.variables.set('Delta_p', this.variables.get('hbar') / this.variables.get('Delta_x'));
     }
 
-    // Dynamic variable operations from Source39.mm
+    // Dynamic variable operations from Source39.cpp
     updateVariable(name, value) {
         if (this.variables.has(name)) {
             this.variables.set(name, value);
@@ -15726,20 +15726,20 @@ class CrabResonanceUQFFModule {
     }
 }
 
-// UQFF Compressed & Resonance Module for Systems 18-24 (from Source40.mm)
+// UQFF Compressed & Resonance Module for Systems 18-24 (from Source40.cpp)
 class CompressedResonanceUQFF24Module {
     constructor(params = {}) {
         // Initialize all variables with UQFF compressed/resonance defaults for systems 18-24
         this.variables = new Map();
         
-        // Base constants (universal from Source40.mm)
+        // Base constants (universal from Source40.cpp)
         this.variables.set('c', 3e8);                           // m/s
         this.variables.set('pi', 3.141592653589793);            // pi
         this.variables.set('E_vac', 7.09e-36);                  // J/m� (plasmotic vacuum)
         this.variables.set('hbar', 1.0546e-34);                 // J�s
         this.variables.set('f_TRZ', 0.1);                       // Time-reversal
         
-        // Compressed parameters (streamlined DPM, THz, vac_diff, super; scaled for 18-24) from Source40.mm
+        // Compressed parameters (streamlined DPM, THz, vac_diff, super; scaled for 18-24) from Source40.cpp
         this.variables.set('f_DPM', 1e11);                      // Hz (nebula/Saturn scale)
         this.variables.set('f_THz', 1e11);                      // Hz
         this.variables.set('f_vac_diff', 0.143);                // Hz
@@ -15752,7 +15752,7 @@ class CompressedResonanceUQFF24Module {
         this.variables.set('E_0', 6.381e-36);                   // J/m�
         this.variables.set('V_sys', 4.189e18);                  // m� (scaled volume)
         
-        // Resonance parameters (aether, U_g4i, osc, quantum, fluid, exp; scaled) from Source40.mm
+        // Resonance parameters (aether, U_g4i, osc, quantum, fluid, exp; scaled) from Source40.cpp
         this.variables.set('f_aether', 1e3);                    // Hz
         this.variables.set('f_react', 1e9);                     // Hz (U_g4i)
         this.variables.set('f_quantum', 1.445e-17);             // Hz
@@ -15768,11 +15768,11 @@ class CompressedResonanceUQFF24Module {
         this.variables.set('delta_rho', 0.1 * 1e-20);           // kg/m�
         this.variables.set('rho', 1e-20);                       // kg/m�
         
-        // Superconductive integrated from Source40.mm
+        // Superconductive integrated from Source40.cpp
         this.variables.set('B_crit', 1e11);                     // T
         this.variables.set('f_sc', 1.0);                        // Factor
         
-        // Quantum from Source40.mm
+        // Quantum from Source40.cpp
         this.variables.set('Delta_x', 1e-10);                   // m
         this.variables.set('Delta_p', 1.0546e-34 / 1e-10);      // kg�m/s
         this.variables.set('integral_psi', 1.0);                // Normalized
@@ -15788,7 +15788,7 @@ class CompressedResonanceUQFF24Module {
         this.variables.set('Delta_p', this.variables.get('hbar') / this.variables.get('Delta_x'));
     }
 
-    // Dynamic variable operations from Source40.mm
+    // Dynamic variable operations from Source40.cpp
     updateVariable(name, value) {
         if (this.variables.has(name)) {
             this.variables.set(name, value);
@@ -15932,13 +15932,13 @@ class CompressedResonanceUQFF24Module {
     }
 }
 
-// UQFF Observable Universe Diameter Evolution Module (from Source41.mm)
+// UQFF Observable Universe Diameter Evolution Module (from Source41.cpp)
 class UniverseDiameterUQFFModule {
     constructor(params = {}) {
-        // Initialize all variables with Universe defaults from Source41.mm
+        // Initialize all variables with Universe defaults from Source41.cpp
         this.variables = new Map();
         
-        // Base constants (universal from Source41.mm)
+        // Base constants (universal from Source41.cpp)
         this.variables.set('G', 6.6743e-11);                    // m�/kg/s�
         this.variables.set('c', 3e8);                           // m/s
         this.variables.set('hbar', 1.0546e-34);                 // J�s
@@ -15947,14 +15947,14 @@ class UniverseDiameterUQFFModule {
         this.variables.set('pi', 3.141592653589793);            // pi
         this.variables.set('t_Hubble', 13.8e9 * 3.156e7);       // s (13.8 Gyr)
         
-        // Universe parameters from Source41.mm
+        // Universe parameters from Source41.cpp
         this.variables.set('M_sun', 1.989e30);                  // kg
         this.variables.set('M', 1e53 * 1.989e30);               // kg (total mass - observable universe)
         this.variables.set('M_visible', 0.73 * 1e53 * 1.989e30); // kg (baryonic fraction)
         this.variables.set('M_DM', 0.27 * 1e53 * 1.989e30);     // kg (dark matter fraction)
         this.variables.set('r', 4.4e26);                        // m (half observable diameter ~93 Gly / 2)
         
-        // Hubble/cosmology from Source41.mm
+        // Hubble/cosmology from Source41.cpp
         this.variables.set('H_0', 70.0);                        // km/s/Mpc (Hubble constant)
         this.variables.set('H0', 70.0);                         // km/s/Mpc
         this.variables.set('Mpc_to_m', 3.086e22);               // m/Mpc
@@ -15978,35 +15978,35 @@ class UniverseDiameterUQFFModule {
         this.variables.set('f_magnetic', 1e6);                  // Hz (cosmic magnetic)
         this.variables.set('f_expansion', 2.27e-18);            // Hz (Hubble frequency)
         
-        // Cosmic dynamics from Source41.mm
+        // Cosmic dynamics from Source41.cpp
         this.variables.set('rho_fluid', 8.6e-27);               // kg/m� (critical density)
         this.variables.set('V', 1e3);                           // m� (arbitrary, scaled irrelevant)
         this.variables.set('v_exp', 70.0 * 1e3 / 3.086e22 * 4.4e26); // m/s (Hubble flow)
         this.variables.set('delta_rho', 0.1 * 8.6e-27);         // kg/m� (perturbation)
         this.variables.set('rho', 8.6e-27);                     // kg/m� (mean density)
         
-        // EM/magnetic/superconductivity (cosmic fields) from Source41.mm
+        // EM/magnetic/superconductivity (cosmic fields) from Source41.cpp
         this.variables.set('B', 1e-15);                         // T (cosmic magnetic field)
         this.variables.set('B_crit', 1e11);                     // T (critical field)
         
-        // Quantum terms from Source41.mm
+        // Quantum terms from Source41.cpp
         this.variables.set('Delta_x', 1e-10);                   // m (fundamental scale)
         this.variables.set('Delta_p', 1.0546e-34 / 1e-10);      // kg�m/s
         this.variables.set('integral_psi', 1.0);                // Normalized
         
-        // Resonant/oscillatory terms (CMB scale) from Source41.mm
+        // Resonant/oscillatory terms (CMB scale) from Source41.cpp
         this.variables.set('A', 1e-10);                         // Amplitude
         this.variables.set('k', 1e20);                          // m^-2� (short wavelength proxy)
         this.variables.set('omega', 1e11);                      // rad/s (CMB freq proxy)
         this.variables.set('x', 0.0);                           // m (position)
         
-        // Ug subterms (initialized placeholders) from Source41.mm
+        // Ug subterms (initialized placeholders) from Source41.cpp
         this.variables.set('Ug1', 0.0);                         // Computed dynamically
         this.variables.set('Ug2', 0.0);                         // Set to 0 for universe
         this.variables.set('Ug3', 0.0);                         // Set to 0 for universe
         this.variables.set('Ug4', 0.0);                         // Computed as Ug1 * f_sc
         
-        // Scale factors from Source41.mm
+        // Scale factors from Source41.cpp
         this.variables.set('scale_macro', 1e-12);               // Macro scale factor
         this.variables.set('f_TRZ', 0.1);                       // Time-reversal
         this.variables.set('f_sc', 1.0);                        // Superconductive factor
@@ -16029,7 +16029,7 @@ class UniverseDiameterUQFFModule {
         }
     }
 
-    // Dynamic variable operations from Source41.mm
+    // Dynamic variable operations from Source41.cpp
     updateVariable(name, value) {
         if (this.variables.has(name)) {
             this.variables.set(name, value);
@@ -16223,13 +16223,13 @@ class UniverseDiameterUQFFModule {
     }
 }
 
-// UQFF Hydrogen Atom Evolution Module (from Source42.mm)
+// UQFF Hydrogen Atom Evolution Module (from Source42.cpp)
 class HydrogenAtomUQFFModule {
     constructor(params = {}) {
-        // Initialize all variables with Hydrogen Atom defaults from Source42.mm
+        // Initialize all variables with Hydrogen Atom defaults from Source42.cpp
         this.variables = new Map();
         
-        // Base constants (universal from Source42.mm)
+        // Base constants (universal from Source42.cpp)
         this.variables.set('G', 6.6743e-11);                    // m�/kg/s�
         this.variables.set('c', 3e8);                           // m/s
         this.variables.set('hbar', 1.0546e-34);                 // J�s
@@ -16238,13 +16238,13 @@ class HydrogenAtomUQFFModule {
         this.variables.set('pi', 3.141592653589793);            // pi
         this.variables.set('t_Hubble', 13.8e9 * 3.156e7);       // s (irrelevant but included)
         
-        // Hydrogen Atom parameters from Source42.mm
+        // Hydrogen Atom parameters from Source42.cpp
         this.variables.set('M', 1.673e-27);                     // kg (proton mass)
         this.variables.set('M_visible', 1.673e-27);             // kg (visible mass)
         this.variables.set('M_DM', 0.0);                        // kg (no dark matter)
         this.variables.set('r', 5.29e-11);                      // m (Bohr radius)
         
-        // Hubble/cosmology (negligible at atomic scale) from Source42.mm
+        // Hubble/cosmology (negligible at atomic scale) from Source42.cpp
         this.variables.set('H0', 70.0);                         // km/s/Mpc
         this.variables.set('Mpc_to_m', 3.086e22);               // m/Mpc
         this.variables.set('z', 0.0);                           // z=0 for atomic
@@ -16252,35 +16252,35 @@ class HydrogenAtomUQFFModule {
         this.variables.set('Omega_Lambda', 0.7);                // Dark energy density
         this.variables.set('t', 1e-15);                         // s (atomic timescale proxy)
         
-        // Electron/orbital dynamics from Source42.mm
+        // Electron/orbital dynamics from Source42.cpp
         this.variables.set('rho_fluid', 1e-25);                 // kg/m� (electron cloud density)
         this.variables.set('V', (4.0/3.0) * Math.PI * Math.pow(5.29e-11, 3)); // m� (orbital volume)
         this.variables.set('v_orbital', 2.2e6);                 // m/s (electron velocity)
         this.variables.set('delta_rho', 0.1 * 1e-25);           // kg/m� (perturbation)
         this.variables.set('rho', 1e-25);                       // kg/m� (mean density)
         
-        // EM/magnetic/superconductivity (atomic scale) from Source42.mm
+        // EM/magnetic/superconductivity (atomic scale) from Source42.cpp
         this.variables.set('B', 1e-4);                          // T (atomic magnetic field)
         this.variables.set('B_crit', 1e11);                     // T (critical field)
         
-        // Quantum terms (dominant at atomic scale) from Source42.mm
+        // Quantum terms (dominant at atomic scale) from Source42.cpp
         this.variables.set('Delta_x', 1e-10);                   // m (Compton wavelength proxy)
         this.variables.set('Delta_p', 1.0546e-34 / 1e-10);      // kg�m/s
         this.variables.set('integral_psi', 1.0);                // Normalized ground state
         
-        // Resonant/oscillatory terms (atomic transitions) from Source42.mm
+        // Resonant/oscillatory terms (atomic transitions) from Source42.cpp
         this.variables.set('A', 1e-10);                         // Amplitude
         this.variables.set('k', 1e11);                          // m^-2� (UV wavelength)
         this.variables.set('omega', 1e15);                      // rad/s (Lyman alpha)
         this.variables.set('x', 0.0);                           // m (position)
         
-        // Ug subterms (initialized placeholders) from Source42.mm
+        // Ug subterms (initialized placeholders) from Source42.cpp
         this.variables.set('Ug1', 0.0);                         // Computed dynamically
         this.variables.set('Ug2', 0.0);                         // Weak for hydrogen
         this.variables.set('Ug3', 0.0);                         // Weak for hydrogen
         this.variables.set('Ug4', 0.0);                         // Computed as Ug1 * f_sc
         
-        // Scale factors from Source42.mm
+        // Scale factors from Source42.cpp
         this.variables.set('scale_macro', 1e-12);               // Atomic scale factor
         this.variables.set('f_TRZ', 0.1);                       // Time-reversal factor
         this.variables.set('f_sc', 1.0);                        // Superconductive factor
@@ -16306,7 +16306,7 @@ class HydrogenAtomUQFFModule {
         }
     }
     
-    // Dynamic variable operations from Source42.mm
+    // Dynamic variable operations from Source42.cpp
     updateVariable(name, value) {
         this.variables.set(name, value);
         if (name === 'Delta_x' || name === 'r' || name === 'M') {
@@ -16326,7 +16326,7 @@ class HydrogenAtomUQFFModule {
         this.addToVariable(name, -delta);
     }
     
-    // Compute H(z) in s^-1� (negligible at atomic scale) from Source42.mm
+    // Compute H(z) in s^-1� (negligible at atomic scale) from Source42.cpp
     computeHz() {
         const Hz_kms = this.variables.get('H0') * 
                       Math.sqrt(this.variables.get('Omega_m') * 
@@ -16335,7 +16335,7 @@ class HydrogenAtomUQFFModule {
         return (Hz_kms * 1e3) / this.variables.get('Mpc_to_m');
     }
     
-    // Compute Ug sum: Ug1 = G M / r�, Ug4 = Ug1 * f_sc from Source42.mm
+    // Compute Ug sum: Ug1 = G M / r�, Ug4 = Ug1 * f_sc from Source42.cpp
     computeUgSum() {
         const Ug1 = (this.variables.get('G') * this.variables.get('M')) / 
                     (this.variables.get('r') * this.variables.get('r'));
@@ -16345,7 +16345,7 @@ class HydrogenAtomUQFFModule {
                this.variables.get('Ug3') + this.variables.get('Ug4');
     }
     
-    // Quantum term (dominant): (h / v(?x ?p)) * ?? * (2p / t_Hubble) from Source42.mm
+    // Quantum term (dominant): (h / v(?x ?p)) * ?? * (2p / t_Hubble) from Source42.cpp
     computeQuantumTerm(t_Hubble_val) {
         const unc = Math.sqrt(this.variables.get('Delta_x') * this.variables.get('Delta_p'));
         const integral_val = this.variables.get('integral_psi');
@@ -16353,12 +16353,12 @@ class HydrogenAtomUQFFModule {
                (2 * this.variables.get('pi') / t_Hubble_val);
     }
     
-    // Fluid term: ?_fluid * V * g (electron cloud) from Source42.mm
+    // Fluid term: ?_fluid * V * g (electron cloud) from Source42.cpp
     computeFluidTerm(g_base) {
         return this.variables.get('rho_fluid') * this.variables.get('V') * g_base;
     }
     
-    // Resonant terms: 2A cos(kx) cos(?t) + (2p/13.8) A Re[exp(i(kx - ?t))] from Source42.mm
+    // Resonant terms: 2A cos(kx) cos(?t) + (2p/13.8) A Re[exp(i(kx - ?t))] from Source42.cpp
     computeResonantTerm(t) {
         const cos_term = 2 * this.variables.get('A') * 
                         Math.cos(this.variables.get('k') * this.variables.get('x')) * 
@@ -16373,7 +16373,7 @@ class HydrogenAtomUQFFModule {
         return cos_term + exp_factor * exp_real;
     }
     
-    // DM term: (M_visible + M_DM) * (d?/? + 3GM/r�) (negligible) from Source42.mm
+    // DM term: (M_visible + M_DM) * (d?/? + 3GM/r�) (negligible) from Source42.cpp
     computeDMTerm() {
         const pert = this.variables.get('delta_rho') / this.variables.get('rho');
         const curv = 3 * this.variables.get('G') * this.variables.get('M') / 
@@ -16381,7 +16381,7 @@ class HydrogenAtomUQFFModule {
         return (this.variables.get('M_visible') + this.variables.get('M_DM')) * (pert + curv);
     }
     
-    // Full computation: g_UQFF(r, t) = all terms (quantum dominant) from Source42.mm
+    // Full computation: g_UQFF(r, t) = all terms (quantum dominant) from Source42.cpp
     compute_g_Hydrogen(t) {
         this.variables.set('t', t);
         const Hz = this.computeHz();
@@ -16454,7 +16454,7 @@ class HydrogenAtomUQFFModule {
         };
     }
     
-    // Get equation description from Source42.mm
+    // Get equation description from Source42.cpp
     getEquationText() {
         return "A_muv = g_muv + eta T_s^{muv}(rho_vac_SCm, rho_vac_UA, rho_vac_A, t_n)" +
                "\nT_s^{muv} = 1.123e7 J/m� (diagonal; T_s_base + rho_vac_A = 1.27e3 + 1.11e7);" +
@@ -16480,24 +16480,24 @@ class HydrogenAtomUQFFModule {
     }
 }
 
-// UQFF Hydrogen Periodic Table Resonance Module (from Source43.mm)
+// UQFF Hydrogen Periodic Table Resonance Module (from Source43.cpp)
 class HydrogenPToEResonanceUQFFModule {
     constructor(params = {}) {
-        // Initialize all variables with Hydrogen PToE resonance defaults from Source43.mm
+        // Initialize all variables with Hydrogen PToE resonance defaults from Source43.cpp
         this.variables = new Map();
         
-        // Base constants (UQFF universal from Source43.mm)
+        // Base constants (UQFF universal from Source43.cpp)
         this.variables.set('c', 3e8);                           // m/s
         this.variables.set('pi', 3.141592653589793);            // pi
         this.variables.set('E_vac', 7.09e-36);                  // J/m� (plasmotic vacuum energy density)
         this.variables.set('hbar', 1.0546e-34);                 // J�s
         this.variables.set('f_TRZ', 0.1);                       // Time-reversal correction
         
-        // Hydrogen Atom parameters from Source43.mm
+        // Hydrogen Atom parameters from Source43.cpp
         this.variables.set('r', 5.29e-11);                      // m (Bohr radius)
         this.variables.set('V_sys', (4.0/3.0) * Math.PI * Math.pow(5.29e-11, 3)); // m� (orbital volume)
         
-        // Resonance parameters (spectral lines) from Source43.mm
+        // Resonance parameters (spectral lines) from Source43.cpp
         this.variables.set('f_DPM', 1e15);                      // Hz (Lyman alpha scaled)
         this.variables.set('f_THz', 1e15);                      // Hz (THz proxy for transitions)
         this.variables.set('f_aether', 1e4);                    // Hz (Aether-mediated)
@@ -16512,24 +16512,24 @@ class HydrogenPToEResonanceUQFFModule {
         this.variables.set('E_0', 6.381e-36);                   // J/m�
         this.variables.set('f_vac_diff', 0.143);                // Hz
         
-        // Superconductive resonance integrated from Source43.mm
+        // Superconductive resonance integrated from Source43.cpp
         this.variables.set('B_crit', 1e11);                     // T
         this.variables.set('f_sc', 1.0);                        // Factor
         this.variables.set('B_atomic', 1e-4);                   // T (internal field)
         
-        // Oscillatory/resonant from Source43.mm
+        // Oscillatory/resonant from Source43.cpp
         this.variables.set('k', 1e11);                          // m^-2� (UV wavelength)
         this.variables.set('omega_osc', 2.47e15);               // rad/s (Lyman)
         this.variables.set('x', 0.0);                           // m
         this.variables.set('A', 1e-10);                         // Amplitude
         
-        // Fluid/quantum proxies from Source43.mm
+        // Fluid/quantum proxies from Source43.cpp
         this.variables.set('rho_fluid', 1e-25);                 // kg/m� (electron cloud)
         this.variables.set('V', (4.0/3.0) * Math.PI * Math.pow(5.29e-11, 3)); // m�
         this.variables.set('delta_rho', 0.1 * 1e-25);           // kg/m� (perturbation)
         this.variables.set('rho', 1e-25);                       // kg/m�
         
-        // Quantum from Source43.mm
+        // Quantum from Source43.cpp
         this.variables.set('Delta_x', 5.29e-11);                // m (Bohr)
         this.variables.set('Delta_p', 1.0546e-34 / 5.29e-11);   // kg�m/s
         this.variables.set('integral_psi', 1.0);                // Normalized
@@ -16555,7 +16555,7 @@ class HydrogenPToEResonanceUQFFModule {
         this.variables.set('V', this.variables.get('V_sys'));
     }
     
-    // Dynamic variable operations from Source43.mm
+    // Dynamic variable operations from Source43.cpp
     updateVariable(name, value) {
         this.variables.set(name, value);
         if (name === 'Delta_x' || name === 'r') {
@@ -16575,7 +16575,7 @@ class HydrogenPToEResonanceUQFFModule {
         this.addToVariable(name, -delta);
     }
     
-    // Compute DPM Resonance Term: a_DPM_res = (F_DPM * f_DPM * E_vac) / (c * V_sys) from Source43.mm
+    // Compute DPM Resonance Term: a_DPM_res = (F_DPM * f_DPM * E_vac) / (c * V_sys) from Source43.cpp
     computeDPMResTerm() {
         const F_DPM = this.variables.get('I') * this.variables.get('A_vort') * 
                      (this.variables.get('omega_1') - this.variables.get('omega_2'));
@@ -16583,7 +16583,7 @@ class HydrogenPToEResonanceUQFFModule {
                (this.variables.get('c') * this.variables.get('V_sys'));
     }
     
-    // Compute THz Resonance Term: a_THz_res = (f_THz * E_vac * v_exp * a_DPM_res) / (E_vac/10 * c) from Source43.mm
+    // Compute THz Resonance Term: a_THz_res = (f_THz * E_vac * v_exp * a_DPM_res) / (E_vac/10 * c) from Source43.cpp
     computeTHzResTerm() {
         const a_DPM_res = this.computeDPMResTerm();
         return (this.variables.get('f_THz') * this.variables.get('E_vac') * 
@@ -16591,14 +16591,14 @@ class HydrogenPToEResonanceUQFFModule {
                ((this.variables.get('E_vac') / 10.0) * this.variables.get('c'));
     }
     
-    // Compute Aether Resonance Term: a_aether_res = f_aether * 1e-8 * f_DPM * (1 + f_TRZ) * a_DPM_res from Source43.mm
+    // Compute Aether Resonance Term: a_aether_res = f_aether * 1e-8 * f_DPM * (1 + f_TRZ) * a_DPM_res from Source43.cpp
     computeAetherResTerm() {
         const a_DPM_res = this.computeDPMResTerm();
         return this.variables.get('f_aether') * 1e-8 * this.variables.get('f_DPM') * 
                (1 + this.variables.get('f_TRZ')) * a_DPM_res;
     }
     
-    // Compute U_g4i Reactive Resonance Term: U_g4i_res = f_sc * Ug1_proxy * f_react * a_DPM_res / (E_vac * c) from Source43.mm
+    // Compute U_g4i Reactive Resonance Term: U_g4i_res = f_sc * Ug1_proxy * f_react * a_DPM_res / (E_vac * c) from Source43.cpp
     computeU_g4iResTerm() {
         const Ug1_proxy = 1.0; // Normalized
         const a_DPM_res = this.computeDPMResTerm();
@@ -16606,14 +16606,14 @@ class HydrogenPToEResonanceUQFFModule {
                a_DPM_res / (this.variables.get('E_vac') * this.variables.get('c'));
     }
     
-    // Compute Quantum Orbital Resonance Term: a_quantum_orbital_res = (f_quantum_orbital * E_vac * a_DPM_res) / (E_vac/10 * c) from Source43.mm
+    // Compute Quantum Orbital Resonance Term: a_quantum_orbital_res = (f_quantum_orbital * E_vac * a_DPM_res) / (E_vac/10 * c) from Source43.cpp
     computeQuantumOrbitalResTerm() {
         const a_DPM_res = this.computeDPMResTerm();
         return (this.variables.get('f_quantum_orbital') * this.variables.get('E_vac') * a_DPM_res) / 
                ((this.variables.get('E_vac') / 10.0) * this.variables.get('c'));
     }
     
-    // Compute Oscillatory Resonance Term: 2A cos(kx) cos(?t) + (2p/13.8) A Re[exp(i(kx - ?t))] from Source43.mm
+    // Compute Oscillatory Resonance Term: 2A cos(kx) cos(?t) + (2p/13.8) A Re[exp(i(kx - ?t))] from Source43.cpp
     computeOscResTerm(t) {
         const cos_term = 2 * this.variables.get('A') * 
                         Math.cos(this.variables.get('k') * this.variables.get('x')) * 
@@ -16628,12 +16628,12 @@ class HydrogenPToEResonanceUQFFModule {
         return cos_term + exp_factor * exp_real;
     }
     
-    // Compute SC Resonance Integrated: (1 - B / B_crit) * f_sc from Source43.mm
+    // Compute SC Resonance Integrated: (1 - B / B_crit) * f_sc from Source43.cpp
     computeSCResIntegrated(B) {
         return (1.0 - (B / this.variables.get('B_crit'))) * this.variables.get('f_sc');
     }
     
-    // Full Hydrogen Resonance: Sum resonance terms * SC * (1 + f_TRZ) from Source43.mm
+    // Full Hydrogen Resonance: Sum resonance terms * SC * (1 + f_TRZ) from Source43.cpp
     computeResonanceTerm(t, B) {
         this.variables.set('t', t);
         const a_DPM_res = this.computeDPMResTerm();
@@ -16689,7 +16689,7 @@ class HydrogenPToEResonanceUQFFModule {
         };
     }
     
-    // Get equation description from Source43.mm
+    // Get equation description from Source43.cpp
     getEquationText() {
         return "A_muv = g_muv + eta T_s^{muv}(rho_vac_SCm, rho_vac_UA, rho_vac_A, t_n)" +
                "\nT_s^{muv} = 1.123e7 J/m� (diagonal; T_s_base + rho_vac_A = 1.27e3 + 1.11e7);" +
@@ -16717,12 +16717,12 @@ class HydrogenPToEResonanceUQFFModule {
 }
 
 /**
- * Source41.mm Integration: Observable Universe Diameter Evolution Analysis
+ * Source41.cpp Integration: Observable Universe Diameter Evolution Analysis
  * Analyzes comprehensive UQFF+SM cosmological integration for observable universe
  * Implements H(z) evolution, Lambda-CDM model, dark matter interactions
  */
 function analyzeUniverseDiameter(timePoints = [1e9 * 3.156e7, 4.5e9 * 3.156e7, 13.8e9 * 3.156e7, 1e12 * 3.156e7]) {
-    console.log('\n?? === SOURCE 41.MM: OBSERVABLE UNIVERSE DIAMETER EVOLUTION ANALYSIS ===');
+    console.log('\n?? === SOURCE 41.cpp: OBSERVABLE UNIVERSE DIAMETER EVOLUTION ANALYSIS ===');
     console.log('?? UQFF Observable Universe Diameter Evolution with UQFF+SM Integration');
     console.log('?? Comprehensive cosmological physics for universe-scale evolution');
     
@@ -16851,7 +16851,7 @@ function analyzeUniverseDiameter(timePoints = [1e9 * 3.156e7, 4.5e9 * 3.156e7, 1
         console.log(`    Scale Factor Growth:       ${result.scale_factor.toExponential(2)}� current size`);
     });
     
-    console.log('\n?? Source41.mm Integration Summary:');
+    console.log('\n?? Source41.cpp Integration Summary:');
     console.log('  � Observable Universe: Complete UQFF+SM cosmological framework implemented');
     console.log('  � Lambda-CDM Model: Full integration with dark energy, dark matter, baryons');
     console.log('  � H(z) Evolution: Proper Hubble parameter evolution across cosmic time');
@@ -16871,12 +16871,12 @@ function analyzeUniverseDiameter(timePoints = [1e9 * 3.156e7, 4.5e9 * 3.156e7, 1
 }
 
 /**
- * Source42.mm Integration: Hydrogen Atom Evolution Analysis
+ * Source42.cpp Integration: Hydrogen Atom Evolution Analysis
  * Analyzes comprehensive UQFF+SM integration for hydrogen atom evolution
  * Implements quantum-dominant physics, atomic transitions, electron orbital dynamics
  */
 function analyzeHydrogenAtom(timePoints = [1e-18, 1e-15, 1e-12, 1e-9]) {
-    console.log('\n?? === SOURCE 42.MM: HYDROGEN ATOM EVOLUTION ANALYSIS ===');
+    console.log('\n?? === SOURCE 42.cpp: HYDROGEN ATOM EVOLUTION ANALYSIS ===');
     console.log('?? UQFF Hydrogen Atom Evolution with UQFF+SM Integration');
     console.log('?? Comprehensive atomic physics for quantum-scale evolution');
     
@@ -17009,7 +17009,7 @@ function analyzeHydrogenAtom(timePoints = [1e-18, 1e-15, 1e-12, 1e-9]) {
         console.log(`    Quantum Dominance:          ${(result.quantum_dominance * 100).toFixed(1)}%`);
     });
     
-    console.log('\n?? Source42.mm Integration Summary:');
+    console.log('\n?? Source42.cpp Integration Summary:');
     console.log('  � Hydrogen Atom: Complete UQFF+SM atomic framework implemented');
     console.log('  � Quantum Dominance: Heisenberg uncertainty principle dominates (~10�� m/s�)');
     console.log('  � EM Interactions: Electron orbital magnetic coupling q(v�B) included');
@@ -17028,13 +17028,13 @@ function analyzeHydrogenAtom(timePoints = [1e-18, 1e-15, 1e-12, 1e-9]) {
     };
 }
 
-// UQFF Lagoon Nebula Evolution Module (from Source44.mm)
+// UQFF Lagoon Nebula Evolution Module (from Source44.cpp)
 class LagoonUQFFModule {
     constructor(params = {}) {
-        // Initialize all variables with Lagoon Nebula defaults from Source44.mm
+        // Initialize all variables with Lagoon Nebula defaults from Source44.cpp
         this.variables = new Map();
         
-        // Base constants (UQFF universal from Source44.mm)
+        // Base constants (UQFF universal from Source44.cpp)
         this.variables.set('G', 6.6743e-11);                    // m� kg?� s^-1�
         this.variables.set('c', 3e8);                           // m/s
         this.variables.set('hbar', 1.0546e-34);                 // J�s
@@ -17044,7 +17044,7 @@ class LagoonUQFFModule {
         this.variables.set('t_Hubble', 13.8e9 * 3.156e7);       // s
         this.variables.set('year_to_s', 3.156e7);               // s/yr
         
-        // Lagoon Nebula parameters from Source44.mm
+        // Lagoon Nebula parameters from Source44.cpp
         const M_sun_val = 1.989e30;                             // kg
         this.variables.set('M_sun', M_sun_val);
         this.variables.set('M', 1e4 * M_sun_val);               // Total mass kg (10,000 Msun)
@@ -17054,7 +17054,7 @@ class LagoonUQFFModule {
         this.variables.set('M_DM', 0.85 * this.variables.get('M'));     // Dark matter/halo
         this.variables.set('r', 5.2e17);                        // m (half width ~55 ly)
         
-        // Hubble/cosmology from Source44.mm
+        // Hubble/cosmology from Source44.cpp
         this.variables.set('H0', 67.15);                        // km/s/Mpc
         this.variables.set('Mpc_to_m', 3.086e22);               // m/Mpc
         this.variables.set('z', 0.0013);                        // Redshift
@@ -17062,40 +17062,40 @@ class LagoonUQFFModule {
         this.variables.set('Omega_Lambda', 0.7);
         this.variables.set('t', 1e6 * this.variables.get('year_to_s')); // Default t=1 Myr s
         
-        // Gas dynamics from Source44.mm
+        // Gas dynamics from Source44.cpp
         this.variables.set('rho_fluid', 1e-20);                 // kg/m� (dense gas)
         this.variables.set('V', 1e3);                           // m� (arbitrary volume)
         this.variables.set('v_gas', 1e5);                       // m/s (turbulent velocity)
         this.variables.set('delta_rho', 0.1 * this.variables.get('rho_fluid'));
         this.variables.set('rho', this.variables.get('rho_fluid'));
         
-        // EM/magnetic from Source44.mm
+        // EM/magnetic from Source44.cpp
         this.variables.set('B', 1e-5);                          // T (nebula field)
         this.variables.set('B_crit', 1e11);                     // T (critical field)
         
-        // Quantum terms from Source44.mm
+        // Quantum terms from Source44.cpp
         this.variables.set('Delta_x', 1e-10);                   // m
         this.variables.set('Delta_p', this.variables.get('hbar') / this.variables.get('Delta_x'));
         this.variables.set('integral_psi', 1.0);
         
-        // Resonant/oscillatory from Source44.mm
+        // Resonant/oscillatory from Source44.cpp
         this.variables.set('A', 1e-10);
         this.variables.set('k', 1e20);
         this.variables.set('omega', 1e15);                      // rad/s (high freq)
         this.variables.set('x', 0.0);
         
-        // Ug subterms from Source44.mm
+        // Ug subterms from Source44.cpp
         this.variables.set('Ug1', 0.0);
         this.variables.set('Ug2', 0.0);
         this.variables.set('Ug3', 0.0);
         this.variables.set('Ug4', 0.0);
         
-        // Scale factors from Source44.mm
+        // Scale factors from Source44.cpp
         this.variables.set('scale_macro', 1e-12);
         this.variables.set('f_TRZ', 0.1);
         this.variables.set('f_sc', 1.0);
         
-        // Radiation pressure from Source44.mm
+        // Radiation pressure from Source44.cpp
         this.variables.set('L_H36', 7.65e31);                   // W (Herschel 36)
         this.variables.set('m_H', 1.67e-27);                    // kg (hydrogen mass)
         
@@ -17120,7 +17120,7 @@ class LagoonUQFFModule {
         this.variables.set('rho', this.variables.get('rho_fluid'));
     }
     
-    // Dynamic variable operations from Source44.mm
+    // Dynamic variable operations from Source44.cpp
     updateVariable(name, value) {
         this.variables.set(name, value);
         if (name === 'Delta_x' || name === 'M' || name === 'rho_fluid') {
@@ -17140,7 +17140,7 @@ class LagoonUQFFModule {
         this.addToVariable(name, -delta);
     }
     
-    // Compute H(z) in s^-1� from Source44.mm
+    // Compute H(z) in s^-1� from Source44.cpp
     computeHz() {
         const Hz_kms = this.variables.get('H0') * 
                       Math.sqrt(this.variables.get('Omega_m') * 
@@ -17149,7 +17149,7 @@ class LagoonUQFFModule {
         return (Hz_kms * 1e3) / this.variables.get('Mpc_to_m');
     }
     
-    // Compute Ug sum: Ug1 = G M / r�, Ug4 = Ug1 * f_sc, others 0 from Source44.mm
+    // Compute Ug sum: Ug1 = G M / r�, Ug4 = Ug1 * f_sc, others 0 from Source44.cpp
     computeUgSum() {
         const Ug1 = (this.variables.get('G') * this.variables.get('M')) / 
                     (this.variables.get('r') * this.variables.get('r'));
@@ -17159,7 +17159,7 @@ class LagoonUQFFModule {
                this.variables.get('Ug3') + this.variables.get('Ug4');
     }
     
-    // Quantum term: (h / v(?x ?p)) * ?? * (2p / t_Hubble) from Source44.mm
+    // Quantum term: (h / v(?x ?p)) * ?? * (2p / t_Hubble) from Source44.cpp
     computeQuantumTerm(t_Hubble_val) {
         const unc = Math.sqrt(this.variables.get('Delta_x') * this.variables.get('Delta_p'));
         const integral_val = this.variables.get('integral_psi');
@@ -17167,12 +17167,12 @@ class LagoonUQFFModule {
                (2 * this.variables.get('pi') / t_Hubble_val);
     }
     
-    // Fluid term: ?_fluid * V * g from Source44.mm
+    // Fluid term: ?_fluid * V * g from Source44.cpp
     computeFluidTerm(g_base) {
         return this.variables.get('rho_fluid') * this.variables.get('V') * g_base;
     }
     
-    // Resonant terms: 2A cos(kx) cos(?t) + (2p/13.8) A Re[exp(i(kx - ?t))] from Source44.mm
+    // Resonant terms: 2A cos(kx) cos(?t) + (2p/13.8) A Re[exp(i(kx - ?t))] from Source44.cpp
     computeResonantTerm(t) {
         const cos_term = 2 * this.variables.get('A') * 
                         Math.cos(this.variables.get('k') * this.variables.get('x')) * 
@@ -17187,7 +17187,7 @@ class LagoonUQFFModule {
         return cos_term + exp_factor * exp_real;
     }
     
-    // DM term: (M_visible + M_DM) * (??/? + 3GM/r�) from Source44.mm
+    // DM term: (M_visible + M_DM) * (??/? + 3GM/r�) from Source44.cpp
     computeDMTerm() {
         const pert = this.variables.get('delta_rho') / this.variables.get('rho');
         const curv = 3 * this.variables.get('G') * this.variables.get('M') / 
@@ -17195,13 +17195,13 @@ class LagoonUQFFModule {
         return (this.variables.get('M_visible') + this.variables.get('M_DM')) * (pert + curv);
     }
     
-    // Star formation factor: (SFR * t_yr) / M0 from Source44.mm
+    // Star formation factor: (SFR * t_yr) / M0 from Source44.cpp
     computeMsfFactor(t) {
         const t_yr = t / this.variables.get('year_to_s');
         return (this.variables.get('SFR') * t_yr) / this.variables.get('M0');
     }
     
-    // Radiation pressure: P_rad = (L_H36 / (4p r� c)) * (? / m_H) from Source44.mm
+    // Radiation pressure: P_rad = (L_H36 / (4p r� c)) * (? / m_H) from Source44.cpp
     computeP_rad() {
         const flux = this.variables.get('L_H36') / 
                     (4 * this.variables.get('pi') * this.variables.get('r') * 
@@ -17209,7 +17209,7 @@ class LagoonUQFFModule {
         return flux * (this.variables.get('rho_fluid') / this.variables.get('m_H'));
     }
     
-    // Full computation: g_UQFF(r, t) = ... all terms with M_sf and -P_rad from Source44.mm
+    // Full computation: g_UQFF(r, t) = ... all terms with M_sf and -P_rad from Source44.cpp
     computeG(t) {
         this.variables.set('t', t);
         const Hz = this.computeHz();
@@ -17292,7 +17292,7 @@ class LagoonUQFFModule {
         };
     }
     
-    // Get equation description from Source44.mm
+    // Get equation description from Source44.cpp
     getEquationText() {
         return "A_muv = g_muv + eta T_s^{muv}(rho_vac_SCm, rho_vac_UA, rho_vac_A, t_n)" +
                "\nT_s^{muv} = 1.123e7 J/m� (diagonal; T_s_base + rho_vac_A = 1.27e3 + 1.11e7);" +
@@ -17318,13 +17318,13 @@ class LagoonUQFFModule {
     }
 }
 
-// UQFF Spiral Galaxies & Supernovae Evolution Module (from Source45.mm)
+// UQFF Spiral Galaxies & Supernovae Evolution Module (from Source45.cpp)
 class SpiralSupernovaeUQFFModule {
     constructor(params = {}) {
-        // Initialize all variables with Spiral-Supernovae defaults from Source45.mm
+        // Initialize all variables with Spiral-Supernovae defaults from Source45.cpp
         this.variables = new Map();
         
-        // Base constants (UQFF universal from Source45.mm)
+        // Base constants (UQFF universal from Source45.cpp)
         this.variables.set('G', 6.6743e-11);                    // m� kg?� s^-1�
         this.variables.set('c', 3e8);                           // m/s
         this.variables.set('hbar', 1.0546e-34);                 // J�s
@@ -17333,7 +17333,7 @@ class SpiralSupernovaeUQFFModule {
         this.variables.set('pi', 3.141592653589793);            // p
         this.variables.set('t_Hubble', 13.8e9 * 3.156e7);       // s
         
-        // Spiral-Supernovae parameters from Source45.mm
+        // Spiral-Supernovae parameters from Source45.cpp
         const M_sun_val = 1.989e30;                             // kg
         this.variables.set('M_sun', M_sun_val);
         this.variables.set('M', 1e11 * M_sun_val);              // Galaxy mass kg (100 billion Msun)
@@ -17342,7 +17342,7 @@ class SpiralSupernovaeUQFFModule {
         this.variables.set('r', 9.258e20);                      // m (~30 kpc)
         this.variables.set('M_gas', 1e9 * M_sun_val);           // Gas mass
         
-        // Hubble/cosmology from Source45.mm
+        // Hubble/cosmology from Source45.cpp
         this.variables.set('H0', 73.0);                         // km/s/Mpc (SH0ES)
         this.variables.set('Mpc_to_m', 3.086e22);               // m/Mpc
         this.variables.set('z', 0.5);                           // Typical z for SN
@@ -17350,10 +17350,10 @@ class SpiralSupernovaeUQFFModule {
         this.variables.set('Omega_Lambda', 0.7);
         this.variables.set('t', 5e9 * 3.156e7);                 // Default t=5 Gyr s
         
-        // Spiral dynamics from Source45.mm
+        // Spiral dynamics from Source45.cpp
         this.variables.set('Omega_p', 20e3 / 3.086e19);         // rad/s (20 km/s/kpc pattern speed)
         
-        // SN parameters from Source45.mm
+        // SN parameters from Source45.cpp
         this.variables.set('L_SN', 1e36);                       // W (peak luminosity)
         this.variables.set('rho_fluid', 1e-21);                 // kg/m� (ISM)
         this.variables.set('V', 1e3);                           // m�
@@ -17361,28 +17361,28 @@ class SpiralSupernovaeUQFFModule {
         this.variables.set('delta_rho', 0.1 * this.variables.get('rho_fluid'));
         this.variables.set('rho', this.variables.get('rho_fluid'));
         
-        // EM/magnetic from Source45.mm
+        // EM/magnetic from Source45.cpp
         this.variables.set('B', 1e-5);                          // T (galactic field)
         this.variables.set('B_crit', 1e11);                     // T
         
-        // Quantum terms from Source45.mm
+        // Quantum terms from Source45.cpp
         this.variables.set('Delta_x', 1e-10);                   // m
         this.variables.set('Delta_p', this.variables.get('hbar') / this.variables.get('Delta_x'));
         this.variables.set('integral_psi', 1.0);
         
-        // Resonant/oscillatory from Source45.mm
+        // Resonant/oscillatory from Source45.cpp
         this.variables.set('A', 1e-10);
         this.variables.set('k', 1e20);
         this.variables.set('omega', 1e15);
         this.variables.set('x', 0.0);
         
-        // Ug subterms from Source45.mm
+        // Ug subterms from Source45.cpp
         this.variables.set('Ug1', 0.0);
         this.variables.set('Ug2', 0.0);
         this.variables.set('Ug3', 0.0);
         this.variables.set('Ug4', 0.0);
         
-        // Scale factors from Source45.mm
+        // Scale factors from Source45.cpp
         this.variables.set('scale_macro', 1e-12);
         this.variables.set('f_TRZ', 0.1);
         this.variables.set('f_sc', 1.0);
@@ -17407,7 +17407,7 @@ class SpiralSupernovaeUQFFModule {
         this.variables.set('rho', this.variables.get('rho_fluid'));
     }
     
-    // Dynamic variable operations from Source45.mm
+    // Dynamic variable operations from Source45.cpp
     updateVariable(name, value) {
         this.variables.set(name, value);
         if (name === 'Delta_x' || name === 'M' || name === 'rho_fluid' || name === 'H0') {
@@ -17427,7 +17427,7 @@ class SpiralSupernovaeUQFFModule {
         this.addToVariable(name, -delta);
     }
     
-    // Compute H(z) in s^-1� from Source45.mm
+    // Compute H(z) in s^-1� from Source45.cpp
     computeHz(z) {
         const Hz_kms = this.variables.get('H0') * 
                       Math.sqrt(this.variables.get('Omega_m') * 
@@ -17435,7 +17435,7 @@ class SpiralSupernovaeUQFFModule {
         return (Hz_kms * 1e3) / this.variables.get('Mpc_to_m');
     }
     
-    // Compute Ug sum: Ug1 = G M / r�, Ug4 = Ug1 * f_sc, others 0 from Source45.mm
+    // Compute Ug sum: Ug1 = G M / r�, Ug4 = Ug1 * f_sc, others 0 from Source45.cpp
     computeUgSum() {
         const Ug1 = (this.variables.get('G') * this.variables.get('M')) / 
                     (this.variables.get('r') * this.variables.get('r'));
@@ -17445,7 +17445,7 @@ class SpiralSupernovaeUQFFModule {
                this.variables.get('Ug3') + this.variables.get('Ug4');
     }
     
-    // Quantum term: (h / v(?x ?p)) * ?? * (2p / t_Hubble) from Source45.mm
+    // Quantum term: (h / v(?x ?p)) * ?? * (2p / t_Hubble) from Source45.cpp
     computeQuantumTerm(t_Hubble_val) {
         const unc = Math.sqrt(this.variables.get('Delta_x') * this.variables.get('Delta_p'));
         const integral_val = this.variables.get('integral_psi');
@@ -17453,12 +17453,12 @@ class SpiralSupernovaeUQFFModule {
                (2 * this.variables.get('pi') / t_Hubble_val);
     }
     
-    // Fluid term: ?_fluid * V * g from Source45.mm
+    // Fluid term: ?_fluid * V * g from Source45.cpp
     computeFluidTerm(g_base) {
         return this.variables.get('rho_fluid') * this.variables.get('V') * g_base;
     }
     
-    // Resonant terms: 2A cos(kx) cos(?t) + (2p/13.8) A Re[exp(i(kx - ?t))] from Source45.mm
+    // Resonant terms: 2A cos(kx) cos(?t) + (2p/13.8) A Re[exp(i(kx - ?t))] from Source45.cpp
     computeResonantTerm(t) {
         const cos_term = 2 * this.variables.get('A') * 
                         Math.cos(this.variables.get('k') * this.variables.get('x')) * 
@@ -17473,7 +17473,7 @@ class SpiralSupernovaeUQFFModule {
         return cos_term + exp_factor * exp_real;
     }
     
-    // DM term: (M_visible + M_DM) * (??/? + 3GM/r�) from Source45.mm
+    // DM term: (M_visible + M_DM) * (??/? + 3GM/r�) from Source45.cpp
     computeDMTerm() {
         const pert = this.variables.get('delta_rho') / this.variables.get('rho');
         const curv = 3 * this.variables.get('G') * this.variables.get('M') / 
@@ -17481,7 +17481,7 @@ class SpiralSupernovaeUQFFModule {
         return (this.variables.get('M_visible') + this.variables.get('M_DM')) * (pert + curv);
     }
     
-    // Spiral torque term: T_spiral = G * M_gas * M / r� * (1 + O_p * t) from Source45.mm
+    // Spiral torque term: T_spiral = G * M_gas * M / r� * (1 + O_p * t) from Source45.cpp
     computeT_spiral(t) {
         const torque_base = (this.variables.get('G') * this.variables.get('M_gas') * 
                             this.variables.get('M')) / 
@@ -17489,7 +17489,7 @@ class SpiralSupernovaeUQFFModule {
         return torque_base * (1.0 + this.variables.get('Omega_p') * t);
     }
     
-    // Supernova term: SN_term = (L_SN / (4p r� c)) * (1 + H(z) * t) from Source45.mm
+    // Supernova term: SN_term = (L_SN / (4p r� c)) * (1 + H(z) * t) from Source45.cpp
     computeSN_term(z) {
         const Hz = this.computeHz(z);
         const flux = this.variables.get('L_SN') / 
@@ -17498,7 +17498,7 @@ class SpiralSupernovaeUQFFModule {
         return flux * (1.0 + Hz * this.variables.get('t'));
     }
     
-    // Full computation: g_UQFF(r, t) = ... all terms with T_spiral and SN_term from Source45.mm
+    // Full computation: g_UQFF(r, t) = ... all terms with T_spiral and SN_term from Source45.cpp
     computeG(t, z) {
         this.variables.set('t', t);
         const Hz = this.computeHz(z);
@@ -17588,7 +17588,7 @@ class SpiralSupernovaeUQFFModule {
         };
     }
     
-    // Get equation description from Source45.mm
+    // Get equation description from Source45.cpp
     getEquationText() {
         return "A_muv = g_muv + eta T_s^{muv}(rho_vac_SCm, rho_vac_UA, rho_vac_A, t_n)" +
                "\nT_s^{muv} = 1.123e7 J/m� (diagonal; T_s_base + rho_vac_A = 1.27e3 + 1.11e7);" +
@@ -17615,10 +17615,10 @@ class SpiralSupernovaeUQFFModule {
     }
 }
 
-// NGC 6302 Bug Nebula Planetary Nebula Evolution Module (from Source46.mm)
+// NGC 6302 Bug Nebula Planetary Nebula Evolution Module (from Source46.cpp)
 class NGC6302UQFFModule {
     constructor(params = {}) {
-        // Initialize all variables with NGC 6302 Bug Nebula defaults from Source46.mm
+        // Initialize all variables with NGC 6302 Bug Nebula defaults from Source46.cpp
         this.variables = new Map();
         
         // Base universal constants
@@ -17945,10 +17945,10 @@ class NGC6302UQFFModule {
     }
 }
 
-// NGC 6302 Bug Nebula Resonance Evolution Module (from Source47.mm)
+// NGC 6302 Bug Nebula Resonance Evolution Module (from Source47.cpp)
 class NGC6302ResonanceUQFFModule {
     constructor(params = {}) {
-        // Initialize all variables with NGC 6302 Resonance defaults from Source47.mm
+        // Initialize all variables with NGC 6302 Resonance defaults from Source47.cpp
         this.variables = new Map();
         
         // Base universal constants (UQFF universal)
@@ -18292,7 +18292,7 @@ class NGC6302ResonanceUQFFModule {
 }
 
 /**
- * Source48.mm: Complete MUGE (Master Universal Gravity Equation) Integration for Orion Nebula Evolution
+ * Source48.cpp: Complete MUGE (Master Universal Gravity Equation) Integration for Orion Nebula Evolution
  * Implements full UQFF+SM framework with dynamic variables, star formation, stellar winds, radiation pressure
  */
 class OrionUQFFModule {
@@ -18688,10 +18688,10 @@ class OrionUQFFModule {
 }
 
 /**
- * Analyze Hydrogen PToE Resonance using UQFF Model (Source43.mm)
+ * Analyze Hydrogen PToE Resonance using UQFF Model (Source43.cpp)
  */
 function analyzeHydrogenPToEResonance() {
-    console.log("\n=== Source43.mm: Hydrogen PToE Resonance UQFF Analysis ===");
+    console.log("\n=== Source43.cpp: Hydrogen PToE Resonance UQFF Analysis ===");
     const params = PREDEFINED_SYSTEMS.HYDROGEN_PTOE_RESONANCE;
     const resonanceModule = new HydrogenPToEResonanceUQFFModule(params);
     
@@ -18749,10 +18749,10 @@ function analyzeHydrogenPToEResonance() {
 }
 
 /**
- * Analyze Lagoon Nebula Evolution using UQFF Model (Source44.mm)
+ * Analyze Lagoon Nebula Evolution using UQFF Model (Source44.cpp)
  */
 function analyzeLagoonNebula() {
-    console.log("\n=== Source44.mm: Lagoon Nebula Evolution UQFF Analysis ===");
+    console.log("\n=== Source44.cpp: Lagoon Nebula Evolution UQFF Analysis ===");
     const params = PREDEFINED_SYSTEMS.LAGOON_NEBULA;
     const lagoonModule = new LagoonUQFFModule(params);
     
@@ -18832,10 +18832,10 @@ function analyzeLagoonNebula() {
 }
 
 /**
- * Analyze Spiral Galaxies & Supernovae Evolution using UQFF Model (Source45.mm)
+ * Analyze Spiral Galaxies & Supernovae Evolution using UQFF Model (Source45.cpp)
  */
 function analyzeSpiralSupernovae() {
-    console.log("\n=== Source45.mm: Spiral Galaxies & Supernovae UQFF Analysis ===");
+    console.log("\n=== Source45.cpp: Spiral Galaxies & Supernovae UQFF Analysis ===");
     const params = PREDEFINED_SYSTEMS.SPIRAL_SUPERNOVAE;
     const spiralModule = new SpiralSupernovaeUQFFModule(params);
     
@@ -18925,10 +18925,10 @@ function analyzeSpiralSupernovae() {
 }
 
 /**
- * Analyze NGC 6302 Bug Nebula Evolution using UQFF Model (Source46.mm)
+ * Analyze NGC 6302 Bug Nebula Evolution using UQFF Model (Source46.cpp)
  */
 function analyzeNGC6302() {
-    console.log("\n=== Source46.mm: NGC 6302 Bug Nebula UQFF Analysis ===");
+    console.log("\n=== Source46.cpp: NGC 6302 Bug Nebula UQFF Analysis ===");
     const params = PREDEFINED_SYSTEMS.NGC6302_BUG_NEBULA;
     const ngc6302Module = new NGC6302UQFFModule(params);
     
@@ -19046,7 +19046,7 @@ function analyzeNGC6302() {
     return result;
 }
 
-// Compressed+Resonance UQFF Multi-System Module (from Source49.mm)
+// Compressed+Resonance UQFF Multi-System Module (from Source49.cpp)
 // Handles systems 26-28, 30-32, 34 with compressed and resonance terms
 class CompressedResonanceUQFF34Module {
     constructor(params = {}) {
@@ -19489,7 +19489,7 @@ class CompressedResonanceUQFF34Module {
     }
 }
 
-// Dynamic Variable UQFF Compressed & Resonance Module (from Source50.mm)
+// Dynamic Variable UQFF Compressed & Resonance Module (from Source50.cpp)
 // Handles comprehensive astronomical systems with dynamic variable management
 class CompressedResonanceUQFF50Module {
     constructor(params = {}) {
@@ -19763,7 +19763,7 @@ class StressEnergyTensorModule {
 
 
 function analyzeStressEnergyUQFF120() {
-    console.log('=== Source120.mm: Stress-Energy Tensor (T_s^{muv}) Analysis ===\n');
+    console.log('=== Source120.cpp: Stress-Energy Tensor (T_s^{muv}) Analysis ===\n');
     
     const setm = new StressEnergyTensorModule();
     
@@ -19809,16 +19809,16 @@ function analyzeStressEnergyUQFF120() {
     console.log('   Metric deviation: ' + Math.abs(setm.computePerturbation()).toExponential(3) + ' (weak field regime)');
     console.log('   Physical meaning: Aether stress perturbs spacetime geometry for UQFF dynamics');
     
-    console.log('\n Source120.mm Stress-Energy Tensor Integration Complete!');
+    console.log('\n Source120.cpp Stress-Energy Tensor Integration Complete!');
     console.log('     Ready for UQFF metric perturbation modeling');
     console.log('     Supports GR-compatible vacuum stress-energy effects');
     console.log('     Enables eta parameter studies in spacetime curvature dynamics');
 }
 
-// Export Source120.mm Stress-Energy Tensor Module
+// Export Source120.cpp Stress-Energy Tensor Module
 if (typeof module !== 'undefined' && module.exports) {
 
-// Source122.mm: SurfaceTemperatureModule - Surface Temperature Integration
+// Source122.cpp: SurfaceTemperatureModule - Surface Temperature Integration
 // Surface Temperature (T_s) computation for thermal scaling in UQFF magnetic strings
 // T_s = 5778 K (Sun effective photosphere); B_j scaling T_s / T_s_ref for U_g3 calculations
 // Physics: T_s influences magnetic string strength; U_g3 thermal dependence modeling
@@ -19908,7 +19908,7 @@ class SurfaceTemperatureModule {
 }
 
 function analyzeSurfaceTemperatureUQFF122() {
-    console.log('=== Source122.mm: Surface Temperature (T_s) Analysis ===');
+    console.log('=== Source122.cpp: Surface Temperature (T_s) Analysis ===');
     
     const stm = new SurfaceTemperatureModule();
     
@@ -19956,7 +19956,7 @@ function analyzeSurfaceTemperatureUQFF122() {
         energy_ratio: energy_ratio
     };
     
-    console.log(' Source122.mm: Surface Temperature Integration Complete!');
+    console.log(' Source122.cpp: Surface Temperature Integration Complete!');
     
     // Define integration data
     const uqffData = {
@@ -19975,11 +19975,11 @@ function analyzeSurfaceTemperatureUQFF122() {
     console.log('    UQFF cosmic magnetism thermal baseline');
     console.log('    Variable surface temperature impact studies');
     
-    console.log('\\n Source122.mm: Surface Temperature Integration Complete!');
+    console.log('\\n Source122.cpp: Surface Temperature Integration Complete!');
     return { module: stm, demo, uqffData };
 }
 
-// Source124.mm: Ug1DefectModule - Universal Gravity Defect Factor Integration
+// Source124.cpp: Ug1DefectModule - Universal Gravity Defect Factor Integration
 // Ug1 Defect Factor (?_def) computation for oscillatory perturbations in UQFF internal dipole gravity
 // ?_def = 0.01 * sin(0.001 t) (unitless, t in days); Period ~17.22 years for stellar gravity perturbations
 // Physics: Small oscillatory defects in internal dipole gravity; time-dependent U_g1 enhancement
@@ -20087,9 +20087,9 @@ class Ug1DefectModule {
     }
 }
 
-// Analysis function for Source124.mm integration
+// Analysis function for Source124.cpp integration
 function analyzeUg1DefectUQFF124() {
-    console.log('=== Source124.mm: Ug1 Defect Factor (?_def) Analysis ===');
+    console.log('=== Source124.cpp: Ug1 Defect Factor (?_def) Analysis ===');
     console.log('');
     
     const ugm = new Ug1DefectModule();
@@ -20138,15 +20138,15 @@ function analyzeUg1DefectUQFF124() {
     console.log('   Enhancement: 1% oscillatory gravity perturbations');
     console.log('   Period: ~17.22 year stellar gravity cycles');
     console.log('   Framework: UQFF internal dipole gravity dynamics');
-    console.log('   Status: Source124.mm integration complete');
+    console.log('   Status: Source124.cpp integration complete');
     console.log('');
     
-    console.log(' Source124.mm: Ug1 Defect Factor Integration Complete!');
+    console.log(' Source124.cpp: Ug1 Defect Factor Integration Complete!');
     return ugm;
 }
 
 
-// Source125.mm: Ug3DiskVectorModule - Unit Vector in Ug3 Disk Plane Integration
+// Source125.cpp: Ug3DiskVectorModule - Unit Vector in Ug3 Disk Plane Integration
 // Unit Vector f_j computation for directional geometry in UQFF magnetic strings
 // f_j = [cos ?_j, sin ?_j, 0] (unit vector in Ug3 disk plane, |f_j|=1)
 // Physics: Azimuthal direction for j-th magnetic string in disk/galactic plane
@@ -20262,9 +20262,9 @@ class Ug3DiskVectorModule {
     }
 }
 
-// Analysis function for Source125.mm integration
+// Analysis function for Source125.cpp integration
 function analyzeUg3DiskVectorUQFF125() {
-    console.log('=== Source125.mm: Ug3 Disk Vector (f_j) Analysis ===');
+    console.log('=== Source125.cpp: Ug3 Disk Vector (f_j) Analysis ===');
     console.log('');
     
     const ugvm = new Ug3DiskVectorModule();
@@ -20330,14 +20330,14 @@ function analyzeUg3DiskVectorUQFF125() {
     console.log('   Vector: f_j = [cos ?_j, sin ?_j, 0] normalized disk vectors');
     console.log('   Magnitude: |f_j| = 1.0 (proper unit vector normalization)');
     console.log('   Framework: UQFF directional geometry for U_m contributions');
-    console.log('   Status: Source125.mm integration complete');
+    console.log('   Status: Source125.cpp integration complete');
     console.log('');
     
-    console.log(' Source125.mm: Ug3 Disk Vector Integration Complete!');
+    console.log(' Source125.cpp: Ug3 Disk Vector Integration Complete!');
     return ugvm;
 }
 
-// Source126.mm: AetherVacuumDensityModule - Vacuum Energy Density of Aether Integration
+// Source126.cpp: AetherVacuumDensityModule - Vacuum Energy Density of Aether Integration
 // Vacuum Energy Density ?_vac,A computation for spacetime geometry in UQFF Aether dynamics
 // ?_vac,A = 1e-23 J/m (Aether vacuum energy density); A_�? = g_�? + ? T_s^{�?}
 // Physics: Intrinsic Aether energy contributing to stress-energy tensor and metric perturbation
@@ -20433,9 +20433,9 @@ class AetherVacuumDensityModule {
     }
 }
 
-// Analysis function for Source126.mm integration
+// Analysis function for Source126.cpp integration
 function analyzeAetherVacuumDensityUQFF126() {
-    console.log('=== Source126.mm: Aether Vacuum Density (?_vac,A) Analysis ===');
+    console.log('=== Source126.cpp: Aether Vacuum Density (?_vac,A) Analysis ===');
     console.log('');
     
     const avdm = new AetherVacuumDensityModule();
@@ -20503,14 +20503,14 @@ function analyzeAetherVacuumDensityUQFF126() {
     console.log('   Vacuum density: ?_vac,A = 1e-23 J/m (intrinsic Aether background)');
     console.log('   Metric perturbation: A_�?  g_�? + 1e-15 (negligible but measurable)');
     console.log('   Framework: UQFF GR-Aether coupling for spacetime geometry');
-    console.log('   Status: Source126.mm integration complete');
+    console.log('   Status: Source126.cpp integration complete');
     console.log('');
     
-    console.log(' Source126.mm: Aether Vacuum Density Integration Complete!');
+    console.log(' Source126.cpp: Aether Vacuum Density Integration Complete!');
     return avdm;
 }
 
-// Source127.mm: UniversalInertiaVacuumModule - Universal Inertia Vacuum Energy Density Integration
+// Source127.cpp: UniversalInertiaVacuumModule - Universal Inertia Vacuum Energy Density Integration
 // Vacuum Energy Density ?_vac,Ui computation for inertial resistance scale in UQFF dynamics
 // ?_vac,Ui = 2.84e-36 J/m (Sun level 13, reference scale for U_i magnitude)
 // Physics: Quantifies vacuum inertia energy providing resistance to cosmic dynamics
@@ -20612,9 +20612,9 @@ class UniversalInertiaVacuumModule {
     }
 }
 
-// Analysis function for Source127.mm integration
+// Analysis function for Source127.cpp integration
 function analyzeUniversalInertiaVacuumUQFF127() {
-    console.log('=== Source127.mm: Universal Inertia Vacuum (?_vac,Ui) Analysis ===');
+    console.log('=== Source127.cpp: Universal Inertia Vacuum (?_vac,Ui) Analysis ===');
     console.log('');
     
     const uivm = new UniversalInertiaVacuumModule();
@@ -20695,10 +20695,10 @@ function analyzeUniversalInertiaVacuumUQFF127() {
     console.log('   Reference: ?_vac,Ui = 2.84e-36 J/m (Sun level 13 inertial scale)');
     console.log('   Inertia: U_i  1.38e-77 J/m (with TRZ enhancement +10%)');
     console.log('   Framework: UQFF vacuum inertia energy for resistance dynamics');
-    console.log('   Status: Source127.mm integration complete');
+    console.log('   Status: Source127.cpp integration complete');
     console.log('');
     
-    console.log(' Source127.mm: Universal Inertia Vacuum Integration Complete!');
+    console.log(' Source127.cpp: Universal Inertia Vacuum Integration Complete!');
     return uivm;
 }
 // Export all modules

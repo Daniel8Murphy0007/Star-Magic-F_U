@@ -1,4 +1,4 @@
-// UniversalInertiaVacuumModule.h
+﻿// UniversalInertiaVacuumModule.h
 // Modular C++ implementation of the Vacuum Energy Density of Universal Inertia (ρ_vac,Ui) in the Universal Quantum Field Superconductive Framework (UQFF).
 // This module computes ρ_vac,Ui = 2.84e-36 J/m³ (Sun, level 13); reference scale for U_i inertial term.
 // Pluggable: #include "UniversalInertiaVacuumModule.h"

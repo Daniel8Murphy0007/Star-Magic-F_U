@@ -325,3 +325,318 @@ void Abell2256UQFFModule::printVariables() {
 // Compile: g++ -o abell_sim abell_sim.cpp Abell2256UQFFModule.cpp -lm
 // Sample Output at t=0.2 Gyr: F ≈ -8.32e217 + i (large; approx per framework; dominant real from LENR * x2).
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 11, 2025.
+// ===== MISSING ABELL 2256 BUOYANCY FUNCTION IMPLEMENTATIONS =====
+
+// Compute Ub1 buoyancy term for galaxy cluster merger dynamics
+cdouble Abell2256UQFFModule::computeUb1() {
+    // Enhanced buoyancy calculation for Abell 2256 galaxy cluster
+    cdouble beta = variables["beta_i"];
+    cdouble V = variables["V_infl_UA"];
+    cdouble rho_vac = variables["rho_vac_UA"];
+    cdouble rho_A = variables["rho_vac_A"];
+    cdouble a = variables["a_universal"];
+    cdouble G = variables["G"];
+    cdouble M = variables["M"];
+    cdouble r = variables["r"];
+    cdouble c = variables["c"];
+    
+    // Base buoyancy force
+    cdouble base_buoyancy = beta * V * rho_A * a;
+    
+    // Galaxy cluster gravitational enhancement
+    cdouble cluster_grav = G * M / (r * r);
+    
+    // Intracluster medium (ICM) buoyancy effects
+    cdouble rho_ICM = variables["rho_gas"];  // ICM gas density
+    cdouble T_ICM = 8e7;  // ICM temperature ~80 keV
+    cdouble k_B = variables["k_B"];
+    cdouble pressure_term = rho_ICM * k_B * T_ICM / (variables["m_e"] * c * c);
+    
+    // Radio halo and relic contributions (Abell 2256 specific)
+    cdouble L_X = variables["L_X"];
+    cdouble B0 = variables["B0"];
+    cdouble radio_enhancement = std::sqrt(L_X / 1e37) * std::sqrt(B0 / 1e-9);
+    
+    // Merger shock dynamics (major-minor merger at z=0.058)
+    double velocity_dispersion = 1700e3;  // m/s, characteristic velocity
+    cdouble merger_factor = velocity_dispersion * velocity_dispersion / (c * c);
+    
+    // Dark matter halo effects
+    double M500 = M.real();  // M500 mass
+    cdouble dm_factor = std::log10(M500 / 1e45);  // Mass scaling
+    
+    // Cosmic ray pressure and relativistic effects
+    cdouble relativistic_pressure = variables["k_rel"] * pressure_term * merger_factor;
+    
+    return base_buoyancy + cluster_grav * pressure_term * radio_enhancement * (1.0 + merger_factor) * dm_factor + relativistic_pressure;
+}
+
+// Compute Ui superconductive term for galaxy cluster magnetism and dynamics
+cdouble Abell2256UQFFModule::computeUi(double t) {
+    double pi_val = variables["pi"].real();
+    double tn = t / variables["t_scale"].real();
+    cdouble lambda = variables["lambda_i"];
+    cdouble rho_sc = variables["rho_vac_SCm"];
+    cdouble rho_ua = variables["rho_vac_UA"];
+    cdouble omega_s = variables["omega_s"];
+    cdouble f_trz = variables["f_TRZ"];
+    
+    // Time-dependent oscillations
+    double cos_term = cos(pi_val * tn);
+    
+    // Abell 2256 specific magnetic field enhancements
+    cdouble B0 = variables["B0"];
+    cdouble mu0 = variables["mu0"];
+    cdouble magnetic_energy = B0 * B0 / (2.0 * mu0);
+    
+    // ICM turbulence and magnetic field amplification
+    double turbulent_velocity = 500e3;  // m/s, turbulent velocity in ICM
+    cdouble turbulence_factor = turbulent_velocity / variables["c"];
+    
+    // Merger-induced magnetic field enhancement
+    double merger_age = 6.31e15;  // s, ~0.2 Gyr since merger
+    cdouble time_evolution = std::exp(-t / (2.0 * merger_age));  // Decay factor
+    
+    // Radio halo magnetic field coupling
+    cdouble L_X = variables["L_X"];
+    cdouble synchrotron_scaling = std::sqrt(L_X * magnetic_energy);
+    
+    // Relativistic particle acceleration in merger shocks
+    cdouble shock_acceleration = variables["k_rel"] * turbulence_factor * turbulence_factor;
+    
+    // Dark matter interaction effects
+    cdouble M = variables["M"];
+    cdouble r = variables["r"];
+    cdouble dm_coupling = M / (4.0 * pi_val * r * r * r);  // Mass density profile
+    
+    // Enhanced superconductive term with galaxy cluster physics
+    cdouble base_ui = lambda * (rho_sc / rho_ua) * omega_s * cos_term * (1.0 + f_trz);
+    cdouble cluster_enhancement = magnetic_energy * turbulence_factor * time_evolution * shock_acceleration;
+    cdouble radio_coupling = synchrotron_scaling * dm_coupling;
+    
+    return base_ui * cluster_enhancement + radio_coupling;
+}
+
+// ===== ENHANCED DYNAMIC CAPABILITIES =====
+
+// Auto-calibrate parameters to match observational targets
+void Abell2256UQFFModule::autoCalibrate(const std::string& observable, double target_value, double tolerance) {
+    if (variables.find(observable) == variables.end()) {
+        std::cerr << "Observable '" << observable << "' not found for calibration." << std::endl;
+        return;
+    }
+    
+    double current_value = variables[observable].real();
+    double error = std::abs(current_value - target_value) / target_value;
+    
+    if (error > tolerance) {
+        // Gradient-based parameter adjustment
+        std::vector<std::string> tunable_params = {"M", "r", "B0", "rho_gas", "L_X"};
+        
+        for (const auto& param : tunable_params) {
+            cdouble gradient = computeGradient(param, observable);
+            if (std::abs(gradient) > 1e-20) {
+                cdouble adjustment = learning_rate * (target_value - current_value) / gradient;
+                variables[param] += adjustment;
+                recordHistory(param, variables[param]);
+            }
+        }
+        
+        std::cout << "Auto-calibrated " << observable << " from " << current_value 
+                  << " to target " << target_value << " (error: " << error << ")" << std::endl;
+    }
+}
+
+// Adaptive parameter updates based on temporal evolution
+void Abell2256UQFFModule::adaptiveUpdate(double dt, const std::string& feedback_param) {
+    if (!self_learning_enabled) return;
+    
+    // Merger evolution timescale
+    double merger_timescale = 6.31e15;  // ~0.2 Gyr
+    double evolution_factor = std::exp(-dt / merger_timescale);
+    
+    // Adaptive magnetic field evolution
+    cdouble B0_old = variables["B0"];
+    variables["B0"] *= evolution_factor;
+    
+    // Adaptive velocity dispersion decay
+    double velocity_decay = 0.99;  // 1% decay per update
+    if (variables.find("velocity_dispersion") != variables.end()) {
+        variables["velocity_dispersion"] *= velocity_decay;
+    } else {
+        variables["velocity_dispersion"] = {1700e3 * velocity_decay, 0.0};
+    }
+    
+    // ICM cooling and heating balance
+    cdouble T_ICM_factor = 1.0 + 0.01 * std::sin(2 * M_PI * dt / merger_timescale);
+    if (variables.find("T_ICM") != variables.end()) {
+        variables["T_ICM"] *= T_ICM_factor;
+    } else {
+        variables["T_ICM"] = {8e7 * T_ICM_factor.real(), 0.0};
+    }
+    
+    recordHistory("adaptive_time", {dt, 0.0});
+    std::cout << "Adaptive update: B0=" << variables["B0"].real() 
+              << ", v_disp=" << variables["velocity_dispersion"].real() << std::endl;
+}
+
+// Scale parameters to match observational data
+void Abell2256UQFFModule::scaleToObservations(const std::map<std::string, double>& observations) {
+    for (const auto& obs : observations) {
+        if (variables.find(obs.first) != variables.end()) {
+            double scaling = obs.second / variables[obs.first].real();
+            variables[obs.first] *= scaling;
+            
+            // Scale related parameters
+            if (obs.first == "L_X") {
+                variables["B0"] *= std::sqrt(scaling);  // B scales with sqrt(L_X)
+                variables["rho_gas"] *= scaling;        // Gas density scales with L_X
+            }
+            if (obs.first == "M") {
+                variables["r"] *= std::pow(scaling, 1.0/3.0);  // r scales with M^(1/3)
+            }
+        }
+    }
+    std::cout << "Scaled to " << observations.size() << " observational constraints." << std::endl;
+}
+
+// Add custom variables with dependency tracking
+void Abell2256UQFFModule::addCustomVariable(const std::string& name, cdouble value, const std::string& dependency) {
+    variables[name] = value;
+    if (!dependency.empty()) {
+        variable_dependencies[name] = dependency;
+    }
+    recordHistory(name, value);
+    std::cout << "Added custom variable: " << name << " = " << value << std::endl;
+}
+
+// Get variable evolution history
+std::map<std::string, cdouble> Abell2256UQFFModule::getVariableHistory(const std::string& name, int steps) {
+    std::map<std::string, cdouble> history;
+    if (variable_history.find(name) != variable_history.end()) {
+        auto& hist = variable_history[name];
+        int start = std::max(0, (int)hist.size() - steps);
+        for (int i = start; i < (int)hist.size(); i++) {
+            history["step_" + std::to_string(i)] = hist[i];
+        }
+    }
+    return history;
+}
+
+// Enable/disable self-learning capabilities
+void Abell2256UQFFModule::enableSelfLearning(bool enable) {
+    self_learning_enabled = enable;
+    if (enable) {
+        std::cout << "Self-learning enabled with rate: " << learning_rate << std::endl;
+    } else {
+        std::cout << "Self-learning disabled." << std::endl;
+    }
+}
+
+// Export current state for persistence
+void Abell2256UQFFModule::exportState(const std::string& filename) {
+    std::ofstream file(filename);
+    if (file.is_open()) {
+        file << "# Abell2256UQFFModule State Export" << std::endl;
+        file << "update_counter=" << update_counter << std::endl;
+        file << "learning_rate=" << learning_rate << std::endl;
+        file << "self_learning_enabled=" << (self_learning_enabled ? 1 : 0) << std::endl;
+        
+        for (const auto& var : variables) {
+            file << var.first << "=" << var.second.real() << "," << var.second.imag() << std::endl;
+        }
+        file.close();
+        std::cout << "State exported to: " << filename << std::endl;
+    }
+}
+
+// Import state from file
+void Abell2256UQFFModule::importState(const std::string& filename) {
+    std::ifstream file(filename);
+    if (file.is_open()) {
+        std::string line;
+        while (std::getline(file, line)) {
+            if (line[0] == '#') continue;
+            
+            size_t eq_pos = line.find('=');
+            if (eq_pos != std::string::npos) {
+                std::string key = line.substr(0, eq_pos);
+                std::string value_str = line.substr(eq_pos + 1);
+                
+                if (key == "update_counter") {
+                    update_counter = std::stoi(value_str);
+                } else if (key == "learning_rate") {
+                    learning_rate = std::stod(value_str);
+                } else if (key == "self_learning_enabled") {
+                    self_learning_enabled = (std::stoi(value_str) == 1);
+                } else {
+                    size_t comma_pos = value_str.find(',');
+                    if (comma_pos != std::string::npos) {
+                        double real_part = std::stod(value_str.substr(0, comma_pos));
+                        double imag_part = std::stod(value_str.substr(comma_pos + 1));
+                        variables[key] = {real_part, imag_part};
+                    }
+                }
+            }
+        }
+        file.close();
+        std::cout << "State imported from: " << filename << std::endl;
+    }
+}
+
+// Helper function: Update dependent variables
+void Abell2256UQFFModule::updateDependencies(const std::string& changed_var) {
+    // Automatic dependency updates
+    if (changed_var == "M") {
+        // Update Schwarzschild radius
+        cdouble M = variables["M"];
+        cdouble G = variables["G"];
+        cdouble c = variables["c"];
+        variables["r_schwarzschild"] = 2.0 * G * M / (c * c);
+    }
+    
+    if (changed_var == "B0") {
+        // Update magnetic energy density
+        cdouble B0 = variables["B0"];
+        cdouble mu0 = variables["mu0"];
+        variables["u_magnetic"] = B0 * B0 / (2.0 * mu0);
+    }
+    
+    if (changed_var == "L_X") {
+        // Update implied temperature
+        cdouble L_X = variables["L_X"];
+        variables["T_implied"] = std::pow(L_X / 1e37, 0.25) * 8e7;  // Rough scaling
+    }
+}
+
+// Helper function: Compute numerical gradient
+cdouble Abell2256UQFFModule::computeGradient(const std::string& var, const std::string& target) {
+    if (variables.find(var) == variables.end() || variables.find(target) == variables.end()) {
+        return {0.0, 0.0};
+    }
+    
+    cdouble original_value = variables[var];
+    cdouble original_target = variables[target];
+    
+    // Small perturbation
+    cdouble delta = original_value * 1e-6;
+    variables[var] += delta;
+    
+    // Recompute target (simplified - would need full recalculation in practice)
+    cdouble new_target = computeF(variables["t"].real());  // Use main computation
+    
+    // Restore original value
+    variables[var] = original_value;
+    
+    return (new_target - original_target) / delta;
+}
+
+// Helper function: Record variable history
+void Abell2256UQFFModule::recordHistory(const std::string& name, cdouble value) {
+    variable_history[name].push_back(value);
+    
+    // Keep only last 100 values to prevent memory bloat
+    if (variable_history[name].size() > 100) {
+        variable_history[name].erase(variable_history[name].begin());
+    }
+}

@@ -1,4 +1,4 @@
-// CentaurusAUQFFModule.h
+﻿// CentaurusAUQFFModule.h
 // Modular C++ implementation of the full Master Unified Field Equation (F_U_Bi_i & UQFF Integration) for Centaurus A Active Galaxy Evolution.
 // This module can be plugged into a base program (e.g., 'centaurus_sim.cpp') by including this header and linking the .cpp.
 // Usage in base: #include "CentaurusAUQFFModule.h"

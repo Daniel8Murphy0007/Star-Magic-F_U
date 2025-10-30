@@ -1,4 +1,4 @@
-// LENRUQFFModule.h
+﻿// LENRUQFFModule.h
 // Modular C++ implementation of the Master Universal Gravity Equation (MUGE & UQFF Integration) for LENR Analysis (Metallic Hydride Cells, Exploding Wires, Solar Corona).
 // This module models LENR dynamics via electro-weak interactions: electron acceleration to 0.78 MeV threshold, neutron production, transmutations; UQFF terms Um (magnetism), Ug1-Ug4 (gravity), Ui (inertia), pseudo-monopole.
 // Usage: #include "LENRUQFFModule.h" in base program; LENRUQFFModule mod; mod.setScenario("hydride"); mod.computeNeutronRate(t); mod.updateVariable("E_field", new_value);

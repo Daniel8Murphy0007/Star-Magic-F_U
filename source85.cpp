@@ -1,4 +1,4 @@
-// NGC346UQFFModule.h
+﻿// NGC346UQFFModule.h
 // Modular C++ implementation of the Master Universal Gravity Equation (MUGE & UQFF Integration) for NGC 346 Nebula Evolution.
 // This module models NGC 346's gravitational dynamics, incorporating protostar formation via Ug3 collapse, cluster entanglement via Ugi forces, blueshifted quantum waves, and pseudo-monopole communication.
 // Usage: #include "NGC346UQFFModule.h" in base program; NGC346UQFFModule mod; mod.computeG(t); mod.updateVariable("rho_gas", new_value);

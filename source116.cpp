@@ -1,4 +1,4 @@
-// SolarWindVelocityModule.h
+﻿// SolarWindVelocityModule.h
 // Modular C++ implementation of the Solar Wind Velocity (v_sw) in the Universal Quantum Field Superconductive Framework (UQFF).
 // This module computes v_sw=5e5 m/s (500 km/s); scales (1 + δ_sw v_sw) in Universal Gravity U_g2 term.
 // Pluggable: #include "SolarWindVelocityModule.h"

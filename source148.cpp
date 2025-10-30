@@ -1,4 +1,4 @@
-// RAquariiUQFFModule.h
+﻿// RAquariiUQFFModule.h
 // Modular C++ implementation of the full Master Unified Field Equation (F_U_Bi_i & UQFF Integration) for R Aquarii Symbiotic Binary Star Evolution.
 // This module can be plugged into a base program (e.g., 'raquarii_sim.cpp') by including this header and linking the .cpp.
 // Usage in base: #include "RAquariiUQFFModule.h"

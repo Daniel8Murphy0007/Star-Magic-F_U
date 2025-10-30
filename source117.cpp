@@ -1,14 +1,14 @@
-// SolarWindVelocityModule.h
-// Modular C++ implementation of the Solar Wind Velocity (v_sw) in the Universal Quantum Field Superconductive Framework (UQFF).
-// This module computes v_sw=5e5 m/s (500 km/s); scales (1 + δ_sw v_sw) in Universal Gravity U_g2 term.
-// Pluggable: #include "SolarWindVelocityModule.h"
-// SolarWindVelocityModule mod; mod.computeU_g2(1.496e13); mod.updateVariable("v_sw", new_value);
-// Variables in std::map; example for Sun at r=R_b=1.496e13 m; amplification ~5001x.
-// Approximations: S(r - R_b)=1; H_SCm=1; E_react=1e46; ρ_sum=7.80e-36 J/m³.
+// StellarMassModule.h
+// Modular C++ implementation of the Stellar/Planetary Mass (M_s) in the Universal Quantum Field Superconductive Framework (UQFF).
+// This module computes M_s=1.989e30 kg (1 M_sun for Sun); scales M_s / r^2 in Universal Gravity U_g1 and U_g2 terms.
+// Pluggable: #include "StellarMassModule.h"
+// StellarMassModule mod; mod.computeU_g2(1.496e13); mod.updateVariable("M_s", new_value);
+// Variables in std::map; example for Sun at r=1.496e13 m; U_g2 ?1.18e53 J/m�.
+// Approximations: S(r - R_b)=1; (1 + ?_sw v_sw)=5001; H_SCm=1; E_react=1e46.
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
-#ifndef SOLAR_WIND_VELOCITY_MODULE_H
-#define SOLAR_WIND_VELOCITY_MODULE_H
+#ifndef STELLAR_MASS_MODULE_H
+#define STELLAR_MASS_MODULE_H
 
 #include <map>
 #include <string>
@@ -16,15 +16,16 @@
 #include <iostream>
 #include <iomanip>
 
-class SolarWindVelocityModule {
+class StellarMassModule {
 private:
     std::map<std::string, double> variables;
-    double computeModulationFactor();
+    double computeM_sOverR2(double r);
+    double computeU_g1(double r);
     double computeU_g2(double r);
 
 public:
     // Constructor: Initialize with framework defaults (Sun)
-    SolarWindVelocityModule();
+    StellarMassModule();
 
     // Dynamic variable operations
     void updateVariable(const std::string& name, double value);
@@ -32,11 +33,11 @@ public:
     void subtractFromVariable(const std::string& name, double delta);
 
     // Core computations
-    double computeV_sw();  // 5e5 m/s
-    double computeV_swKmS();  // 500 km/s
-    double computeModulationFactor();  // 1 + δ_sw v_sw
-    double computeU_g2(double r);  // U_g2 with modulation (J/m^3)
-    double computeU_g2_no_sw(double r);  // Without v_sw (set=0)
+    double computeM_s();  // 1.989e30 kg
+    double computeM_sInMsun();  // 1 M_sun
+    double computeM_sOverR2(double r);  // M_s / r^2 (kg/m�)
+    double computeU_g1(double r);  // U_g1 example (J/m^3)
+    double computeU_g2(double r);  // U_g2 example (J/m^3)
 
     // Output descriptive text
     std::string getEquationText();
@@ -45,39 +46,41 @@ public:
     void printVariables();
 };
 
-#endif // SOLAR_WIND_VELOCITY_MODULE_H
+#endif // STELLAR_MASS_MODULE_H
 
-// SolarWindVelocityModule.cpp
-#include "SolarWindVelocityModule.h"
+// StellarMassModule.cpp
+#include "StellarMassModule.h"
 
 // Constructor: Set framework defaults (Sun at r=R_b)
-SolarWindVelocityModule::SolarWindVelocityModule() {
+StellarMassModule::StellarMassModule() {
     // Universal constants
-    variables["v_sw"] = 5e5;                        // m/s
-    variables["delta_sw"] = 0.01;                   // Unitless
-    variables["k_2"] = 1.2;                         // Coupling
+    variables["M_s"] = 1.989e30;                    // kg (Sun)
+    variables["M_sun"] = 1.989e30;                  // kg
+    variables["k_1"] = 1.5;                         // Coupling for U_g1
+    variables["k_2"] = 1.2;                         // Coupling for U_g2
     variables["rho_vac_UA"] = 7.09e-36;             // J/m^3
     variables["rho_vac_SCm"] = 7.09e-37;            // J/m^3
-    variables["M_s"] = 1.989e30;                    // kg
-    variables["r"] = 1.496e13;                      // m (R_b)
+    variables["r"] = 1.496e13;                      // m (example R_b)
     variables["R_b"] = 1.496e13;                    // m
     variables["S_r_Rb"] = 1.0;                      // Step
+    variables["delta_sw"] = 0.01;                   // Unitless
+    variables["v_sw"] = 5e5;                        // m/s
     variables["H_SCm"] = 1.0;                       // Unitless
     variables["E_react"] = 1e46;                    // J
 
     // Derived
     variables["rho_sum"] = variables["rho_vac_UA"] + variables["rho_vac_SCm"];
-    variables["modulation_factor"] = computeModulationFactor();
+    variables["swirl_factor"] = 1.0 + variables["delta_sw"] * variables["v_sw"];
 }
 
 // Update variable
-void SolarWindVelocityModule::updateVariable(const std::string& name, double value) {
+void StellarMassModule::updateVariable(const std::string& name, double value) {
     if (variables.find(name) != variables.end()) {
         variables[name] = value;
-        if (name == "v_sw" || name == "delta_sw") {
-            variables["modulation_factor"] = computeModulationFactor();
-        } else if (name == "rho_vac_UA" || name == "rho_vac_SCm") {
+        if (name == "rho_vac_UA" || name == "rho_vac_SCm") {
             variables["rho_sum"] = variables["rho_vac_UA"] + variables["rho_vac_SCm"];
+        } else if (name == "delta_sw" || name == "v_sw") {
+            variables["swirl_factor"] = 1.0 + variables["delta_sw"] * variables["v_sw"];
         }
     } else {
         std::cerr << "Variable '" << name << "' not found. Adding with value " << value << std::endl;
@@ -86,13 +89,13 @@ void SolarWindVelocityModule::updateVariable(const std::string& name, double val
 }
 
 // Add delta
-void SolarWindVelocityModule::addToVariable(const std::string& name, double delta) {
+void StellarMassModule::addToVariable(const std::string& name, double delta) {
     if (variables.find(name) != variables.end()) {
         variables[name] += delta;
-        if (name == "v_sw" || name == "delta_sw") {
-            variables["modulation_factor"] = computeModulationFactor();
-        } else if (name == "rho_vac_UA" || name == "rho_vac_SCm") {
+        if (name == "rho_vac_UA" || name == "rho_vac_SCm") {
             variables["rho_sum"] = variables["rho_vac_UA"] + variables["rho_vac_SCm"];
+        } else if (name == "delta_sw" || name == "v_sw") {
+            variables["swirl_factor"] = 1.0 + variables["delta_sw"] * variables["v_sw"];
         }
     } else {
         std::cerr << "Variable '" << name << "' not found. Adding with delta " << delta << std::endl;
@@ -101,59 +104,61 @@ void SolarWindVelocityModule::addToVariable(const std::string& name, double delt
 }
 
 // Subtract delta
-void SolarWindVelocityModule::subtractFromVariable(const std::string& name, double delta) {
+void StellarMassModule::subtractFromVariable(const std::string& name, double delta) {
     addToVariable(name, -delta);
 }
 
-// Compute v_sw (m/s)
-double SolarWindVelocityModule::computeV_sw() {
-    return variables["v_sw"];
+// Compute M_s (kg)
+double StellarMassModule::computeM_s() {
+    return variables["M_s"];
 }
 
-// v_sw in km/s
-double SolarWindVelocityModule::computeV_swKmS() {
-    return computeV_sw() / 1e3;
+// M_s in M_sun
+double StellarMassModule::computeM_sInMsun() {
+    return computeM_s() / variables["M_sun"];
 }
 
-// Compute 1 + δ_sw * v_sw
-double SolarWindVelocityModule::computeModulationFactor() {
-    return 1.0 + variables["delta_sw"] * computeV_sw();
+// M_s / r^2 (kg/m�)
+double StellarMassModule::computeM_sOverR2(double r) {
+    variables["r"] = r;
+    if (r == 0.0) return 0.0;
+    return computeM_s() / (r * r);
 }
 
-// Compute U_g2 with modulation
-double SolarWindVelocityModule::computeU_g2(double r) {
+// U_g1 example (internal, simplified)
+double StellarMassModule::computeU_g1(double r) {
+    double k_1 = variables["k_1"];
+    double rho_sum = variables["rho_sum"];
+    double m_over_r2 = computeM_sOverR2(r);
+    double e_react = variables["E_react"];
+    return k_1 * rho_sum * m_over_r2 * e_react;  // Simplified
+}
+
+// U_g2 example (outer bubble)
+double StellarMassModule::computeU_g2(double r) {
     variables["r"] = r;
     double k_2 = variables["k_2"];
     double rho_sum = variables["rho_sum"];
-    double M_s = variables["M_s"];
     double s_step = (r >= variables["R_b"]) ? 1.0 : 0.0;
-    double mod_factor = computeModulationFactor();
+    double swirl_factor = variables["swirl_factor"];
     double h_scm = variables["H_SCm"];
     double e_react = variables["E_react"];
-    return k_2 * (rho_sum * M_s / (r * r)) * s_step * mod_factor * h_scm * e_react;
-}
-
-// U_g2 without solar wind (v_sw=0)
-double SolarWindVelocityModule::computeU_g2_no_sw(double r) {
-    double orig_v = variables["v_sw"];
-    variables["v_sw"] = 0.0;
-    double result = computeU_g2(r);
-    variables["v_sw"] = orig_v;
-    return result;
+    return k_2 * rho_sum * computeM_sOverR2(r) * s_step * swirl_factor * h_scm * e_react;
 }
 
 // Equation text
-std::string SolarWindVelocityModule::getEquationText() {
-    return "U_g2 = k_2 * [(ρ_vac,[UA] + ρ_vac,[SCm]) M_s / r^2] * S(r - R_b) * (1 + δ_sw v_sw) * H_SCm * E_react\n"
-           "Where v_sw = 5e5 m/s (500 km/s, typical solar wind speed at 1 AU+);\n"
-           "Modulation = 1 + 0.01 * v_sw ≈5001 (amplifies ~5000x).\n"
-           "Example r=R_b=1.496e13 m: U_g2 ≈1.18e53 J/m³ (with); ≈2.36e49 J/m³ (without v_sw; ~5000x less).\n"
-           "Role: Solar wind momentum/pressure enhances external gravity beyond R_b (heliosphere).\n"
-           "UQFF: Models wind shaping of fields; key for heliodynamics/nebular formation.";
+std::string StellarMassModule::getEquationText() {
+    return "U_g1 = k_1 * ?_vac,[UA/SCm] * (M_s / r^2) * ... E_react (internal dipole);\n"
+           "U_g2 = k_2 * ?_vac,[UA/SCm] * (M_s / r^2) * S(r - R_b) * (1 + ?_sw v_sw) * H_SCm * E_react (outer bubble).\n"
+           "Where M_s = 1.989e30 kg (1 M_sun for Sun).\n"
+           "Scales gravity by mass; M_s / r^2 ?8.89e3 kg/m� at r=1.496e13 m.\n"
+           "Example U_g2 (r=R_b): ?1.18e53 J/m�.\n"
+           "Role: Central mass drives internal/external gravity; stellar/planetary dynamics.\n"
+           "UQFF: Mass-dependent fields for nebulae/formation/mergers.";
 }
 
 // Print variables
-void SolarWindVelocityModule::printVariables() {
+void StellarMassModule::printVariables() {
     std::cout << "Current Variables:\n";
     for (const auto& pair : variables) {
         std::cout << pair.first << " = " << std::scientific << pair.second << std::endl;
@@ -161,32 +166,32 @@ void SolarWindVelocityModule::printVariables() {
 }
 
 // Example usage in base program (snippet)
-// #include "SolarWindVelocityModule.h"
+// #include "StellarMassModule.h"
 // int main() {
-//     SolarWindVelocityModule mod;
-//     double v = mod.computeV_sw();
-//     std::cout << "v_sw = " << v << " m/s (" << mod.computeV_swKmS() << " km/s)\n";
+//     StellarMassModule mod;
+//     double m_sun = mod.computeM_sInMsun();
+//     std::cout << "M_s = " << m_sun << " M_sun\n";
 //     double u_g2 = mod.computeU_g2(1.496e13);
-//     std::cout << "U_g2 = " << u_g2 << " J/m³\n";
+//     std::cout << "U_g2 = " << u_g2 << " J/m�\n";
 //     std::cout << mod.getEquationText() << std::endl;
-//     mod.updateVariable("v_sw", 4e5);
+//     mod.updateVariable("M_s", 2e30);
 //     mod.printVariables();
 //     return 0;
 // }
-// Compile: g++ -o sw_vel_test sw_vel_test.cpp SolarWindVelocityModule.cpp -lm
-// Sample: v_sw=5e5 m/s (500 km/s); U_g2≈1.18e53 J/m³; amplifies outer bubble.
+// Compile: g++ -o stellar_mass_test stellar_mass_test.cpp StellarMassModule.cpp -lm
+// Sample: M_s=1 M_sun; U_g2?1.18e53 J/m�; scales gravity by mass.
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
-SolarWindVelocityModule Evaluation
+StellarMassModule Evaluation
 
 Strengths :
 -Modular and pluggable design; can be included and instantiated easily in other projects.
 - Dynamic variable management using std::map allows runtime updates, additions, and removals.
-- Core computation methods(computeV_sw, computeV_swKmS, computeModulationFactor, computeU_g2, computeU_g2_no_sw) are clear, concise, and variable - driven.
-- Automatic recalculation of derived variables(modulation_factor, rho_sum) when dependencies change.
+- Core computation methods(computeM_s, computeM_sInMsun, computeM_sOverR2, computeU_g1, computeU_g2) are clear, concise, and variable - driven.
+- Automatic recalculation of derived variables(rho_sum, swirl_factor) when dependencies change.
 - Output and debugging functions(printVariables, getEquationText) provide transparency and aid validation.
 - Well - documented physical meaning and example calculations in comments and equation text.
-- Models strong amplification of gravity terms via solar wind velocity.
+- Supports both internal and external gravity calculations(U_g1, U_g2) with mass scaling.
 
 Weaknesses / Recommendations:
 -Many constants and parameters are hardcoded; consider external configuration for greater flexibility.
@@ -196,4 +201,4 @@ Weaknesses / Recommendations:
 - Expand documentation for function purposes and expected input / output.
 
 Summary:
-The code is well - structured, clear, and suitable for scientific prototyping and educational use in solar wind velocity modeling.It is dynamic and can be updated or expanded easily.For production or high - performance applications, address the recommendations above for improved robustness, maintainability, and scalability.
+The code is well - structured, clear, and suitable for scientific prototyping and educational use in stellar / planetary mass modeling.It is dynamic and can be updated or expanded easily.For production or high - performance applications, address the recommendations above for improved robustness, maintainability, and scalability.

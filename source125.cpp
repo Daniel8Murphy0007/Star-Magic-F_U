@@ -1,30 +1,32 @@
-// Ug1DefectModule.h
-// Modular C++ implementation of the Ug1 Defect Factor (?_def) in the Universal Quantum Field Superconductive Framework (UQFF).
-// This module computes ?_def = 0.01 * sin(0.001 t) (unitless); scales (1 + ?_def) in Universal Gravity U_g1 term.
-// Pluggable: #include "Ug1DefectModule.h"
-// Ug1DefectModule mod; mod.computeU_g1(0.0, 1.496e11); mod.updateVariable("amplitude", new_value);
-// Variables in std::map; example for Sun at t=0 (?_def=0, U_g1?4.51e31 J/m�); t=1570.8 days: +1%.
-// Approximations: ?=0.001 day?�; cos(? t_n)=1 at t_n=0; ?_s=3.38e23 T�m�; ?(M_s/r)?M_s/r�=8.89e7 m/s�.
+// Ug3DiskVectorModule.h
+// Modular C++ implementation of the Unit Vector in the Ug3 Disk Plane (??_j) in the Universal Quantum Field Superconductive Framework (UQFF).
+// This module computes ??_j (unit vector, magnitude=1; e.g., [cos ?_j, sin ?_j, 0]); scales in Universal Magnetism U_m term.
+// Pluggable: #include "Ug3DiskVectorModule.h"
+// Ug3DiskVectorModule mod; mod.computeUmContribution(0.0, 1); mod.updateVariable("theta_j", new_value);
+// Variables in std::map; example for j=1 at t=0, ?_j=0 (??_j=[1,0,0], U_m?2.28e65 J/m�).
+// Approximations: ??_j magnitude=1; 1 - exp=0 at t=0; ?_j / r_j=2.26e10 T m�.
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
-#ifndef UG1_DEFECT_MODULE_H
-#define UG1_DEFECT_MODULE_H
+#ifndef UG3_DISK_VECTOR_MODULE_H
+#define UG3_DISK_VECTOR_MODULE_H
 
 #include <map>
 #include <string>
+#include <vector>
 #include <cmath>
 #include <iostream>
 #include <iomanip>
 
-class Ug1DefectModule {
+class Ug3DiskVectorModule {
 private:
     std::map<std::string, double> variables;
-    double computeDelta_def(double t_day);
-    double computeU_g1(double t_day, double r);
+    std::vector<double> computePhiHat_j(int j);
+    double computeUmBase(double t);
+    double computeUmContribution(double t, int j);
 
 public:
     // Constructor: Initialize with framework defaults
-    Ug1DefectModule();
+    Ug3DiskVectorModule();
 
     // Dynamic variable operations
     void updateVariable(const std::string& name, double value);
@@ -32,47 +34,48 @@ public:
     void subtractFromVariable(const std::string& name, double delta);
 
     // Core computations
-    double computeDelta_def(double t_day);  // 0.01 * sin(0.001 t)
-    double computeU_g1(double t_day, double r);  // U_g1 with defect (J/m^3)
-    double computePeriod_years();  // ~17.22 years
+    std::vector<double> computePhiHat_j(int j);  // Unit vector [cos ?_j, sin ?_j, 0]
+    double computePhiHatMagnitude(int j);  // 1.0 (normalized)
+    double computeUmContribution(double t, int j);  // U_m single string (J/m^3)
 
     // Output descriptive text
     std::string getEquationText();
 
     // Print all current variables
     void printVariables();
+
+    // Print ??_j and U_m
+    void printVectorAndUm(int j = 1, double t = 0.0);
 };
 
-#endif // UG1_DEFECT_MODULE_H
+#endif // UG3_DISK_VECTOR_MODULE_H
 
-// Ug1DefectModule.cpp
-#include "Ug1DefectModule.h"
+// Ug3DiskVectorModule.cpp
+#include "Ug3DiskVectorModule.h"
 
-// Constructor: Set framework defaults (Sun)
-Ug1DefectModule::Ug1DefectModule() {
+// Constructor: Set framework defaults
+Ug3DiskVectorModule::Ug3DiskVectorModule() {
     // Universal constants
-    variables["amplitude"] = 0.01;                  // Unitless
-    variables["freq"] = 0.001;                      // day?�
-    variables["k_1"] = 1.5;                         // Coupling
-    variables["mu_s"] = 3.38e23;                    // T�m�
-    variables["M_s"] = 1.989e30;                    // kg
-    variables["alpha"] = 0.001;                     // day?�
-    variables["t_n"] = 0.0;                         // days
+    variables["theta_j"] = 0.0;                     // rad (default azimuthal angle)
+    variables["mu_j"] = 3.38e23;                    // T�m^3 (j=1)
+    variables["r_j"] = 1.496e13;                    // m
+    variables["gamma"] = 5e-5 / 86400.0;            // s^-1
+    variables["t_n"] = 0.0;                         // s
+    variables["P_SCm"] = 1.0;                       // Pressure
+    variables["E_react"] = 1e46;                    // J
+    variables["f_Heaviside"] = 0.01;                // Unitless
+    variables["f_quasi"] = 0.01;                    // Unitless
     variables["pi"] = 3.141592653589793;
-    variables["t_day"] = 0.0;                       // days
-    variables["r"] = 1.496e11;                      // m (Earth-Sun example)
 
     // Derived
-    variables["period_days"] = 2.0 * M_PI / variables["freq"];
+    variables["scale_Heaviside"] = 1e13;
+    variables["heaviside_factor"] = 1.0 + variables["scale_Heaviside"] * variables["f_Heaviside"];
 }
 
 // Update variable
-void Ug1DefectModule::updateVariable(const std::string& name, double value) {
+void Ug3DiskVectorModule::updateVariable(const std::string& name, double value) {
     if (variables.find(name) != variables.end()) {
         variables[name] = value;
-        if (name == "freq") {
-            variables["period_days"] = 2.0 * M_PI / value;
-        }
     } else {
         std::cerr << "Variable '" << name << "' not found. Adding with value " << value << std::endl;
         variables[name] = value;
@@ -80,12 +83,9 @@ void Ug1DefectModule::updateVariable(const std::string& name, double value) {
 }
 
 // Add delta
-void Ug1DefectModule::addToVariable(const std::string& name, double delta) {
+void Ug3DiskVectorModule::addToVariable(const std::string& name, double delta) {
     if (variables.find(name) != variables.end()) {
         variables[name] += delta;
-        if (name == "freq") {
-            variables["period_days"] = 2.0 * M_PI / variables[name];
-        }
     } else {
         std::cerr << "Variable '" << name << "' not found. Adding with delta " << delta << std::endl;
         variables[name] = delta;
@@ -93,86 +93,103 @@ void Ug1DefectModule::addToVariable(const std::string& name, double delta) {
 }
 
 // Subtract delta
-void Ug1DefectModule::subtractFromVariable(const std::string& name, double delta) {
+void Ug3DiskVectorModule::subtractFromVariable(const std::string& name, double delta) {
     addToVariable(name, -delta);
 }
 
-// Compute ?_def = 0.01 * sin(0.001 t) (t in days)
-double Ug1DefectModule::computeDelta_def(double t_day) {
-    variables["t_day"] = t_day;
-    return variables["amplitude"] * std::sin(variables["freq"] * t_day);
+// Compute ??_j = [cos ?_j, sin ?_j, 0] (disk plane unit vector)
+std::vector<double> Ug3DiskVectorModule::computePhiHat_j(int j) {
+    double theta = variables["theta_j"];  // Simplified, same for all j or per j
+    std::vector<double> phi_hat = {std::cos(theta), std::sin(theta), 0.0};
+    return phi_hat;
 }
 
-// Compute U_g1 = k_1 * ?_s * ?(M_s / r) * exp(-? t) * cos(? t_n) * (1 + ?_def)
-double Ug1DefectModule::computeU_g1(double t_day, double r) {
-    variables["r"] = r;
-    double k_1 = variables["k_1"];
-    double mu_s = variables["mu_s"];
-    double grad_ms_r = variables["M_s"] / (r * r);  // Approx ?(M_s / r) = M_s / r^2
-    double exp_term = std::exp( - variables["alpha"] * t_day );
-    double cos_tn = std::cos(variables["pi"] * variables["t_n"]);
-    double defect_factor = 1.0 + computeDelta_def(t_day);
-    return k_1 * mu_s * grad_ms_r * exp_term * cos_tn * defect_factor;
+// Magnitude of ??_j (normalized=1)
+double Ug3DiskVectorModule::computePhiHatMagnitude(int j) {
+    auto phi = computePhiHat_j(j);
+    return std::sqrt(phi[0]*phi[0] + phi[1]*phi[1] + phi[2]*phi[2]);  // =1
 }
 
-// Period in years (365.25 days/year)
-double Ug1DefectModule::computePeriod_years() {
-    return variables["period_days"] / 365.25;
+// Base for U_m without ??_j magnitude (since=1)
+double Ug3DiskVectorModule::computeUmBase(double t) {
+    double mu_over_rj = variables["mu_j"] / variables["r_j"];
+    double exp_arg = - variables["gamma"] * t * std::cos(variables["pi"] * variables["t_n"]);
+    double one_minus_exp = 1.0 - std::exp(exp_arg);
+    double phi_mag = computePhiHatMagnitude(1);  // =1
+    double p_scm = variables["P_SCm"];
+    double e_react = variables["E_react"];
+    return mu_over_rj * one_minus_exp * phi_mag * p_scm * e_react;
+}
+
+// U_m contribution with ??_j
+double Ug3DiskVectorModule::computeUmContribution(double t, int j) {
+    double base = computeUmBase(t);
+    double heaviside_f = variables["heaviside_factor"];
+    double quasi_f = 1.0 + variables["f_quasi"];
+    return base * heaviside_f * quasi_f;
 }
 
 // Equation text
-std::string Ug1DefectModule::getEquationText() {
-    return "U_g1 = k_1 * ?_s * ?(M_s / r) * e^{-? t} * cos(? t_n) * (1 + ?_def)\n"
-           "Where ?_def = 0.01 * sin(0.001 t) (unitless, t days; period ~17.22 yr).\n"
-           "Small oscillatory defect (~�1%) in internal dipole gravity.\n"
-           "Example t=0, r=1.496e11 m: ?_def=0, U_g1 ?4.51e31 J/m�;\n"
-           "t=1570.8 days: ?_def=0.01, U_g1 ?4.56e31 J/m� (+1.1%).\n"
-           "Role: Time-dependent perturbations; internal dynamics/[SCm] variations.\n"
-           "UQFF: Cyclic defects in stellar gravity; for formation/nebular stability.";
+std::string Ug3DiskVectorModule::getEquationText() {
+    return "U_m = ?_j [ (?_j / r_j) (1 - e^{-? t cos(? t_n)}) \hat{?}_j ] P_SCm E_react (1 + 10^13 f_Heaviside) (1 + f_quasi)\n"
+           "Where \hat{?}_j = [cos ?_j, sin ?_j, 0] (unit vector in Ug3 disk plane, |??_j|=1);\n"
+           "Specifies azimuthal direction for j-th string in disk (e.g., galactic plane).\n"
+           "Example j=1, ?_j=0, t=0: ??_j=[1,0,0], U_m ?2.28e65 J/m� (mag=1).\n"
+           "Role: Directional geometry for magnetic contributions in disks/nebulae.\n"
+           "UQFF: Vector orientation in U_m/U_g3; collimation in jets/disks/formation.";
 }
 
 // Print variables
-void Ug1DefectModule::printVariables() {
+void Ug3DiskVectorModule::printVariables() {
     std::cout << "Current Variables:\n";
     for (const auto& pair : variables) {
         std::cout << pair.first << " = " << std::scientific << pair.second << std::endl;
     }
 }
 
+// Print vector and U_m
+void Ug3DiskVectorModule::printVectorAndUm(int j, double t) {
+    auto phi = computePhiHat_j(j);
+    double mag = computePhiHatMagnitude(j);
+    double um = computeUmContribution(t, j);
+    std::cout << "??_" << j << " at ?_j=" << variables["theta_j"] << " rad, t=" << t << " s:\n";
+    std::cout << "??_j = [" << std::scientific << phi[0] << ", " << phi[1] << ", " << phi[2] << "] (mag=" << mag << ")\n";
+    std::cout << "U_m contrib = " << um << " J/m�\n";
+}
+
 // Example usage in base program (snippet)
-// #include "Ug1DefectModule.h"
+// #include "Ug3DiskVectorModule.h"
 // int main() {
-//     Ug1DefectModule mod;
-//     double delta = mod.computeDelta_def(0.0);
-//     std::cout << "?_def (t=0) = " << delta << std::endl;
-//     double u_g1 = mod.computeU_g1(1570.8, 1.496e11);
-//     std::cout << "U_g1 (t=1570.8 days) = " << u_g1 << " J/m�\n";
+//     Ug3DiskVectorModule mod;
+//     auto phi = mod.computePhiHat_j(1);
+//     std::cout << "??_1 = [" << phi[0] << ", " << phi[1] << ", " << phi[2] << "]\n";
+//     mod.printVectorAndUm(1, 0.0);
 //     std::cout << mod.getEquationText() << std::endl;
-//     mod.updateVariable("amplitude", 0.02);
+//     mod.updateVariable("theta_j", M_PI / 2);
 //     mod.printVariables();
 //     return 0;
 // }
-// Compile: g++ -o defect_test defect_test.cpp Ug1DefectModule.cpp -lm
-// Sample: ?_def=0 at t=0; U_g1?4.56e31 J/m� at peak (+1%); period~17.22 yr.
+// Compile: g++ -o disk_vector_test disk_vector_test.cpp Ug3DiskVectorModule.cpp -lm
+// Sample: ??_1=[1,0,0] (?=0); U_m?2.28e65 J/m�; directional in disk plane.
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
-Ug1DefectModule Evaluation
+Ug3DiskVectorModule Evaluation
 
 Strengths :
 -Modular and pluggable design; can be included and instantiated easily in other projects.
 - Dynamic variable management using std::map allows runtime updates, additions, and removals.
-- Core computation methods(computeDelta_def, computeU_g1, computePeriod_years) are clear, concise, and variable - driven.
-- Automatic recalculation of derived variables(period_days) when frequency changes.
-- Output and debugging functions(printVariables, getEquationText) provide transparency and aid validation.
+- Core computation methods(computePhiHat_j, computePhiHatMagnitude, computeUmContribution) are clear, concise, and variable - driven.
+- Uses std::vector for unit vector representation, supporting extensibility for vector operations.
+- Output and debugging functions(printVariables, printVectorAndUm, getEquationText) provide transparency and aid validation.
 - Well - documented physical meaning and example calculations in comments and equation text.
-- Models small oscillatory defect in internal dipole gravity, supporting time - dependent perturbation analysis.
+- Models directional geometry for magnetic contributions in disk planes.
 
 Weaknesses / Recommendations:
 -Many constants and parameters are hardcoded; consider external configuration for greater flexibility.
 - Minimal error handling for missing variables, invalid input, or division by zero; add validation for robustness.
 - Unit consistency is described in comments but not enforced; runtime checks or clearer documentation would help.
-- For large - scale or performance - critical simulations, consider more efficient data structures than std::map.
+- For large - scale or performance - critical simulations, consider more efficient data structures than std::map and std::vector.
 - Expand documentation for function purposes and expected input / output.
 
 Summary:
-The code is well - structured, clear, and suitable for scientific prototyping and educational use in defect factor modeling for universal gravity.It is dynamic and can be updated or expanded easily.For production or high - performance applications, address the recommendations above for improved robustness, maintainability, and scalability.
+The code is well - structured, clear, and suitable for scientific prototyping and educational use in disk vector and magnetic geometry modeling.It is dynamic and can be updated or expanded easily.For production or high - performance applications, address the recommendations above for improved robustness, maintainability, and scalability.

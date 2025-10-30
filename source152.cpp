@@ -1,4 +1,4 @@
-// VelaPulsarUQFFModule.h
+﻿// VelaPulsarUQFFModule.h
 // Modular C++ implementation of the full Master Unified Field Equation (F_U_Bi_i & UQFF Integration) for Vela Pulsar (PSR J0835-4510 in Vela Remnant) Evolution.
 // This module can be plugged into a base program (e.g., 'vela_sim.cpp') by including this header and linking the .cpp.
 // Usage in base: #include "VelaPulsarUQFFModule.h"

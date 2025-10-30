@@ -1,4 +1,4 @@
-// M87JetUQFFModule.h
+﻿// M87JetUQFFModule.h
 // Modular C++ implementation of the full Master Unified Field Equation (F_U_Bi_i & UQFF Integration) for M87 Jet Relativistic Jet Evolution.
 // This module can be plugged into a base program (e.g., 'm87_sim.cpp') by including this header and linking the .cpp.
 // Usage in base: #include "M87JetUQFFModule.h"

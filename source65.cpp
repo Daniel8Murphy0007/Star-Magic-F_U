@@ -1,4 +1,4 @@
-// NebularUQFFModule.h
+﻿// NebularUQFFModule.h
 // Modular C++ implementation of UQFF for Nebular Cloud Analysis (Drawing 32) and Red Dwarf Compression_B (43.b).
 // Computes UQFF terms for nebular dynamics: dust trails, pseudo-monopoles, pillars, star geometries; integrates LENR, Higgs, NGC 346 star formation.
 // Plug into base (e.g., 'nebular_uqff_sim.cpp') via #include "NebularUQFFModule.h".

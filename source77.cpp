@@ -1,4 +1,4 @@
-// UGC10214UQFFModule.h
+﻿// UGC10214UQFFModule.h
 // Modular C++ implementation of the Master Universal Gravity Equation (MUGE & UQFF Integration) for Galaxy UGC 10214 (Tadpole Galaxy) Evolution.
 // This module models UGC 10214's gravitational dynamics, incorporating minor merger with VV 29c, tidal tail ejection, star formation in disk/tail, gas densities, and dark matter.
 // Usage: #include "UGC10214UQFFModule.h" in base program; UGC10214UQFFModule mod; mod.computeG(t); mod.updateVariable("SFR", new_value);

@@ -1,4 +1,4 @@
-// IC2163UQFFModule.h
+﻿// IC2163UQFFModule.h
 // Modular C++ implementation of the full Master Unified Field Equation (F_U_Bi_i & UQFF Integration) for IC 2163 Interacting Galaxy Evolution.
 // This module can be plugged into a base program (e.g., 'ic2163_sim.cpp') by including this header and linking the .cpp.
 // Usage in base: #include "IC2163UQFFModule.h"

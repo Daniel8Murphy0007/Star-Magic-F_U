@@ -1,4 +1,4 @@
-// MultiUQFFCompressionModule.h
+﻿// MultiUQFFCompressionModule.h
 // Modular C++ implementation of the full Compressed Master Universal Gravity Equation (UQFF Compression Cycle 2) for 19 astrophysical systems (1-19 docs).
 // This module can be plugged into a base program (e.g., 'ziqn233h.cpp') by including this header and linking the .cpp.
 // Usage in base: #include "MultiUQFFCompressionModule.h"

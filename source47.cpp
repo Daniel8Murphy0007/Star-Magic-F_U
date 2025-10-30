@@ -1,4 +1,4 @@
-// NGC6302ResonanceUQFFModule.h
+﻿// NGC6302ResonanceUQFFModule.h
 // Modular C++ implementation of the full Master Universal Gravity Equation (UQFF Resonance) for NGC 6302 Evolution.
 // This module can be plugged into a base program (e.g., 'ziqn233h.cpp') by including this header and linking the .cpp.
 // Usage in base: #include "NGC6302ResonanceUQFFModule.h"

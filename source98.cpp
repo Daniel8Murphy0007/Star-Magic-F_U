@@ -1,4 +1,4 @@
-// UnifiedFieldModule.h
+﻿// UnifiedFieldModule.h
 // Modular C++ implementation of the Unified Field Strength (F_U) in the Universal Quantum Field Superconductive Framework (UQFF).
 // This module computes F_U as normalized vacuum energy density (J/m³) from Ug, Um, Ub, Ui, and Aether terms across 26 quantum levels.
 // Pluggable: #include "UnifiedFieldModule.h"

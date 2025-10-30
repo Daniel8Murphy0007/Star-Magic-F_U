@@ -1,4 +1,4 @@
-// MultiUQFFModule.h
+﻿// MultiUQFFModule.h
 // Modular C++ implementation of the full Master Universal Gravity Compressed UQFF Equations (with Resonance mode) for multiple astrophysical systems.
 // This module can be plugged into a base program (e.g., 'ziqn233h.cpp') by including this header and linking the .cpp.
 // Usage in base: #include "MultiUQFFModule.h"

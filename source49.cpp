@@ -1,4 +1,4 @@
-// CompressedResonanceUQFF34Module.h
+﻿// CompressedResonanceUQFF34Module.h
 // Modular C++ implementation of the UQFF Compressed and Resonance Equations for Systems 26-28, 30-32, 34.
 // This module can be plugged into a base program (e.g., 'ziqn233h.cpp') by including this header and linking the .cpp.
 // Usage in base: #include "CompressedResonanceUQFF34Module.h"

@@ -1,4 +1,4 @@
-// CompressedResonanceUQFF24Module.h
+﻿// CompressedResonanceUQFF24Module.h
 // Modular C++ implementation of the UQFF Compressed and Resonance Equations for Systems 18-24.
 // This module can be plugged into a base program (e.g., 'ziqn233h.cpp') by including this header and linking the .cpp.
 // Usage in base: #include "CompressedResonanceUQFF24Module.h"

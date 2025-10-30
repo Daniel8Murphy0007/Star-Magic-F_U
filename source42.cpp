@@ -1,4 +1,4 @@
-// HydrogenAtomUQFFModule.h
+﻿// HydrogenAtomUQFFModule.h
 // Modular C++ implementation of the full Master Universal Gravity Equation (UQFF & SM Integration) for Hydrogen Atom Evolution.
 // This module can be plugged into a base program (e.g., 'ziqn233h.cpp') by including this header and linking the .cpp.
 // Usage in base: #include "HydrogenAtomUQFFModule.h"

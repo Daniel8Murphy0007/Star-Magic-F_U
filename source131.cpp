@@ -1,4 +1,4 @@
-// ScmVelocityModule.h
+﻿// ScmVelocityModule.h
 // Modular C++ implementation of the [SCm] Velocity (v_SCm) in the Universal Quantum Field Superconductive Framework (UQFF).
 // This module computes v_SCm = 1e8 m/s (~c/3); scales in E_react = ρ_vac,[SCm] v_SCm² / ρ_vac,A * exp(-κ t) for U_m, U_bi, etc.
 // Pluggable: #include "ScmVelocityModule.h"

@@ -1,4 +1,4 @@
-// DPMModule.h
+﻿// DPMModule.h
 // Modular C++ implementation of the Birth of Di-Pseudo-Monopole (DPM) in the Universal Quantum Field Superconductive Framework (UQFF).
 // This module models the Pre-Big Bang reaction of [SCm] and [UA] in a 26-shell oscillating EM field, yielding 26 resonant sphere centers.
 // Pluggable: #include "DPMModule.h"

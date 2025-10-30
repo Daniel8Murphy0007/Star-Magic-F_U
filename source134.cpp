@@ -1,4 +1,4 @@
-// Abell2256UQFFModule.h
+﻿// Abell2256UQFFModule.h
 // Modular C++ implementation of the full Master Unified Field Equation (F_U_Bi_i & UQFF Integration) for Abell 2256 Galaxy Cluster Evolution.
 // This module can be plugged into a base program (e.g., 'abell_sim.cpp') by including this header and linking the .cpp.
 // Usage in base: #include "Abell2256UQFFModule.h"

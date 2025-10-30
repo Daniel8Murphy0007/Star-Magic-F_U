@@ -1,4 +1,4 @@
-// SGR1745UQFFModule.h
+﻿// SGR1745UQFFModule.h
 // Modular C++ implementation of the full Master Universal Gravity Equation (UQFF) for SGR 1745-2900 Magnetar Evolution.
 // This module can be plugged into a base program (e.g., 'ziqn233h.cpp') by including this header and linking the .cpp.
 // Usage in base: #include "SGR1745UQFFModule.h"
