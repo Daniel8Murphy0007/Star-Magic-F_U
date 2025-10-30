@@ -1,4 +1,4 @@
-// UQFFSource10.cpp: Source file for UQFFSource10 class (split from header for maintainability)
+﻿// UQFFSource10.cpp: Source file for UQFFSource10 class (split from header for maintainability)
 // Include the header
 #include "UQFFSource10.h"
 

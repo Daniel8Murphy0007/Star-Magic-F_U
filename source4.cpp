@@ -1,7 +1,7 @@
 // Star Magic - The Quest for Unity
 // Unified Field Theory Implementation in C++
 // Based on the document provided.
-// Watermark: ï¿½2025 Daniel T. Murphy, daniel.murphy00@gmail.com ï¿½ All Rights Reserved
+// Watermark: ©2025 Daniel T. Murphy, daniel.murphy00@gmail.com – All Rights Reserved
 //
 // This C++ program implements the refined unified field equation (FU) and its components
 // as described in the document. It computes Universal Gravity (Ug1, Ug2, Ug3, Ug4), Universal Buoyancy (Ubi),
@@ -1014,7 +1014,7 @@ int main(int argc, char** argv) {
     };
 
     MUGESystem student_guide = {
-        "Studentï¿½s Guide to the Universe",
+        "Student’s Guide to the Universe",
         1e24,  // I
         1e52,  // A
         1e-6,  // omega1
@@ -1050,5 +1050,5 @@ int main(int argc, char** argv) {
 }
 
 // End of C++ implementation
-// Watermark: ï¿½2025 Daniel T. Murphy, daniel.murphy00@gmail.com ï¿½ All Rights Reserved
-
+// Watermark: ©2025 Daniel T. Murphy, daniel.murphy00@gmail.com – All Rights Reserved
+

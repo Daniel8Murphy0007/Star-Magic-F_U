@@ -410,7 +410,7 @@ int main(int argc, char** argv) {
             MUGESystem westerlund = tapestry; westerlund.name = "Westerlund 2";
             MUGESystem pillars = { "Pillars of Creation", 1e21, 2.813e32, 1e-3, -1e-3, 3.552e48, 2e3, 3.156e13, 0.0, 8.457e-14, 1.989e32, 9.46e15, 1e-4, 1e-3, 1e-21, 1e-8, 0.0, 1e-5 };
             MUGESystem rings = { "Rings of Relativity", 1e22, 1e35, 1e-4, -1e-4, 1e54, 1e5, 3.156e14, 0.01, 1e-9, 1.989e36, 3.086e17, 1e-5, 1e-4, 1e-20, 1e-5, 1e36, 1e-3 };
-            MUGESystem student_guide = { "Studentï¿½s Guide to the Universe", 1e24, 1e52, 1e-6, -1e-6, 1e80, 3e8, 4.35e17, 0.0, 1e-18, 1e53, 1e26, 1e-10, 1e-9, 1e-30, 1e-10, 1e53, 1e-6 };
+            MUGESystem student_guide = { "Student’s Guide to the Universe", 1e24, 1e52, 1e-6, -1e-6, 1e80, 3e8, 4.35e17, 0.0, 1e-18, 1e53, 1e26, 1e-10, 1e-9, 1e-30, 1e-10, 1e53, 1e-6 };
             muge_systems = { sgr1745, sagA, tapestry, westerlund, pillars, rings, student_guide };
         }
 
@@ -1657,7 +1657,7 @@ int main(int argc, char** argv) {
 }
 
 # CoAnQiNode.py - Upgraded CoAnQi Node with 3D Graphics Integration, Data Structures, Import / Export, and SIM Plugin
-# Watermark: ï¿½2025 Daniel T.Murphy, daniel.murphy00@gmail.com ï¿½ All Rights Reserved
+# Watermark: ©2025 Daniel T.Murphy, daniel.murphy00@gmail.com – All Rights Reserved
 # Upgrades:
 # 1. Integrated 3D graphics libraries : PyOpenGL for OpenGL, PyVulkan for Vulkan, PyDirectX(placeholder via DirectXMath), PyQt3D for Qt3D, and Ogre3D via python - ogre.
 #    - Note: Install via pip: pyopengl, vulkan, pyqt5, python-ogre (may require additional setup for Ogre/DirectX).
@@ -1996,7 +1996,7 @@ def load_sim_plugin(self, module_path: str)->None :
 main()
 
 # CoAnQiNode.py - Upgraded CoAnQi Node with GUI, 3D Graphics, APIs, Multi - Modal Input, Cloud Sync, and SIM Plugin
-# Watermark: ï¿½2025 Daniel T.Murphy, daniel.murphy00@gmail.com ï¿½ All Rights Reserved
+# Watermark: ©2025 Daniel T.Murphy, daniel.murphy00@gmail.com – All Rights Reserved
 # Upgrades from C++ Snippet:
 # - PyQt5 GUI with search bar, tabs, voice/video buttons, calculator dialog, VTK visualization sidebar.
 # - NASA/MAST APIs via requests; WebSocket for live data (LIGO/EHT).
