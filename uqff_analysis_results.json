@@ -1,241 +1,470 @@
 {
-  "timestamp": "2025-10-19T00:58:39.569Z",
-  "theory": "Unified Quantum Field Force (UQFF)",
-  "author": "Daniel T. Murphy",
-  "constants": {
-    "SOLAR_MASS": 1.989e+30,
-    "SOLAR_RADIUS": 696000000,
-    "GALACTIC_SPIN_RATE": 7.3e-16,
-    "BLACK_HOLE_MASS": 8.15e+36,
-    "GALACTIC_DISTANCE": 255000000000000000000,
-    "AETHER_DENSITY": 1e-23,
-    "SCM_DENSITY": 1000000000000000,
-    "HELIOSPHERE_RADIUS": 14960000000000,
-    "OMEGA_C": 1.8112590826010062e-8
+  "timestamp": "2025-10-31T04:25:52.434Z",
+  "analyses": {
+    "convergence": [
+      {
+        "level": 1,
+        "scale": 1,
+        "coherence": -1.3500000000084929e+184,
+        "integrand": 1000000000006.291,
+        "ratio": 1.35e+172
+      },
+      {
+        "level": 2,
+        "scale": 10,
+        "coherence": -1.349999999999876e+186,
+        "integrand": 9999999999999.082,
+        "ratio": 1.35e+173
+      },
+      {
+        "level": 3,
+        "scale": 100,
+        "coherence": -1.3499999999999878e+188,
+        "integrand": 99999999999999.1,
+        "ratio": 1.35e+174
+      },
+      {
+        "level": 4,
+        "scale": 1000,
+        "coherence": -1.35e+190,
+        "integrand": 1000000000000000,
+        "ratio": 1.35e+175
+      },
+      {
+        "level": 5,
+        "scale": 10000,
+        "coherence": -1.350000000000001e+192,
+        "integrand": 10000000000000008,
+        "ratio": 1.35e+176
+      },
+      {
+        "level": 6,
+        "scale": 100000,
+        "coherence": -1.3500000000000012e+194,
+        "integrand": 100000000000000100,
+        "ratio": 1.35e+177
+      },
+      {
+        "level": 7,
+        "scale": 1000000,
+        "coherence": -1.3500000000000014e+196,
+        "integrand": 1000000000000001000,
+        "ratio": 1.35e+178
+      },
+      {
+        "level": 8,
+        "scale": 10000000,
+        "coherence": -1.3500000000000013e+198,
+        "integrand": 10000000000000010000,
+        "ratio": 1.35e+179
+      },
+      {
+        "level": 9,
+        "scale": 100000000,
+        "coherence": -1.3500000000000013e+200,
+        "integrand": 100000000000000100000,
+        "ratio": 1.3499999999999999e+180
+      },
+      {
+        "level": 10,
+        "scale": 1000000000,
+        "coherence": -1.3500000000000015e+202,
+        "integrand": 1.000000000000001e+21,
+        "ratio": 1.35e+181
+      },
+      {
+        "level": 11,
+        "scale": 10000000000,
+        "coherence": -1.3500000000000013e+204,
+        "integrand": 1.000000000000001e+22,
+        "ratio": 1.3499999999999999e+182
+      },
+      {
+        "level": 12,
+        "scale": 100000000000,
+        "coherence": -1.350000000000001e+206,
+        "integrand": 1.000000000000001e+23,
+        "ratio": 1.35e+183
+      },
+      {
+        "level": 13,
+        "scale": 1000000000000,
+        "coherence": -1.3500000000000013e+208,
+        "integrand": 1.0000000000000009e+24,
+        "ratio": 1.3500000000000001e+184
+      },
+      {
+        "level": 14,
+        "scale": 10000000000000,
+        "coherence": -1.3500000000000014e+210,
+        "integrand": 1.0000000000000012e+25,
+        "ratio": 1.3499999999999999e+185
+      },
+      {
+        "level": 15,
+        "scale": 100000000000000,
+        "coherence": -1.3500000000000015e+212,
+        "integrand": 1.000000000000001e+26,
+        "ratio": 1.3500000000000002e+186
+      },
+      {
+        "level": 16,
+        "scale": 1000000000000000,
+        "coherence": -1.3500000000000012e+214,
+        "integrand": 1.000000000000001e+27,
+        "ratio": 1.3499999999999998e+187
+      },
+      {
+        "level": 17,
+        "scale": 10000000000000000,
+        "coherence": -1.3500000000000015e+216,
+        "integrand": 1.000000000000001e+28,
+        "ratio": 1.35e+188
+      },
+      {
+        "level": 18,
+        "scale": 100000000000000000,
+        "coherence": -1.3500000000000012e+218,
+        "integrand": 1.000000000000001e+29,
+        "ratio": 1.35e+189
+      },
+      {
+        "level": 19,
+        "scale": 1000000000000000000,
+        "coherence": -1.3500000000000014e+220,
+        "integrand": 1.000000000000001e+30,
+        "ratio": 1.35e+190
+      },
+      {
+        "level": 20,
+        "scale": 10000000000000000000,
+        "coherence": -1.3500000000000012e+222,
+        "integrand": 1.000000000000001e+31,
+        "ratio": 1.3499999999999998e+191
+      },
+      {
+        "level": 21,
+        "scale": 100000000000000000000,
+        "coherence": -1.3500000000000016e+224,
+        "integrand": 1.0000000000000011e+32,
+        "ratio": 1.35e+192
+      },
+      {
+        "level": 22,
+        "scale": 1e+21,
+        "coherence": -1.3500000000000012e+226,
+        "integrand": 1.000000000000001e+33,
+        "ratio": 1.3499999999999998e+193
+      },
+      {
+        "level": 23,
+        "scale": 1e+22,
+        "coherence": -1.3500000000000013e+228,
+        "integrand": 1.000000000000001e+34,
+        "ratio": 1.3499999999999999e+194
+      },
+      {
+        "level": 24,
+        "scale": 1.0000000000000001e+23,
+        "coherence": -1.3500000000000017e+230,
+        "integrand": 1.000000000000001e+35,
+        "ratio": 1.3500000000000003e+195
+      },
+      {
+        "level": 25,
+        "scale": 1e+24,
+        "coherence": -1.3500000000000014e+232,
+        "integrand": 1.0000000000000011e+36,
+        "ratio": 1.35e+196
+      },
+      {
+        "level": 26,
+        "scale": 1e+25,
+        "coherence": -1.3500000000000015e+234,
+        "integrand": 1.000000000000001e+37,
+        "ratio": 1.3500000000000002e+197
+      }
+    ],
+    "astrophysical": [
+      {
+        "name": "Solar System",
+        "scale": 1,
+        "mass": 1.989e+30,
+        "radius": 149600000000,
+        "coherence": -1.3500000000084929e+184,
+        "ug4": 3257349366581829600,
+        "scm": 1000000000000,
+        "dominant_term": 1.3500000000084929e+184
+      },
+      {
+        "name": "Sagittarius A*",
+        "scale": 1000,
+        "mass": 8.154899999999999e+36,
+        "radius": 15000000000,
+        "coherence": -1.35e+190,
+        "ug4": 324000000000000000000,
+        "scm": 1000000000000000,
+        "dominant_term": 1.35e+190
+      },
+      {
+        "name": "Milky Way",
+        "scale": 10000,
+        "mass": 2.9835e+42,
+        "radius": 500000000000000000000,
+        "coherence": -1.350000000000001e+192,
+        "ug4": 0.29159999999999997,
+        "scm": 10000000000000000,
+        "dominant_term": 1.350000000000001e+192
+      },
+      {
+        "name": "Local Group",
+        "scale": 100000,
+        "mass": 3.9779999999999998e+43,
+        "radius": 3e+22,
+        "coherence": -1.3500000000000012e+194,
+        "ug4": 0.000081,
+        "scm": 100000000000000000,
+        "dominant_term": 1.3500000000000012e+194
+      }
+    ],
+    "resonance": [
+      {
+        "scale": 1,
+        "frequency": 0.3,
+        "resonance": 0.8660254037844385,
+        "phase": 20.943951023931955,
+        "amplitude": 0.8660254037844385
+      },
+      {
+        "scale": 1,
+        "frequency": 1.2,
+        "resonance": -0.8660254037844386,
+        "phase": 5.235987755982989,
+        "amplitude": 0.8660254037844386
+      },
+      {
+        "scale": 1,
+        "frequency": 2.4,
+        "resonance": 0.49999999999999994,
+        "phase": 2.6179938779914944,
+        "amplitude": 0.49999999999999994
+      },
+      {
+        "scale": 1,
+        "frequency": 5,
+        "resonance": 0.9510565162951535,
+        "phase": 1.2566370614359172,
+        "amplitude": 0.9510565162951535
+      },
+      {
+        "scale": 1,
+        "frequency": 10,
+        "resonance": 0.5877852522924731,
+        "phase": 0.6283185307179586,
+        "amplitude": 0.5877852522924731
+      },
+      {
+        "scale": 1,
+        "frequency": 30,
+        "resonance": 0.20791169081775931,
+        "phase": 0.20943951023931953,
+        "amplitude": 0.20791169081775931
+      },
+      {
+        "scale": 10,
+        "frequency": 0.3,
+        "resonance": 0.8660254037844333,
+        "phase": 209.43951023931956,
+        "amplitude": 0.8660254037844333
+      },
+      {
+        "scale": 10,
+        "frequency": 1.2,
+        "resonance": 0.8660254037844373,
+        "phase": 52.35987755982989,
+        "amplitude": 0.8660254037844373
+      },
+      {
+        "scale": 10,
+        "frequency": 2.4,
+        "resonance": 0.8660254037844393,
+        "phase": 26.179938779914945,
+        "amplitude": 0.8660254037844393
+      },
+      {
+        "scale": 10,
+        "frequency": 5,
+        "resonance": -4.898587196589413e-16,
+        "phase": 12.566370614359172,
+        "amplitude": 4.898587196589413e-16
+      },
+      {
+        "scale": 10,
+        "frequency": 10,
+        "resonance": -2.4492935982947064e-16,
+        "phase": 6.283185307179586,
+        "amplitude": 2.4492935982947064e-16
+      },
+      {
+        "scale": 10,
+        "frequency": 30,
+        "resonance": 0.8660254037844387,
+        "phase": 2.0943951023931953,
+        "amplitude": 0.8660254037844387
+      },
+      {
+        "scale": 100,
+        "frequency": 0.3,
+        "resonance": 0.86602540378447,
+        "phase": 2094.3951023931954,
+        "amplitude": 0.86602540378447
+      },
+      {
+        "scale": 100,
+        "frequency": 1.2,
+        "resonance": 0.8660254037844465,
+        "phase": 523.5987755982989,
+        "amplitude": 0.8660254037844465
+      },
+      {
+        "scale": 100,
+        "frequency": 2.4,
+        "resonance": -0.8660254037844347,
+        "phase": 261.79938779914943,
+        "amplitude": 0.8660254037844347
+      },
+      {
+        "scale": 100,
+        "frequency": 5,
+        "resonance": 9.312267518612591e-15,
+        "phase": 125.66370614359174,
+        "amplitude": 9.312267518612591e-15
+      },
+      {
+        "scale": 100,
+        "frequency": 10,
+        "resonance": 4.656133759306296e-15,
+        "phase": 62.83185307179587,
+        "amplitude": 4.656133759306296e-15
+      },
+      {
+        "scale": 100,
+        "frequency": 30,
+        "resonance": 0.8660254037844385,
+        "phase": 20.943951023931955,
+        "amplitude": 0.8660254037844385
+      },
+      {
+        "scale": 1000,
+        "frequency": 0.3,
+        "resonance": 0.8660254037852069,
+        "phase": 20943.951023931953,
+        "amplitude": 0.8660254037852069
+      },
+      {
+        "scale": 1000,
+        "frequency": 1.2,
+        "resonance": 0.8660254037846307,
+        "phase": 5235.987755982988,
+        "amplitude": 0.8660254037846307
+      },
+      {
+        "scale": 1000,
+        "frequency": 2.4,
+        "resonance": -0.8660254037843427,
+        "phase": 2617.993877991494,
+        "amplitude": 0.8660254037843427
+      },
+      {
+        "scale": 1000,
+        "frequency": 5,
+        "resonance": 7.857546894913888e-15,
+        "phase": 1256.6370614359173,
+        "amplitude": 7.857546894913888e-15
+      },
+      {
+        "scale": 1000,
+        "frequency": 10,
+        "resonance": 3.928773447456944e-15,
+        "phase": 628.3185307179587,
+        "amplitude": 3.928773447456944e-15
+      },
+      {
+        "scale": 1000,
+        "frequency": 30,
+        "resonance": 0.8660254037844475,
+        "phase": 209.43951023931953,
+        "amplitude": 0.8660254037844475
+      }
+    ],
+    "benchmark": [
+      {
+        "size": 100,
+        "time": 1,
+        "opsPerSec": 300000,
+        "avgTime": 0.0033333333333333335
+      },
+      {
+        "size": 1000,
+        "time": 2,
+        "opsPerSec": 1500000,
+        "avgTime": 0.0006666666666666666
+      },
+      {
+        "size": 10000,
+        "time": 4,
+        "opsPerSec": 7500000,
+        "avgTime": 0.00013333333333333334
+      },
+      {
+        "size": 50000,
+        "time": 5,
+        "opsPerSec": 30000000,
+        "avgTime": 0.000033333333333333335
+      }
+    ],
+    "stability": [
+      {
+        "scale": 1e-10,
+        "error": "Cannot access 'isFinite' before initialization"
+      },
+      {
+        "scale": 0.00001,
+        "error": "Cannot access 'isFinite' before initialization"
+      },
+      {
+        "scale": 0.1,
+        "error": "Cannot access 'isFinite' before initialization"
+      },
+      {
+        "scale": 1,
+        "error": "Cannot access 'isFinite' before initialization"
+      },
+      {
+        "scale": 10,
+        "error": "Cannot access 'isFinite' before initialization"
+      },
+      {
+        "scale": 100000,
+        "error": "Cannot access 'isFinite' before initialization"
+      },
+      {
+        "scale": 10000000000,
+        "error": "Cannot access 'isFinite' before initialization"
+      },
+      {
+        "scale": 1000000000000000,
+        "error": "Cannot access 'isFinite' before initialization"
+      },
+      {
+        "scale": 100000000000000000000,
+        "error": "Cannot access 'isFinite' before initialization"
+      }
+    ]
   },
-  "coupling": {
-    "k1": 1.5,
-    "k2": 1.2,
-    "k3": 1.8,
-    "k4": 2.1,
-    "beta1": 0.6,
-    "beta2": 0.5,
-    "beta3": 0.7,
-    "beta4": 0.4,
-    "gamma": 1e-22,
-    "alpha": 0.0005,
-    "epsilon": 0.00001
-  },
-  "results": [
-    {
-      "location": "Solar Surface",
-      "radius_m": 696000000,
-      "evolution": [
-        {
-          "time_days": 0,
-          "unified_field": -2.7777675789025166e+28,
-          "components": {
-            "Ug1": 1.3858667784e+25,
-            "Ug2": 0,
-            "Ug3": 1.8000000000000002e+27,
-            "Ug4": 46023529411764710,
-            "Ub1": -1.9400504466096003e+26,
-            "Ub2": 0,
-            "Ub3": -2.9397529411764715e+28,
-            "Ub4": -429516844290657540,
-            "Um": 0,
-            "UA": 1.1101270000000001e-15
-          }
-        },
-        {
-          "time_days": 182.5,
-          "unified_field": 1.1101270000000001e-15,
-          "components": {
-            "Ug1": 0,
-            "Ug2": 0,
-            "Ug3": 0,
-            "Ug4": 0,
-            "Ub1": 0,
-            "Ub2": 0,
-            "Ub3": 0,
-            "Ub4": 0,
-            "Um": 0,
-            "UA": 1.1101270000000001e-15
-          }
-        },
-        {
-          "time_days": 365,
-          "unified_field": 1.1101270000000001e-15,
-          "components": {
-            "Ug1": 0,
-            "Ug2": 0,
-            "Ug3": 0,
-            "Ug4": 0,
-            "Ub1": 0,
-            "Ub2": 0,
-            "Ub3": 0,
-            "Ub4": 0,
-            "Um": 0,
-            "UA": 1.1101270000000001e-15
-          }
-        },
-        {
-          "time_days": 2007.5,
-          "unified_field": 1.1101270000000001e-15,
-          "components": {
-            "Ug1": 0,
-            "Ug2": 0,
-            "Ug3": 0,
-            "Ug4": 0,
-            "Ub1": 0,
-            "Ub2": 0,
-            "Ub3": 0,
-            "Ub4": 0,
-            "Um": 0,
-            "UA": 1.1101270000000001e-15
-          }
-        }
-      ]
-    },
-    {
-      "location": "Earth Orbit (1 AU)",
-      "radius_m": 149600000000,
-      "evolution": [
-        {
-          "time_days": 0,
-          "unified_field": -2.75975333113959e+28,
-          "components": {
-            "Ug1": 299969276951288300000,
-            "Ug2": 0,
-            "Ug3": 1.8000000000000002e+27,
-            "Ug4": 46023529411764710,
-            "Ub1": -4.1992169722863294e+21,
-            "Ub2": 0,
-            "Ub3": -2.9397529411764715e+28,
-            "Ub4": -429516844290657540,
-            "Um": 0,
-            "UA": 1.1101270000000001e-15
-          }
-        },
-        {
-          "time_days": 182.5,
-          "unified_field": 1.1101270000000001e-15,
-          "components": {
-            "Ug1": 0,
-            "Ug2": 0,
-            "Ug3": 0,
-            "Ug4": 0,
-            "Ub1": 0,
-            "Ub2": 0,
-            "Ub3": 0,
-            "Ub4": 0,
-            "Um": 0,
-            "UA": 1.1101270000000001e-15
-          }
-        },
-        {
-          "time_days": 365,
-          "unified_field": 1.1101270000000001e-15,
-          "components": {
-            "Ug1": 0,
-            "Ug2": 0,
-            "Ug3": 0,
-            "Ug4": 0,
-            "Ub1": 0,
-            "Ub2": 0,
-            "Ub3": 0,
-            "Ub4": 0,
-            "Um": 0,
-            "UA": 1.1101270000000001e-15
-          }
-        },
-        {
-          "time_days": 2007.5,
-          "unified_field": 1.1101270000000001e-15,
-          "components": {
-            "Ug1": 0,
-            "Ug2": 0,
-            "Ug3": 0,
-            "Ug4": 0,
-            "Ub1": 0,
-            "Ub2": 0,
-            "Ub3": 0,
-            "Ub4": 0,
-            "Um": 0,
-            "UA": 1.1101270000000001e-15
-          }
-        }
-      ]
-    },
-    {
-      "location": "Heliosphere Edge",
-      "radius_m": 14960000000000,
-      "evolution": [
-        {
-          "time_days": 0,
-          "unified_field": -2.7597529412538132e+28,
-          "components": {
-            "Ug1": 29996927695128824,
-            "Ug2": 0,
-            "Ug3": 1.8000000000000002e+27,
-            "Ug4": 46023529411764710,
-            "Ub1": -419921697228632800,
-            "Ub2": 0,
-            "Ub3": -2.9397529411764715e+28,
-            "Ub4": -429516844290657540,
-            "Um": 0,
-            "UA": 1.1101270000000001e-15
-          }
-        },
-        {
-          "time_days": 182.5,
-          "unified_field": 1.1101270000000001e-15,
-          "components": {
-            "Ug1": 0,
-            "Ug2": 0,
-            "Ug3": 0,
-            "Ug4": 0,
-            "Ub1": 0,
-            "Ub2": 0,
-            "Ub3": 0,
-            "Ub4": 0,
-            "Um": 0,
-            "UA": 1.1101270000000001e-15
-          }
-        },
-        {
-          "time_days": 365,
-          "unified_field": 1.1101270000000001e-15,
-          "components": {
-            "Ug1": 0,
-            "Ug2": 0,
-            "Ug3": 0,
-            "Ug4": 0,
-            "Ub1": 0,
-            "Ub2": 0,
-            "Ub3": 0,
-            "Ub4": 0,
-            "Um": 0,
-            "UA": 1.1101270000000001e-15
-          }
-        },
-        {
-          "time_days": 2007.5,
-          "unified_field": 1.1101270000000001e-15,
-          "components": {
-            "Ug1": 0,
-            "Ug2": 0,
-            "Ug3": 0,
-            "Ug4": 0,
-            "Ub1": 0,
-            "Ub2": 0,
-            "Ub3": 0,
-            "Ub4": 0,
-            "Um": 0,
-            "UA": 1.1101270000000001e-15
-          }
-        }
-      ]
-    }
-  ]
+  "summary": {
+    "avgPerformance": 9825000,
+    "stabilityRatio": 0,
+    "totalAnalyses": 67
+  }
 }
