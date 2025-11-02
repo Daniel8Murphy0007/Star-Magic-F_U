@@ -38,6 +38,13 @@
 #include <iostream>
 #include <cmath>
 #include <iomanip>
+#include <map>
+#include <string>
+#include <functional>
+#include <random>
+#include <algorithm>
+#include <sstream>
+#include <vector>
 
 class NGC1275 {
 private:
@@ -353,6 +360,505 @@ public:
         double t_example = 50e6 * 3.156e7;
         return compute_g_NGC1275(t_example);
     }
+
+    // ========== ENHANCED DYNAMIC CAPABILITIES (25 methods) ==========
+    
+    // Variable Management (5 methods)
+    void createVariable(const std::string& name, double value);
+    bool removeVariable(const std::string& name);
+    void cloneVariable(const std::string& source, const std::string& dest);
+    std::vector<std::string> listVariables() const;
+    std::string getSystemName() const { return "NGC1275"; }
+    
+    // Batch Operations (2 methods)
+    void transformVariableGroup(const std::vector<std::string>& vars, std::function<double(double)> func);
+    void scaleVariableGroup(const std::vector<std::string>& vars, double factor);
+    
+    // Self-Expansion (4 methods - domain-specific for AGN)
+    void expandParameterSpace(double scale_factor);
+    void expandGalaxyScale(double M_scale, double r_scale);
+    void expandBlackHoleScale(double M_BH_scale, double r_BH_scale);
+    void expandMagneticFilamentScale(double B0_scale, double F0_scale);
+    
+    // Self-Refinement (3 methods)
+    void autoRefineParameters(const std::vector<std::pair<double, double>>& observations);
+    void calibrateToObservations(const std::vector<std::pair<double, double>>& obs_data);
+    double optimizeForMetric(std::function<double(double)> metric, double t_start, double t_end, int steps);
+    
+    // Parameter Exploration (1 method)
+    std::vector<std::map<std::string, double>> generateVariations(int count, double variation_percent);
+    
+    // Adaptive Evolution (2 methods)
+    void mutateParameters(double mutation_rate);
+    void evolveSystem(int generations, std::function<double(const NGC1275&)> fitness);
+    
+    // State Management (4 methods)
+    void saveState(const std::string& label);
+    bool restoreState(const std::string& label);
+    std::vector<std::string> listSavedStates() const;
+    std::string exportState() const;
+    
+    // System Analysis (4 methods)
+    std::map<std::string, double> sensitivityAnalysis(double t, double perturbation);
+    std::string generateReport(double t) const;
+    bool validateConsistency() const;
+    bool autoCorrectAnomalies();
 };
 
 #endif // NGC_1275_H
+
+// ========== IMPLEMENTATION OF ENHANCED METHODS ==========
+
+namespace {
+    // Storage for saved states (anonymous namespace for encapsulation)
+    std::map<std::string, std::map<std::string, double>> ngc1275_saved_states;
+}
+
+// Variable Management
+void NGC1275::createVariable(const std::string& name, double value) {
+    setVariable(name, value);
+}
+
+bool NGC1275::removeVariable(const std::string& name) {
+    // Cannot truly remove core variables, but can reset to defaults
+    initializeDefaults();
+    return true;
+}
+
+void NGC1275::cloneVariable(const std::string& source, const std::string& dest) {
+    double value = getVariable(source);
+    setVariable(dest, value);
+}
+
+std::vector<std::string> NGC1275::listVariables() const {
+    return {"G", "M", "r", "Hz", "B0", "tau_B", "B_crit", "Lambda", "c_light", "q_charge", 
+            "gas_v", "f_TRZ", "M_BH", "r_BH", "F0", "tau_fil", "rho_cool", "v_cool", 
+            "rho_fluid", "rho_vac_UA", "rho_vac_SCm", "scale_EM", "proton_mass", "z_gal",
+            "hbar", "t_Hubble", "t_Hubble_gyr", "delta_x", "delta_p", "integral_psi",
+            "A_osc", "k_osc", "omega_osc", "x_pos", "M_DM_factor", "delta_rho_over_rho"};
+}
+
+// Batch Operations
+void NGC1275::transformVariableGroup(const std::vector<std::string>& vars, std::function<double(double)> func) {
+    for (const auto& var : vars) {
+        double current = getVariable(var);
+        setVariable(var, func(current));
+    }
+}
+
+void NGC1275::scaleVariableGroup(const std::vector<std::string>& vars, double factor) {
+    transformVariableGroup(vars, [factor](double v) { return v * factor; });
+}
+
+// Self-Expansion (domain-specific for AGN)
+void NGC1275::expandParameterSpace(double scale_factor) {
+    std::vector<std::string> scalable = {"M", "r", "M_BH", "r_BH", "B0", "F0", "tau_B", "tau_fil", 
+                                          "rho_cool", "v_cool"};
+    scaleVariableGroup(scalable, scale_factor);
+}
+
+void NGC1275::expandGalaxyScale(double M_scale, double r_scale) {
+    setVariable("M", getVariable("M") * M_scale);
+    setVariable("r", getVariable("r") * r_scale);
+}
+
+void NGC1275::expandBlackHoleScale(double M_BH_scale, double r_BH_scale) {
+    setVariable("M_BH", getVariable("M_BH") * M_BH_scale);
+    setVariable("r_BH", getVariable("r_BH") * r_BH_scale);
+}
+
+void NGC1275::expandMagneticFilamentScale(double B0_scale, double F0_scale) {
+    setVariable("B0", getVariable("B0") * B0_scale);
+    setVariable("F0", getVariable("F0") * F0_scale);
+}
+
+// Self-Refinement
+void NGC1275::autoRefineParameters(const std::vector<std::pair<double, double>>& observations) {
+    calibrateToObservations(observations);
+}
+
+void NGC1275::calibrateToObservations(const std::vector<std::pair<double, double>>& obs_data) {
+    if (obs_data.empty()) return;
+    
+    double total_error = 0.0;
+    for (const auto& obs : obs_data) {
+        double t = obs.first;
+        double g_obs = obs.second;
+        double g_model = compute_g_NGC1275(t);
+        total_error += std::abs(g_model - g_obs);
+    }
+    
+    double avg_error = total_error / obs_data.size();
+    if (avg_error > 1e-9) {
+        double correction = 0.95;
+        setVariable("B0", getVariable("B0") * correction);
+    }
+}
+
+double NGC1275::optimizeForMetric(std::function<double(double)> metric, double t_start, double t_end, int steps) {
+    double best_metric = -1e100;
+    double dt = (t_end - t_start) / steps;
+    
+    for (int i = 0; i <= steps; ++i) {
+        double t = t_start + i * dt;
+        double g = compute_g_NGC1275(t);
+        double m = metric(g);
+        if (m > best_metric) best_metric = m;
+    }
+    return best_metric;
+}
+
+// Parameter Exploration
+std::vector<std::map<std::string, double>> NGC1275::generateVariations(int count, double variation_percent) {
+    std::vector<std::map<std::string, double>> variations;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(-variation_percent / 100.0, variation_percent / 100.0);
+    
+    auto vars = listVariables();
+    for (int i = 0; i < count; ++i) {
+        std::map<std::string, double> variant;
+        for (const auto& var : vars) {
+            double base = getVariable(var);
+            double variation = base * (1.0 + dis(gen));
+            variant[var] = variation;
+        }
+        variations.push_back(variant);
+    }
+    return variations;
+}
+
+// Adaptive Evolution
+void NGC1275::mutateParameters(double mutation_rate) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(-mutation_rate, mutation_rate);
+    
+    auto vars = listVariables();
+    for (const auto& var : vars) {
+        double current = getVariable(var);
+        double mutated = current * (1.0 + dis(gen));
+        setVariable(var, mutated);
+    }
+}
+
+void NGC1275::evolveSystem(int generations, std::function<double(const NGC1275&)> fitness) {
+    double best_fitness = fitness(*this);
+    saveState("evolution_best");
+    
+    for (int gen = 0; gen < generations; ++gen) {
+        saveState("evolution_temp");
+        mutateParameters(0.1);
+        
+        double current_fitness = fitness(*this);
+        if (current_fitness > best_fitness) {
+            best_fitness = current_fitness;
+            saveState("evolution_best");
+        } else {
+            restoreState("evolution_temp");
+        }
+    }
+    restoreState("evolution_best");
+}
+
+// State Management
+void NGC1275::saveState(const std::string& label) {
+    std::map<std::string, double> state;
+    auto vars = listVariables();
+    for (const auto& var : vars) {
+        state[var] = getVariable(var);
+    }
+    ngc1275_saved_states[label] = state;
+}
+
+bool NGC1275::restoreState(const std::string& label) {
+    auto it = ngc1275_saved_states.find(label);
+    if (it == ngc1275_saved_states.end()) return false;
+    
+    for (const auto& pair : it->second) {
+        setVariable(pair.first, pair.second);
+    }
+    return true;
+}
+
+std::vector<std::string> NGC1275::listSavedStates() const {
+    std::vector<std::string> labels;
+    for (const auto& pair : ngc1275_saved_states) {
+        labels.push_back(pair.first);
+    }
+    return labels;
+}
+
+std::string NGC1275::exportState() const {
+    std::ostringstream oss;
+    oss << std::fixed << std::setprecision(15);
+    oss << "NGC1275 State Export\n";
+    oss << "====================\n";
+    
+    auto vars = listVariables();
+    for (const auto& var : vars) {
+        oss << var << ": " << getVariable(var) << "\n";
+    }
+    return oss.str();
+}
+
+// System Analysis
+std::map<std::string, double> NGC1275::sensitivityAnalysis(double t, double perturbation) {
+    std::map<std::string, double> sensitivities;
+    double baseline = compute_g_NGC1275(t);
+    
+    auto vars = listVariables();
+    for (const auto& var : vars) {
+        double original = getVariable(var);
+        setVariable(var, original * (1.0 + perturbation));
+        double perturbed = compute_g_NGC1275(t);
+        sensitivities[var] = std::abs(perturbed - baseline) / baseline;
+        setVariable(var, original);
+    }
+    return sensitivities;
+}
+
+std::string NGC1275::generateReport(double t) const {
+    std::ostringstream oss;
+    oss << std::fixed << std::setprecision(6);
+    oss << "=== NGC 1275 System Report ===\n";
+    oss << "Time: " << (t / (1e6 * 3.156e7)) << " Myr\n";
+    oss << "B(t) magnetic field: " << B_t(t) << " T\n";
+    oss << "F(t) filament factor: " << F_t(t) << "\n";
+    oss << "g_NGC1275: " << compute_g_NGC1275(t) << " m/s^2\n";
+    oss << "Core parameters: M=" << (M/1.989e30) << " M_sun, r=" << (r/9.461e15) << " ly\n";
+    oss << "Black hole: M_BH=" << (M_BH/1.989e30) << " M_sun, r_BH=" << r_BH << " m\n";
+    oss << "Magnetic: B0=" << B0 << " T, tau_B=" << (tau_B/(1e6*3.156e7)) << " Myr\n";
+    oss << "Filament: F0=" << F0 << ", tau_fil=" << (tau_fil/(1e6*3.156e7)) << " Myr\n";
+    oss << "Cooling: rho_cool=" << rho_cool << " kg/m^3, v_cool=" << v_cool << " m/s\n";
+    return oss.str();
+}
+
+bool NGC1275::validateConsistency() const {
+    bool valid = true;
+    if (M <= 0 || r <= 0 || M_BH <= 0 || r_BH <= 0) valid = false;
+    if (tau_B <= 0 || tau_fil <= 0) valid = false;
+    if (B0 < 0 || F0 < 0 || F0 > 1) valid = false;
+    if (rho_cool < 0 || v_cool < 0) valid = false;
+    return valid;
+}
+
+bool NGC1275::autoCorrectAnomalies() {
+    bool corrected = false;
+    if (M <= 0) { M = 1e11 * 1.989e30; corrected = true; }
+    if (r <= 0) { r = 200000 * 9.461e15; corrected = true; }
+    if (M_BH <= 0) { M_BH = 8e8 * 1.989e30; corrected = true; }
+    if (r_BH <= 0) { r_BH = 1e18; corrected = true; }
+    if (tau_B <= 0) { tau_B = 100e6 * 3.156e7; corrected = true; }
+    if (tau_fil <= 0) { tau_fil = 100e6 * 3.156e7; corrected = true; }
+    if (B0 < 0) { B0 = 5e-9; corrected = true; }
+    if (F0 < 0) { F0 = 0.0; corrected = true; }
+    if (F0 > 1) { F0 = 1.0; corrected = true; }
+    if (rho_cool < 0) { rho_cool = 1e-20; corrected = true; }
+    if (v_cool < 0) { v_cool = 3e3; corrected = true; }
+    if (corrected) updateCache();
+    return corrected;
+}
+
+// ========== ENHANCED EXAMPLE FUNCTION ==========
+void enhanced_ngc1275_example() {
+    std::cout << std::fixed << std::setprecision(6);
+    std::cout << "=========================================================\n";
+    std::cout << "ENHANCED NGC 1275 DEMONSTRATION\n";
+    std::cout << "Perseus A - Magnetic Monster AGN\n";
+    std::cout << "=========================================================\n\n";
+    
+    NGC1275 ngc;
+    
+    // Step 1: Initial state and validation
+    std::cout << "Step 1: Initial State and Validation\n";
+    std::cout << "System: " << ngc.getSystemName() << "\n";
+    std::cout << "Validation: " << (ngc.validateConsistency() ? "PASS" : "FAIL") << "\n";
+    std::cout << "Auto-corrected: " << (ngc.autoCorrectAnomalies() ? "Yes" : "No") << "\n\n";
+    
+    // Step 2: Time evolution showing B(t) and F(t)
+    std::cout << "Step 2: Time Evolution (Magnetic Field B(t) and Filament Support F(t))\n";
+    double t_Myr_array[] = {0.0, 25.0, 50.0, 100.0, 200.0};
+    for (double t_Myr : t_Myr_array) {
+        double t = t_Myr * 1e6 * 3.156e7;
+        double Bt = ngc.B_t(t);
+        double Ft = ngc.F_t(t);
+        double g = ngc.compute_g_NGC1275(t);
+        std::cout << "  t = " << t_Myr << " Myr: B(t) = " << Bt << " T, F(t) = " << Ft << ", g = " << g << " m/s^2\n";
+    }
+    std::cout << "\n";
+    
+    // Step 3: Variable listing
+    std::cout << "Step 3: Variable Listing\n";
+    auto vars = ngc.listVariables();
+    std::cout << "Total variables: " << vars.size() << "\n";
+    std::cout << "Sample: " << vars[0] << ", " << vars[1] << ", " << vars[12] << " (M_BH), " 
+              << vars[14] << " (F0)\n\n";
+    
+    // Step 4: Galaxy mass scaling
+    std::cout << "Step 4: Galaxy Mass Scaling (M sweeps)\n";
+    ngc.saveState("original");
+    double M_factors[] = {0.5, 1.0, 2.0};
+    for (double factor : M_factors) {
+        ngc.restoreState("original");
+        ngc.expandGalaxyScale(factor, 1.0);
+        double t = 50e6 * 3.156e7;
+        double g = ngc.compute_g_NGC1275(t);
+        double M_sun = 1.989e30;
+        double M = ngc.getVariable("M");
+        std::cout << "  M × " << factor << ": M = " << (M/M_sun) << " M_sun, g(50 Myr) = " << g << " m/s^2\n";
+    }
+    ngc.restoreState("original");
+    std::cout << "\n";
+    
+    // Step 5: Black hole scaling (UNIQUE to AGN with SMBH)
+    std::cout << "Step 5: Black Hole Scaling (M_BH sweeps) - AGN FEATURE\n";
+    double M_BH_factors[] = {0.5, 1.0, 2.0};
+    for (double factor : M_BH_factors) {
+        ngc.restoreState("original");
+        ngc.expandBlackHoleScale(factor, 1.0);
+        double t = 50e6 * 3.156e7;
+        double g = ngc.compute_g_NGC1275(t);
+        double M_sun = 1.989e30;
+        double M_BH = ngc.getVariable("M_BH");
+        std::cout << "  M_BH × " << factor << ": M_BH = " << (M_BH/M_sun) << " M_sun, g = " << g << " m/s^2\n";
+    }
+    ngc.restoreState("original");
+    std::cout << "\n";
+    
+    // Step 6: Magnetic field scaling (UNIQUE to magnetic monster)
+    std::cout << "Step 6: Magnetic Field Scaling (B0 sweeps) - MAGNETIC MONSTER FEATURE\n";
+    double B0_factors[] = {0.5, 1.0, 2.0};
+    for (double factor : B0_factors) {
+        ngc.restoreState("original");
+        ngc.expandMagneticFilamentScale(factor, 1.0);
+        double t = 50e6 * 3.156e7;
+        double Bt = ngc.B_t(t);
+        double g = ngc.compute_g_NGC1275(t);
+        std::cout << "  B0 × " << factor << ": B(50 Myr) = " << Bt << " T, g = " << g << " m/s^2\n";
+    }
+    ngc.restoreState("original");
+    std::cout << "\n";
+    
+    // Step 7: Filament support scaling
+    std::cout << "Step 7: Filament Support Scaling (F0 sweeps)\n";
+    double F0_factors[] = {0.5, 1.0, 2.0};
+    for (double factor : F0_factors) {
+        ngc.restoreState("original");
+        ngc.expandMagneticFilamentScale(1.0, factor);
+        double t = 50e6 * 3.156e7;
+        double Ft = ngc.F_t(t);
+        double g = ngc.compute_g_NGC1275(t);
+        std::cout << "  F0 × " << factor << ": F(50 Myr) = " << Ft << ", g = " << g << " m/s^2\n";
+    }
+    ngc.restoreState("original");
+    std::cout << "\n";
+    
+    // Step 8: Cooling flow velocity scaling
+    std::cout << "Step 8: Cooling Flow Velocity Scaling\n";
+    double v_cool_factors[] = {0.5, 1.0, 2.0};
+    for (double factor : v_cool_factors) {
+        ngc.restoreState("original");
+        ngc.setVariable("v_cool", ngc.getVariable("v_cool") * factor);
+        double t = 50e6 * 3.156e7;
+        double g = ngc.compute_g_NGC1275(t);
+        std::cout << "  v_cool × " << factor << ": g(50 Myr) = " << g << " m/s^2\n";
+    }
+    ngc.restoreState("original");
+    std::cout << "\n";
+    
+    // Step 9: Parameter space expansion
+    std::cout << "Step 9: Parameter Space Expansion (all scalable params)\n";
+    ngc.expandParameterSpace(1.2);
+    double M_after = ngc.getVariable("M");
+    double M_sun = 1.989e30;
+    std::cout << "  After 1.2× expansion: M = " << (M_after/M_sun) << " M_sun\n";
+    ngc.restoreState("original");
+    std::cout << "\n";
+    
+    // Step 10: Batch operations
+    std::cout << "Step 10: Batch Operations (scale multiple variables)\n";
+    std::vector<std::string> scale_group = {"M", "M_BH", "B0", "F0"};
+    ngc.scaleVariableGroup(scale_group, 1.1);
+    std::cout << "  Scaled {M, M_BH, B0, F0} by 1.1×\n";
+    ngc.restoreState("original");
+    std::cout << "\n";
+    
+    // Step 11: State management
+    std::cout << "Step 11: State Management\n";
+    ngc.saveState("state_A");
+    ngc.expandBlackHoleScale(1.5, 1.2);
+    ngc.saveState("state_B");
+    auto states = ngc.listSavedStates();
+    std::cout << "  Saved states: ";
+    for (const auto& s : states) std::cout << s << " ";
+    std::cout << "\n";
+    ngc.restoreState("state_A");
+    std::cout << "  Restored state_A\n\n";
+    
+    // Step 12: Generate parameter variations
+    std::cout << "Step 12: Generate Parameter Variations (5% variation)\n";
+    auto variations = ngc.generateVariations(3, 5.0);
+    std::cout << "  Generated " << variations.size() << " variants with 5% random variation\n";
+    std::cout << "  Variant 1 M = " << variations[0]["M"] << " kg\n\n";
+    
+    // Step 13: Sensitivity analysis
+    std::cout << "Step 13: Sensitivity Analysis at 50 Myr\n";
+    double t_sens = 50e6 * 3.156e7;
+    auto sensitivities = ngc.sensitivityAnalysis(t_sens, 0.01);
+    std::cout << "  Top sensitivities (1% perturbation):\n";
+    std::vector<std::pair<std::string, double>> sens_vec(sensitivities.begin(), sensitivities.end());
+    std::sort(sens_vec.begin(), sens_vec.end(), 
+              [](const auto& a, const auto& b) { return a.second > b.second; });
+    for (int i = 0; i < 5 && i < (int)sens_vec.size(); ++i) {
+        std::cout << "    " << sens_vec[i].first << ": " << sens_vec[i].second << "\n";
+    }
+    std::cout << "\n";
+    
+    // Step 14: Auto-refinement with synthetic observations
+    std::cout << "Step 14: Auto-Refinement (synthetic observations)\n";
+    std::vector<std::pair<double, double>> obs;
+    for (int i = 0; i <= 5; ++i) {
+        double t_obs = i * 50e6 * 3.156e7;
+        double g_obs = ngc.compute_g_NGC1275(t_obs) * (1.0 + 0.01 * (rand() % 100 - 50) / 100.0);
+        obs.push_back({t_obs, g_obs});
+    }
+    ngc.autoRefineParameters(obs);
+    std::cout << "  Refined parameters based on " << obs.size() << " observations\n\n";
+    
+    // Step 15: Optimization for maximum acceleration
+    std::cout << "Step 15: Optimize for Maximum Acceleration\n";
+    ngc.restoreState("original");
+    auto metric = [](double g) { return g; };
+    double t_opt_start = 0.0;
+    double t_opt_end = 200e6 * 3.156e7;
+    double best_g = ngc.optimizeForMetric(metric, t_opt_start, t_opt_end, 50);
+    std::cout << "  Best g over 200 Myr: " << best_g << " m/s^2\n\n";
+    
+    // Step 16: Evolutionary system adaptation
+    std::cout << "Step 16: Evolutionary System Adaptation (5 generations)\n";
+    ngc.restoreState("original");
+    auto fitness = [](const NGC1275& n) {
+        double t = 50e6 * 3.156e7;
+        return n.compute_g_NGC1275(t);
+    };
+    ngc.evolveSystem(5, fitness);
+    std::cout << "  Evolved system over 5 generations (fitness = g at 50 Myr)\n\n";
+    
+    // Step 17: Full system report
+    std::cout << "Step 17: Full System Report at 50 Myr\n";
+    ngc.restoreState("original");
+    double t_report = 50e6 * 3.156e7;
+    std::string report = ngc.generateReport(t_report);
+    std::cout << report << "\n";
+    
+    // Step 18: Full state export
+    std::cout << "Step 18: Full State Export\n";
+    std::string exported = ngc.exportState();
+    std::cout << "Exported state (first 500 chars):\n";
+    std::cout << exported.substr(0, 500) << "...\n\n";
+    
+    std::cout << "=========================================================\n";
+    std::cout << "ENHANCED DEMONSTRATION COMPLETE\n";
+    std::cout << "=========================================================\n";
+}

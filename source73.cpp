@@ -16,6 +16,8 @@
 #include <iostream>
 #include <iomanip>
 #include <complex>
+#include <functional>
+#include <vector>
 
 class NGC1300UQFFModule {
 private:
@@ -52,6 +54,49 @@ public:
 
     // Print all current variables (for debugging)
     void printVariables();
+
+    // ===== DYNAMIC SELF-UPDATE & SELF-EXPANSION CAPABILITIES =====
+    
+    // Dynamic variable management
+    void createDynamicVariable(const std::string& name, double value);
+    void removeDynamicVariable(const std::string& name);
+    void cloneVariable(const std::string& source, const std::string& dest);
+    void listAllVariables();
+    
+    // Batch operations
+    void applyTransformToGroup(const std::vector<std::string>& varNames, std::function<double(double)> transform);
+    void scaleVariableGroup(const std::vector<std::string>& varNames, double scale_factor);
+    
+    // Self-expansion capabilities
+    void autoExpandParameterSpace(double scale_factor);
+    void expandMassScale(double mass_multiplier);
+    void expandSpatialScale(double spatial_multiplier);
+    void expandTimeScale(double time_multiplier);
+    
+    // Self-refinement
+    void autoRefineParameters(double tolerance);
+    void calibrateToObservations(const std::map<std::string, double>& observed_values);
+    void optimizeForMetric(const std::string& metric_name, double target_value);
+    
+    // Parameter exploration
+    void generateVariations(int num_variations, double variation_range);
+    void findOptimalParameters(const std::string& objective, int iterations);
+    
+    // Adaptive evolution
+    void mutateParameters(double mutation_rate, double mutation_strength);
+    void evolveSystem(int generations);
+    
+    // State management
+    void saveState(const std::string& label);
+    void restoreState(const std::string& label);
+    void listSavedStates();
+    void exportState(const std::string& filename);
+    
+    // System analysis
+    void analyzeParameterSensitivity(const std::string& param_name);
+    void generateSystemReport();
+    void validatePhysicalConsistency();
+    void autoCorrectAnomalies();
 };
 
 #endif // NGC1300_UQFF_MODULE_H
@@ -318,21 +363,561 @@ void NGC1300UQFFModule::printVariables() {
     }
 }
 
+// ===== DYNAMIC SELF-UPDATE & SELF-EXPANSION IMPLEMENTATIONS =====
+
+// Static storage for saved states
+static std::map<std::string, std::map<std::string, double>> ngc1300_saved_states;
+
+// 1. Dynamic variable management
+void NGC1300UQFFModule::createDynamicVariable(const std::string& name, double value) {
+    variables[name] = value;
+    std::cout << "Created dynamic variable: " << name << " = " << value << std::endl;
+}
+
+void NGC1300UQFFModule::removeDynamicVariable(const std::string& name) {
+    if (variables.find(name) != variables.end()) {
+        variables.erase(name);
+        std::cout << "Removed dynamic variable: " << name << std::endl;
+    } else {
+        std::cerr << "Variable '" << name << "' not found for removal." << std::endl;
+    }
+}
+
+void NGC1300UQFFModule::cloneVariable(const std::string& source, const std::string& dest) {
+    if (variables.find(source) != variables.end()) {
+        variables[dest] = variables[source];
+        std::cout << "Cloned " << source << " to " << dest << std::endl;
+    } else {
+        std::cerr << "Source variable '" << source << "' not found." << std::endl;
+    }
+}
+
+void NGC1300UQFFModule::listAllVariables() {
+    std::cout << "=== All NGC 1300 Variables (Total: " << variables.size() << ") ===" << std::endl;
+    for (const auto& pair : variables) {
+        std::cout << "  " << pair.first << " = " << pair.second << std::endl;
+    }
+}
+
+// 2. Batch operations
+void NGC1300UQFFModule::applyTransformToGroup(const std::vector<std::string>& varNames,
+                                                std::function<double(double)> transform) {
+    for (const auto& name : varNames) {
+        if (variables.find(name) != variables.end()) {
+            variables[name] = transform(variables[name]);
+            std::cout << "Transformed " << name << " to " << variables[name] << std::endl;
+        }
+    }
+}
+
+void NGC1300UQFFModule::scaleVariableGroup(const std::vector<std::string>& varNames, double scale_factor) {
+    applyTransformToGroup(varNames, [scale_factor](double val) { return val * scale_factor; });
+}
+
+// 3. Self-expansion capabilities
+void NGC1300UQFFModule::autoExpandParameterSpace(double scale_factor) {
+    std::cout << "Auto-expanding NGC 1300 parameter space by factor " << scale_factor << std::endl;
+    std::vector<std::string> expandable = {"M", "SFR", "r", "v_arm", "rho_fluid"};
+    scaleVariableGroup(expandable, scale_factor);
+    
+    // Auto-sync dependent variables
+    variables["M_visible"] = 0.7 * variables["M"];
+    variables["M_DM"] = 0.3 * variables["M"];
+    variables["M0"] = variables["M"];
+    
+    std::cout << "  Parameter space expanded" << std::endl;
+}
+
+void NGC1300UQFFModule::expandMassScale(double mass_multiplier) {
+    std::cout << "Expanding mass scale by " << mass_multiplier << std::endl;
+    variables["M"] *= mass_multiplier;
+    variables["M_visible"] = 0.7 * variables["M"];
+    variables["M_DM"] = 0.3 * variables["M"];
+    variables["M0"] = variables["M"];
+    variables["SFR"] *= mass_multiplier;
+    std::cout << "  M: " << variables["M"] << " kg" << std::endl;
+    std::cout << "  M_visible: " << variables["M_visible"] << " kg" << std::endl;
+    std::cout << "  M_DM: " << variables["M_DM"] << " kg" << std::endl;
+    std::cout << "  SFR: " << variables["SFR"] << " kg/s" << std::endl;
+}
+
+void NGC1300UQFFModule::expandSpatialScale(double spatial_multiplier) {
+    std::cout << "Expanding spatial scale by " << spatial_multiplier << std::endl;
+    variables["r"] *= spatial_multiplier;
+    variables["Delta_x"] *= spatial_multiplier;
+    variables["Delta_p"] = variables["hbar"] / variables["Delta_x"];
+    variables["sigma"] *= spatial_multiplier;
+    std::cout << "  r: " << variables["r"] << " m" << std::endl;
+    std::cout << "  Delta_x: " << variables["Delta_x"] << " m" << std::endl;
+    std::cout << "  sigma: " << variables["sigma"] << " m" << std::endl;
+}
+
+void NGC1300UQFFModule::expandTimeScale(double time_multiplier) {
+    std::cout << "Expanding time scale by " << time_multiplier << std::endl;
+    variables["t"] *= time_multiplier;
+    variables["t_Hubble"] *= time_multiplier;
+    variables["omega"] /= time_multiplier;
+    variables["omega_i"] /= time_multiplier;
+    variables["omega_spin"] /= time_multiplier;
+    std::cout << "  t: " << variables["t"] << " s" << std::endl;
+    std::cout << "  t_Hubble: " << variables["t_Hubble"] << " s" << std::endl;
+    std::cout << "  omega: " << variables["omega"] << " rad/s" << std::endl;
+}
+
+// 4. Self-refinement
+void NGC1300UQFFModule::autoRefineParameters(double tolerance) {
+    std::cout << "Auto-refining NGC 1300 parameters with tolerance " << tolerance << std::endl;
+    
+    // Ensure M = M_visible + M_DM
+    double M_total_computed = variables["M_visible"] + variables["M_DM"];
+    if (std::abs(M_total_computed - variables["M"]) / variables["M"] > tolerance) {
+        std::cout << "  Correcting total mass consistency" << std::endl;
+        variables["M"] = M_total_computed;
+        variables["M0"] = variables["M"];
+    }
+    
+    // Ensure Delta_p = hbar / Delta_x
+    double delta_p_computed = variables["hbar"] / variables["Delta_x"];
+    if (std::abs(delta_p_computed - variables["Delta_p"]) / variables["Delta_p"] > tolerance) {
+        std::cout << "  Correcting uncertainty relation" << std::endl;
+        variables["Delta_p"] = delta_p_computed;
+    }
+    
+    // Ensure v = v_arm consistency
+    if (std::abs(variables["v"] - variables["v_arm"]) / variables["v_arm"] > tolerance) {
+        std::cout << "  Synchronizing velocity parameters" << std::endl;
+        variables["v"] = variables["v_arm"];
+    }
+    
+    std::cout << "Refinement complete." << std::endl;
+}
+
+void NGC1300UQFFModule::calibrateToObservations(const std::map<std::string, double>& observed_values) {
+    std::cout << "Calibrating to " << observed_values.size() << " NGC 1300 observations..." << std::endl;
+    for (const auto& obs : observed_values) {
+        if (variables.find(obs.first) != variables.end()) {
+            double old_val = variables[obs.first];
+            updateVariable(obs.first, obs.second);
+            std::cout << "  " << obs.first << ": " << old_val << " -> " << obs.second << std::endl;
+        }
+    }
+    std::cout << "Calibration complete." << std::endl;
+}
+
+void NGC1300UQFFModule::optimizeForMetric(const std::string& metric_name, double target_value) {
+    std::cout << "Optimizing for metric: " << metric_name << " = " << target_value << std::endl;
+    
+    if (metric_name == "g_total") {
+        double current_g = computeG(variables["t"], variables["r"]);
+        double ratio = target_value / std::max(current_g, 1e-100);
+        
+        // Adjust M to reach target gravity
+        variables["M"] *= ratio;
+        variables["M_visible"] = 0.7 * variables["M"];
+        variables["M_DM"] = 0.3 * variables["M"];
+        variables["M0"] = variables["M"];
+        std::cout << "  Adjusted M by " << ratio << std::endl;
+    } else if (metric_name == "SFR") {
+        updateVariable("SFR", target_value);
+        std::cout << "  Set SFR to " << target_value << std::endl;
+    }
+    
+    std::cout << "Optimization complete." << std::endl;
+}
+
+// 5. Parameter exploration
+void NGC1300UQFFModule::generateVariations(int num_variations, double variation_range) {
+    std::cout << "Generating " << num_variations << " NGC 1300 variations with range ±" 
+              << (variation_range * 100) << "%" << std::endl;
+    
+    std::vector<std::string> key_params = {"M", "SFR", "r", "v_arm", "B", "rho_fluid"};
+    
+    for (int i = 0; i < num_variations; ++i) {
+        std::cout << "  Variation " << (i+1) << ":" << std::endl;
+        for (const auto& param : key_params) {
+            if (variables.find(param) != variables.end()) {
+                double base = variables[param];
+                double variation = base * (1.0 + variation_range * (2.0 * (rand() / (double)RAND_MAX) - 1.0));
+                std::cout << "    " << param << ": " << base << " -> " << variation << std::endl;
+            }
+        }
+    }
+}
+
+void NGC1300UQFFModule::findOptimalParameters(const std::string& objective, int iterations) {
+    std::cout << "Finding optimal NGC 1300 parameters for: " << objective 
+              << " (" << iterations << " iterations)" << std::endl;
+    
+    double best_score = -1e100;
+    std::map<std::string, double> best_params;
+    
+    for (int i = 0; i < iterations; ++i) {
+        mutateParameters(0.7, 0.1);
+        
+        double score = computeG(variables["t"], variables["r"]);
+        
+        if (objective == "maximize_gravity") {
+            if (score > best_score) {
+                best_score = score;
+                best_params = variables;
+            }
+        } else if (objective == "target_2e36") {
+            if (std::abs(score - 2e36) < std::abs(best_score - 2e36)) {
+                best_score = score;
+                best_params = variables;
+            }
+        }
+    }
+    
+    variables = best_params;
+    std::cout << "Optimal g_NGC1300: " << best_score << " m/s^2" << std::endl;
+}
+
+// 6. Adaptive evolution
+void NGC1300UQFFModule::mutateParameters(double mutation_rate, double mutation_strength) {
+    std::vector<std::string> mutable_params = {"M", "SFR", "r", "v_arm", "B", "rho_fluid", "omega_spin"};
+    
+    for (const auto& param : mutable_params) {
+        if (variables.find(param) != variables.end()) {
+            if ((rand() / (double)RAND_MAX) < mutation_rate) {
+                double mutation = 1.0 + mutation_strength * (2.0 * (rand() / (double)RAND_MAX) - 1.0);
+                variables[param] *= mutation;
+            }
+        }
+    }
+    
+    // Auto-sync dependencies
+    variables["M_visible"] = 0.7 * variables["M"];
+    variables["M_DM"] = 0.3 * variables["M"];
+    variables["M0"] = variables["M"];
+    variables["v"] = variables["v_arm"];
+}
+
+void NGC1300UQFFModule::evolveSystem(int generations) {
+    std::cout << "Evolving NGC 1300 system over " << generations << " generations..." << std::endl;
+    
+    for (int gen = 0; gen < generations; ++gen) {
+        mutateParameters(0.3, 0.08);
+        
+        double fitness = computeG(variables["t"], variables["r"]);
+        
+        if (gen % 10 == 0) {
+            std::cout << "  Gen " << gen << ": g_NGC1300 = " << fitness << " m/s^2" << std::endl;
+        }
+    }
+    
+    std::cout << "Evolution complete." << std::endl;
+}
+
+// 7. State management
+void NGC1300UQFFModule::saveState(const std::string& label) {
+    ngc1300_saved_states[label] = variables;
+    std::cout << "Saved NGC 1300 state: " << label << " (" << variables.size() << " variables)" << std::endl;
+}
+
+void NGC1300UQFFModule::restoreState(const std::string& label) {
+    if (ngc1300_saved_states.find(label) != ngc1300_saved_states.end()) {
+        variables = ngc1300_saved_states[label];
+        std::cout << "Restored NGC 1300 state: " << label << std::endl;
+    } else {
+        std::cerr << "State '" << label << "' not found." << std::endl;
+    }
+}
+
+void NGC1300UQFFModule::listSavedStates() {
+    std::cout << "=== Saved NGC 1300 States (Total: " << ngc1300_saved_states.size() << ") ===" << std::endl;
+    for (const auto& state : ngc1300_saved_states) {
+        std::cout << "  " << state.first << " (" << state.second.size() << " variables)" << std::endl;
+    }
+}
+
+void NGC1300UQFFModule::exportState(const std::string& filename) {
+    std::cout << "Exporting NGC 1300 state to " << filename << " (not implemented - placeholder)" << std::endl;
+    // In real implementation: write variables to file
+}
+
+// 8. System analysis
+void NGC1300UQFFModule::analyzeParameterSensitivity(const std::string& param_name) {
+    if (variables.find(param_name) == variables.end()) {
+        std::cerr << "Parameter '" << param_name << "' not found." << std::endl;
+        return;
+    }
+    
+    std::cout << "=== NGC 1300 Sensitivity Analysis: " << param_name << " ===" << std::endl;
+    
+    double base_value = variables[param_name];
+    double base_output = computeG(variables["t"], variables["r"]);
+    
+    std::vector<double> perturbations = {0.7, 0.85, 1.0, 1.15, 1.3};
+    
+    for (double factor : perturbations) {
+        updateVariable(param_name, base_value * factor);
+        
+        double new_output = computeG(variables["t"], variables["r"]);
+        double sensitivity = (new_output - base_output) / std::max(std::abs(base_output), 1e-100);
+        
+        std::cout << "  " << param_name << " * " << factor << " -> g_NGC1300 change: " 
+                  << (sensitivity * 100) << "%" << std::endl;
+    }
+    
+    updateVariable(param_name, base_value);  // Restore
+}
+
+void NGC1300UQFFModule::generateSystemReport() {
+    std::cout << "\n========== NGC 1300 Barred Spiral Galaxy System Report ==========" << std::endl;
+    std::cout << "Total Variables: " << variables.size() << std::endl;
+    
+    // Galaxy parameters
+    std::cout << "\nGalaxy Parameters:" << std::endl;
+    std::cout << "M (total): " << variables["M"] << " kg (" << (variables["M"]/1.989e30) << " M_sun)" << std::endl;
+    std::cout << "M_visible: " << variables["M_visible"] << " kg" << std::endl;
+    std::cout << "M_DM: " << variables["M_DM"] << " kg" << std::endl;
+    std::cout << "r (radius): " << variables["r"] << " m (" << (variables["r"]/3.086e19) << " kpc)" << std::endl;
+    std::cout << "z (redshift): " << variables["z"] << std::endl;
+    
+    std::cout << "\nDynamics:" << std::endl;
+    std::cout << "SFR: " << variables["SFR"] << " kg/s (" << (variables["SFR"]*3.156e7/1.989e30) << " M_sun/yr)" << std::endl;
+    std::cout << "v_arm: " << variables["v_arm"] << " m/s (" << (variables["v_arm"]/1e3) << " km/s)" << std::endl;
+    std::cout << "omega_spin (bar): " << variables["omega_spin"] << " rad/s" << std::endl;
+    std::cout << "B (magnetic): " << variables["B"] << " T" << std::endl;
+    
+    std::cout << "\nEnvironmental Forces:" << std::endl;
+    double f_env = computeFenv(variables["t"]);
+    std::cout << "F_env (total): " << f_env << " N" << std::endl;
+    
+    std::cout << "\nGravity Components:" << std::endl;
+    double Ug1 = computeUg1(variables["t"]);
+    double Ug2 = computeUg2(variables["t"]);
+    double Ug3 = computeUg3prime(variables["t"]);
+    double Ug4 = computeUg4(variables["t"]);
+    double Ui = computeUi(variables["t"]);
+    std::cout << "Ug1 (dipole): " << Ug1 << " J" << std::endl;
+    std::cout << "Ug2 (superconductor): " << Ug2 << " J" << std::endl;
+    std::cout << "Ug3' (bar external): " << Ug3 << " m/s^2" << std::endl;
+    std::cout << "Ug4 (reaction): " << Ug4 << " J" << std::endl;
+    std::cout << "Ui (internal): " << Ui << std::endl;
+    
+    // Current computation
+    double g_total = computeG(variables["t"], variables["r"]);
+    
+    std::cout << "\nCurrent Computation:" << std::endl;
+    std::cout << "t: " << variables["t"] << " s (" << (variables["t"]/(3.156e7*1e9)) << " Gyr)" << std::endl;
+    std::cout << "g_NGC1300: " << g_total << " m/s^2" << std::endl;
+    
+    std::cout << "\nPhysics Regime:" << std::endl;
+    if (variables["B"] / variables["B_crit"] < 0.01) {
+        std::cout << "Weak magnetic regime (B << B_crit)" << std::endl;
+    } else if (variables["B"] / variables["B_crit"] < 0.5) {
+        std::cout << "Moderate magnetic regime" << std::endl;
+    } else {
+        std::cout << "Strong magnetic regime (approaching B_crit)" << std::endl;
+    }
+    
+    std::cout << "==================================================\n" << std::endl;
+}
+
+void NGC1300UQFFModule::validatePhysicalConsistency() {
+    std::cout << "Validating NGC 1300 physical consistency..." << std::endl;
+    bool consistent = true;
+    
+    // Check for NaN/Inf
+    for (const auto& pair : variables) {
+        if (std::isnan(pair.second) || std::isinf(pair.second)) {
+            std::cerr << "  ERROR: " << pair.first << " is NaN/Inf" << std::endl;
+            consistent = false;
+        }
+    }
+    
+    // Check mass consistency
+    double M_total = variables["M_visible"] + variables["M_DM"];
+    if (std::abs(M_total - variables["M"]) / variables["M"] > 0.01) {
+        std::cerr << "  WARNING: M != M_visible + M_DM (discrepancy: " 
+                  << ((M_total - variables["M"]) / variables["M"] * 100) << "%)" << std::endl;
+    }
+    
+    // Check uncertainty relation
+    double delta_p_expected = variables["hbar"] / variables["Delta_x"];
+    if (std::abs(delta_p_expected - variables["Delta_p"]) / variables["Delta_p"] > 0.01) {
+        std::cerr << "  WARNING: Delta_p != hbar / Delta_x" << std::endl;
+    }
+    
+    // Positive values
+    if (variables["M"] <= 0) {
+        std::cerr << "  ERROR: M must be positive" << std::endl;
+        consistent = false;
+    }
+    
+    if (variables["r"] <= 0) {
+        std::cerr << "  ERROR: r must be positive" << std::endl;
+        consistent = false;
+    }
+    
+    if (variables["SFR"] < 0) {
+        std::cerr << "  ERROR: SFR cannot be negative" << std::endl;
+        consistent = false;
+    }
+    
+    // Physical ranges
+    if (variables["z"] < 0) {
+        std::cerr << "  WARNING: Negative redshift (blueshift)" << std::endl;
+    }
+    
+    if (variables["B"] > variables["B_crit"]) {
+        std::cerr << "  WARNING: B exceeds B_crit (superconductor breakdown)" << std::endl;
+    }
+    
+    if (consistent) {
+        std::cout << "  All checks passed. NGC 1300 system is physically consistent." << std::endl;
+    }
+}
+
+void NGC1300UQFFModule::autoCorrectAnomalies() {
+    std::cout << "Auto-correcting NGC 1300 anomalies..." << std::endl;
+    
+    // Fix NaN/Inf
+    for (auto& pair : variables) {
+        if (std::isnan(pair.second) || std::isinf(pair.second)) {
+            std::cout << "  Correcting " << pair.first << " (was NaN/Inf)" << std::endl;
+            pair.second = 1.0;
+        }
+    }
+    
+    // Fix mass consistency
+    double M_total = variables["M_visible"] + variables["M_DM"];
+    if (std::abs(M_total - variables["M"]) / variables["M"] > 0.01) {
+        std::cout << "  Correcting total mass to match components" << std::endl;
+        variables["M"] = M_total;
+        variables["M0"] = M_total;
+    }
+    
+    // Fix uncertainty relation
+    double delta_p_expected = variables["hbar"] / variables["Delta_x"];
+    if (std::abs(delta_p_expected - variables["Delta_p"]) / variables["Delta_p"] > 0.01) {
+        std::cout << "  Correcting Delta_p = hbar / Delta_x" << std::endl;
+        variables["Delta_p"] = delta_p_expected;
+    }
+    
+    // Ensure positive values
+    if (variables["M"] <= 0) {
+        std::cout << "  Correcting M to 1e11 M_sun" << std::endl;
+        variables["M"] = 1e11 * 1.989e30;
+        variables["M_visible"] = 0.7 * variables["M"];
+        variables["M_DM"] = 0.3 * variables["M"];
+        variables["M0"] = variables["M"];
+    }
+    
+    if (variables["r"] <= 0) {
+        std::cout << "  Correcting r to 11.79 kpc" << std::endl;
+        variables["r"] = 11.79e3 * 3.086e19;
+    }
+    
+    if (variables["SFR"] < 0) {
+        std::cout << "  Correcting SFR to 1 M_sun/yr" << std::endl;
+        variables["SFR"] = 1.989e30 / 3.156e7;
+    }
+    
+    // Sync velocity
+    if (variables["v"] != variables["v_arm"]) {
+        std::cout << "  Synchronizing v = v_arm" << std::endl;
+        variables["v"] = variables["v_arm"];
+    }
+    
+    std::cout << "Auto-correction complete." << std::endl;
+}
+
 // Example usage
-// #include "NGC1300UQFFModule.h"
-// int main() {
-//     NGC1300UQFFModule mod;
-//     double t = 1e9 * 3.156e7;  // 1 Gyr
-//     double r = 5e3 * 3.086e19;  // 5 kpc
-//     double g = mod.computeG(t, r);
-//     std::cout << "g_NGC1300 = " << g << " m/s�\n";
-//     std::cout << mod.getEquationText() << std::endl;
-//     mod.updateVariable("SFR", 2 * mod.variables["SFR"]);
-//     mod.printVariables();
-//     return 0;
-// }
+// Uncomment the following code to test the enhanced NGC 1300 module with dynamic capabilities
+/*
+#include "NGC1300UQFFModule.h"
+int main() {
+    NGC1300UQFFModule mod;
+    
+    std::cout << "===== NGC 1300 Barred Spiral Galaxy with Dynamic Capabilities =====" << std::endl;
+    std::cout << "  UQFF Integration with bar-driven gas funneling and spiral arm dynamics\n" << std::endl;
+    
+    // Initial state
+    std::cout << "1. Initial gravity calculation:" << std::endl;
+    double t = 1e9 * 3.156e7;  // 1 Gyr
+    double r = 5e3 * 3.086e19;  // 5 kpc
+    double g = mod.computeG(t, r);
+    std::cout << "g_NGC1300 = " << g << " m/s^2\n" << std::endl;
+    
+    // List all variables
+    std::cout << "2. Variable inventory:" << std::endl;
+    mod.listAllVariables();
+    std::cout << std::endl;
+    
+    // Generate system report
+    std::cout << "3. System report:" << std::endl;
+    mod.generateSystemReport();
+    std::cout << std::endl;
+    
+    // Save initial state
+    std::cout << "4. Saving initial state:" << std::endl;
+    mod.saveState("initial");
+    std::cout << std::endl;
+    
+    // Double star formation rate
+    std::cout << "5. Doubling SFR:" << std::endl;
+    mod.updateVariable("SFR", 2 * mod.variables["SFR"]);
+    g = mod.computeG(t, r);
+    std::cout << "New g_NGC1300 = " << g << " m/s^2\n" << std::endl;
+    
+    // Expand mass scale
+    std::cout << "6. Expanding mass scale by 1.5x:" << std::endl;
+    mod.expandMassScale(1.5);
+    g = mod.computeG(t, r);
+    std::cout << "New g_NGC1300 = " << g << " m/s^2\n" << std::endl;
+    
+    // Save evolved state
+    std::cout << "7. Saving evolved state:" << std::endl;
+    mod.saveState("evolved_1.5x");
+    std::cout << std::endl;
+    
+    // Analyze sensitivity to M
+    std::cout << "8. Sensitivity analysis for M:" << std::endl;
+    mod.analyzeParameterSensitivity("M");
+    std::cout << std::endl;
+    
+    // Create dynamic variable
+    std::cout << "9. Creating dynamic bar strength variable:" << std::endl;
+    mod.createDynamicVariable("bar_strength", 0.25);
+    std::cout << std::endl;
+    
+    // Optimize for target gravity
+    std::cout << "10. Optimizing for target g = 2e36 m/s^2:" << std::endl;
+    mod.optimizeForMetric("g_total", 2e36);
+    g = mod.computeG(t, r);
+    std::cout << "Optimized g_NGC1300 = " << g << " m/s^2\n" << std::endl;
+    
+    // Validate consistency
+    std::cout << "11. Validating physical consistency:" << std::endl;
+    mod.validatePhysicalConsistency();
+    std::cout << std::endl;
+    
+    // Generate variations
+    std::cout << "12. Generating 3 parameter variations (±15%):" << std::endl;
+    mod.generateVariations(3, 0.15);
+    std::cout << std::endl;
+    
+    // Restore initial state
+    std::cout << "13. Restoring initial state:" << std::endl;
+    mod.restoreState("initial");
+    g = mod.computeG(t, r);
+    std::cout << "Restored g_NGC1300 = " << g << " m/s^2\n" << std::endl;
+    
+    // List saved states
+    std::cout << "14. List of saved states:" << std::endl;
+    mod.listSavedStates();
+    std::cout << std::endl;
+    
+    std::cout << "End of NGC 1300 demonstration with dynamic capabilities.\n" << std::endl;
+    std::cout << mod.getEquationText() << std::endl;
+    return 0;
+}
+*/
 // Compile: g++ -o ngc1300_sim base.cpp NGC1300UQFFModule.cpp -lm
-// Sample Output: g_NGC1300 ~ 2e36 m/s� (env/fluid dominant; repulsive terms advance framework).
+// Sample Output: g_NGC1300 ~ 2e36 m/s^2 (env/fluid dominant; repulsive terms advance framework).
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
 NGC1300UQFFModule Evaluation

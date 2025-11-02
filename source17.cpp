@@ -37,6 +37,13 @@
 #include <iostream>
 #include <cmath>
 #include <iomanip>
+#include <map>
+#include <string>
+#include <functional>
+#include <random>
+#include <algorithm>
+#include <sstream>
+#include <vector>
 
 class Westerlund2 {
 private:
@@ -324,6 +331,527 @@ public:
         double t_example = 1e6 * 3.156e7;
         return compute_g_Westerlund2(t_example);
     }
+
+    // ========== ENHANCED DYNAMIC CAPABILITIES (25 methods) ==========
+
+    // --- Variable Management (5 methods) ---
+    bool createVariable(const std::string& name, double value);
+    bool removeVariable(const std::string& name);
+    bool cloneVariable(const std::string& src, const std::string& dest);
+    std::vector<std::string> listVariables() const;
+    std::string getSystemName() const;
+
+    // --- Batch Operations (2 methods) ---
+    bool transformVariableGroup(const std::vector<std::string>& names, std::function<double(double)> func);
+    bool scaleVariableGroup(const std::vector<std::string>& names, double factor);
+
+    // --- Self-Expansion (4 methods) ---
+    void expandParameterSpace(double factor);
+    void expandStarFormationScale(double M_dot_factor_scale, double tau_SF_scale);
+    void expandWindFeedbackScale(double rho_wind_scale, double v_wind_scale);
+    void expandMagneticFluidScale(double B_scale, double rho_fluid_scale);
+
+    // --- Self-Refinement (3 methods) ---
+    void autoRefineParameters(const std::vector<std::pair<double, double>>& observations);
+    void calibrateToObservations(const std::vector<double>& times, const std::vector<double>& g_obs);
+    double optimizeForMetric(std::function<double(double)> metric, double t_start, double t_end, int steps);
+
+    // --- Parameter Exploration (1 method) ---
+    std::vector<std::map<std::string, double>> generateVariations(int count, double variation_pct);
+
+    // --- Adaptive Evolution (2 methods) ---
+    void mutateParameters(double mutation_rate, std::mt19937& rng);
+    void evolveSystem(int generations, std::function<double(const Westerlund2&)> fitness);
+
+    // --- State Management (4 methods) ---
+    bool saveState(const std::string& stateName);
+    bool restoreState(const std::string& stateName);
+    std::vector<std::string> listSavedStates() const;
+    std::string exportState() const;
+
+    // --- System Analysis (4 methods) ---
+    std::map<std::string, double> sensitivityAnalysis(double t, double delta_pct);
+    std::string generateReport(double t) const;
+    bool validateConsistency() const;
+    bool autoCorrectAnomalies();
 };
 
 #endif // WESTERLUND_2_H
+
+// ========== IMPLEMENTATION OF ENHANCED METHODS (Outside class) ==========
+
+// Anonymous namespace for state storage
+namespace {
+    std::map<std::string, std::map<std::string, double>> westerlund2_saved_states;
+}
+
+// --- Variable Management (5 methods) ---
+bool Westerlund2::createVariable(const std::string& name, double value) {
+    return setVariable(name, value);
+}
+
+bool Westerlund2::removeVariable(const std::string& name) {
+    std::cerr << "Warning: Cannot remove built-in variable '" << name << "' in Westerlund2 class." << std::endl;
+    return false;
+}
+
+bool Westerlund2::cloneVariable(const std::string& src, const std::string& dest) {
+    double val = getVariable(src);
+    return setVariable(dest, val);
+}
+
+std::vector<std::string> Westerlund2::listVariables() const {
+    return {"G", "M_initial", "r", "H0", "B", "B_crit", "Lambda", "c_light", "q_charge",
+            "gas_v", "f_TRZ", "M_dot_factor", "tau_SF", "rho_wind", "v_wind", "rho_fluid",
+            "rho_vac_UA", "rho_vac_SCm", "scale_EM", "proton_mass", "hbar", "t_Hubble", "t_Hubble_gyr",
+            "delta_x", "delta_p", "integral_psi", "A_osc", "k_osc", "omega_osc", "x_pos",
+            "M_DM_factor", "delta_rho_over_rho"};
+}
+
+std::string Westerlund2::getSystemName() const {
+    return "Westerlund2";
+}
+
+// --- Batch Operations (2 methods) ---
+bool Westerlund2::transformVariableGroup(const std::vector<std::string>& names, std::function<double(double)> func) {
+    for (const auto& name : names) {
+        double val = getVariable(name);
+        if (!setVariable(name, func(val))) return false;
+    }
+    return true;
+}
+
+bool Westerlund2::scaleVariableGroup(const std::vector<std::string>& names, double factor) {
+    return transformVariableGroup(names, [factor](double v) { return v * factor; });
+}
+
+// --- Self-Expansion (4 methods) ---
+void Westerlund2::expandParameterSpace(double factor) {
+    std::vector<std::string> expandable = {"M_initial", "r", "B", "rho_fluid", "rho_wind", "A_osc", "M_DM_factor"};
+    scaleVariableGroup(expandable, factor);
+}
+
+void Westerlund2::expandStarFormationScale(double M_dot_factor_scale, double tau_SF_scale) {
+    setVariable("M_dot_factor", getVariable("M_dot_factor") * M_dot_factor_scale);
+    setVariable("tau_SF", getVariable("tau_SF") * tau_SF_scale);
+}
+
+void Westerlund2::expandWindFeedbackScale(double rho_wind_scale, double v_wind_scale) {
+    setVariable("rho_wind", getVariable("rho_wind") * rho_wind_scale);
+    setVariable("v_wind", getVariable("v_wind") * v_wind_scale);
+}
+
+void Westerlund2::expandMagneticFluidScale(double B_scale, double rho_fluid_scale) {
+    setVariable("B", getVariable("B") * B_scale);
+    setVariable("B_crit", getVariable("B_crit") * B_scale);
+    setVariable("rho_fluid", getVariable("rho_fluid") * rho_fluid_scale);
+}
+
+// --- Self-Refinement (3 methods) ---
+void Westerlund2::autoRefineParameters(const std::vector<std::pair<double, double>>& observations) {
+    if (observations.empty()) return;
+    
+    double sum_error = 0.0;
+    for (const auto& obs : observations) {
+        double t = obs.first;
+        double g_obs = obs.second;
+        double g_calc = compute_g_Westerlund2(t);
+        sum_error += std::abs(g_calc - g_obs);
+    }
+    double avg_error = sum_error / observations.size();
+    
+    if (avg_error > 1e-6) {
+        double adj_factor = 1.0 - std::min(0.1, avg_error / 1e6);
+        setVariable("M_dot_factor", getVariable("M_dot_factor") * adj_factor);
+        setVariable("tau_SF", getVariable("tau_SF") * (2.0 - adj_factor));
+    }
+}
+
+void Westerlund2::calibrateToObservations(const std::vector<double>& times, const std::vector<double>& g_obs) {
+    if (times.size() != g_obs.size() || times.empty()) return;
+    
+    std::vector<std::pair<double, double>> obs;
+    for (size_t i = 0; i < times.size(); ++i) {
+        obs.push_back({times[i], g_obs[i]});
+    }
+    
+    for (int iter = 0; iter < 5; ++iter) {
+        autoRefineParameters(obs);
+    }
+}
+
+double Westerlund2::optimizeForMetric(std::function<double(double)> metric, double t_start, double t_end, int steps) {
+    double best_score = -1e100;
+    double dt = (t_end - t_start) / steps;
+    
+    for (int i = 0; i <= steps; ++i) {
+        double t = t_start + i * dt;
+        double g = compute_g_Westerlund2(t);
+        double score = metric(g);
+        if (score > best_score) best_score = score;
+    }
+    return best_score;
+}
+
+// --- Parameter Exploration (1 method) ---
+std::vector<std::map<std::string, double>> Westerlund2::generateVariations(int count, double variation_pct) {
+    std::vector<std::map<std::string, double>> variations;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(-variation_pct/100.0, variation_pct/100.0);
+    
+    auto vars = listVariables();
+    for (int i = 0; i < count; ++i) {
+        std::map<std::string, double> variant;
+        for (const auto& v : vars) {
+            double val = getVariable(v);
+            double variation = val * (1.0 + dis(gen));
+            variant[v] = variation;
+        }
+        variations.push_back(variant);
+    }
+    return variations;
+}
+
+// --- Adaptive Evolution (2 methods) ---
+void Westerlund2::mutateParameters(double mutation_rate, std::mt19937& rng) {
+    std::uniform_real_distribution<> dis(-mutation_rate, mutation_rate);
+    auto vars = listVariables();
+    
+    for (const auto& v : vars) {
+        if (v == "c_light" || v == "G" || v == "hbar") continue;
+        double val = getVariable(v);
+        double delta = val * dis(rng);
+        setVariable(v, val + delta);
+    }
+}
+
+void Westerlund2::evolveSystem(int generations, std::function<double(const Westerlund2&)> fitness) {
+    std::random_device rd;
+    std::mt19937 rng(rd());
+    
+    double best_fitness = fitness(*this);
+    saveState("evolution_best");
+    
+    for (int gen = 0; gen < generations; ++gen) {
+        saveState("evolution_temp");
+        mutateParameters(0.05, rng);
+        
+        double new_fitness = fitness(*this);
+        if (new_fitness > best_fitness) {
+            best_fitness = new_fitness;
+            saveState("evolution_best");
+        } else {
+            restoreState("evolution_temp");
+        }
+    }
+    
+    restoreState("evolution_best");
+}
+
+// --- State Management (4 methods) ---
+bool Westerlund2::saveState(const std::string& stateName) {
+    std::map<std::string, double> state;
+    auto vars = listVariables();
+    for (const auto& v : vars) {
+        state[v] = getVariable(v);
+    }
+    westerlund2_saved_states[stateName] = state;
+    return true;
+}
+
+bool Westerlund2::restoreState(const std::string& stateName) {
+    auto it = westerlund2_saved_states.find(stateName);
+    if (it == westerlund2_saved_states.end()) return false;
+    
+    for (const auto& pair : it->second) {
+        setVariable(pair.first, pair.second);
+    }
+    return true;
+}
+
+std::vector<std::string> Westerlund2::listSavedStates() const {
+    std::vector<std::string> names;
+    for (const auto& pair : westerlund2_saved_states) {
+        names.push_back(pair.first);
+    }
+    return names;
+}
+
+std::string Westerlund2::exportState() const {
+    std::ostringstream oss;
+    oss << std::scientific << std::setprecision(6);
+    oss << "Westerlund2 State Export:\n";
+    auto vars = listVariables();
+    for (const auto& v : vars) {
+        oss << v << " = " << getVariable(v) << "\n";
+    }
+    return oss.str();
+}
+
+// --- System Analysis (4 methods) ---
+std::map<std::string, double> Westerlund2::sensitivityAnalysis(double t, double delta_pct) {
+    std::map<std::string, double> sensitivities;
+    double g_base = compute_g_Westerlund2(t);
+    
+    auto vars = listVariables();
+    for (const auto& v : vars) {
+        if (v == "c_light" || v == "G" || v == "hbar") continue;
+        
+        double original = getVariable(v);
+        double delta = original * delta_pct / 100.0;
+        
+        setVariable(v, original + delta);
+        double g_plus = compute_g_Westerlund2(t);
+        setVariable(v, original);
+        
+        double sensitivity = (g_base != 0.0) ? std::abs((g_plus - g_base) / g_base) : 0.0;
+        sensitivities[v] = sensitivity;
+    }
+    
+    return sensitivities;
+}
+
+std::string Westerlund2::generateReport(double t) const {
+    std::ostringstream oss;
+    oss << std::fixed << std::setprecision(6);
+    oss << "============================================\n";
+    oss << "WESTERLUND 2 SUPER STAR CLUSTER REPORT\n";
+    oss << "============================================\n";
+    oss << "Time: t = " << t << " s (" << (t/3.156e7/1e6) << " Myr)\n\n";
+    
+    oss << "Physical Parameters:\n";
+    double M_sun = 1.989e30;
+    oss << "  Initial Mass M_initial = " << M_initial << " kg (" << (M_initial/M_sun) << " M_sun)\n";
+    oss << "  M(t) = " << M_t(t) << " kg (" << (M_t(t)/M_sun) << " M_sun)\n";
+    double ly_to_m = 9.461e15;
+    oss << "  Radius r = " << r << " m (" << (r/ly_to_m) << " ly)\n";
+    oss << "  Magnetic field B = " << B << " T (B_crit = " << B_crit << " T)\n";
+    oss << "  Star formation M_dot_factor = " << M_dot_factor << ", tau_SF = " << tau_SF << " s\n";
+    oss << "  Wind density rho_wind = " << rho_wind << " kg/m^3, v_wind = " << v_wind << " m/s\n";
+    oss << "  Fluid density rho_fluid = " << rho_fluid << " kg/m^3\n";
+    oss << "  Gas velocity = " << gas_v << " m/s\n";
+    oss << "  DM factor = " << M_DM_factor << "\n\n";
+    
+    oss << "Computed Acceleration:\n";
+    oss << "  g_Westerlund2(t) = " << compute_g_Westerlund2(t) << " m/s^2\n\n";
+    
+    oss << "UQFF Terms:\n";
+    double Mt = M_t(t);
+    double ug1_t = (G * Mt) / (r * r);
+    double corr_H = 1 + H0 * t;
+    double corr_B = 1 - B / B_crit;
+    oss << "  Base (with H0, B, M(t)): " << (ug1_t * corr_H * corr_B) << " m/s^2\n";
+    oss << "  Ug total: " << compute_Ug(Mt) << " m/s^2\n";
+    oss << "  Lambda: " << ((Lambda * c_light * c_light) / 3.0) << " m/s^2\n";
+    
+    double cross_vB = gas_v * B;
+    double em_base = (q_charge * cross_vB) / proton_mass;
+    double corr_UA = 1 + (rho_vac_UA / rho_vac_SCm);
+    oss << "  EM (scaled with UA): " << (em_base * corr_UA * scale_EM) << " m/s^2\n";
+    
+    double sqrt_unc = sqrt(delta_x * delta_p);
+    oss << "  Quantum: " << ((hbar / sqrt_unc) * integral_psi * (2 * M_PI / t_Hubble)) << " m/s^2\n";
+    
+    double V = compute_V();
+    oss << "  Fluid: " << ((rho_fluid * V * ug1_t) / Mt) << " m/s^2\n";
+    
+    oss << "  Oscillatory: (combined real parts)\n";
+    
+    double M_dm = Mt * M_DM_factor;
+    double pert1 = delta_rho_over_rho;
+    double pert2 = 3 * G * Mt / (r * r * r);
+    double term_dm_force_like = (Mt + M_dm) * (pert1 + pert2);
+    oss << "  DM: " << (term_dm_force_like / Mt) << " m/s^2\n";
+    
+    double wind_pressure = rho_wind * v_wind * v_wind;
+    oss << "  Stellar Wind Feedback: " << (wind_pressure / rho_fluid) << " m/s^2\n";
+    
+    oss << "============================================\n";
+    return oss.str();
+}
+
+bool Westerlund2::validateConsistency() const {
+    bool valid = true;
+    
+    if (M_initial <= 0 || r <= 0) { std::cerr << "Error: M_initial and r must be positive.\n"; valid = false; }
+    if (B < 0 || B_crit <= 0) { std::cerr << "Error: B, B_crit must be non-negative/positive.\n"; valid = false; }
+    if (tau_SF <= 0) { std::cerr << "Error: Star formation timescale must be positive.\n"; valid = false; }
+    if (rho_fluid <= 0 || rho_wind < 0) { std::cerr << "Error: Fluid/wind densities must be positive/non-negative.\n"; valid = false; }
+    if (v_wind < 0 || gas_v < 0) { std::cerr << "Error: Velocities must be non-negative.\n"; valid = false; }
+    if (M_DM_factor < 0 || M_DM_factor > 1.0) { std::cerr << "Warning: DM factor outside [0,1].\n"; }
+    
+    return valid;
+}
+
+bool Westerlund2::autoCorrectAnomalies() {
+    bool corrected = false;
+    
+    double M_sun = 1.989e30;
+    
+    if (M_initial <= 0) { M_initial = 30000.0 * M_sun; corrected = true; }
+    if (r <= 0) { r = 9.461e16; corrected = true; }
+    if (B < 0) { B = 1e-5; corrected = true; }
+    if (B_crit <= 0) { B_crit = 1e11; corrected = true; }
+    if (tau_SF <= 0) { tau_SF = 2e6 * 3.156e7; corrected = true; }
+    if (rho_fluid <= 0) { rho_fluid = 1e-20; corrected = true; }
+    if (rho_wind < 0) { rho_wind = 1e-20; corrected = true; }
+    if (v_wind < 0) { v_wind = 2e6; corrected = true; }
+    if (gas_v < 0) { gas_v = 1e5; corrected = true; }
+    if (M_DM_factor < 0) { M_DM_factor = 0.1; corrected = true; }
+    if (M_DM_factor > 1.0) { M_DM_factor = 1.0; corrected = true; }
+    
+    if (corrected) updateCache();
+    return corrected;
+}
+
+// ========== ENHANCED EXAMPLE FUNCTION ==========
+void enhancedWesterlund2Example() {
+    std::cout << "\n========== ENHANCED WESTERLUND 2 UQFF EXAMPLE ==========\n\n";
+    
+    Westerlund2 wd2;
+    
+    // Step 1: Initial state
+    std::cout << "Step 1: Initial Configuration\n";
+    wd2.printParameters();
+    double t0 = 0.0;
+    std::cout << "g_Westerlund2(t=0) = " << wd2.compute_g_Westerlund2(t0) << " m/s^2\n\n";
+    
+    // Step 2: Time evolution (0, 0.5, 1, 2, 5 Myr)
+    std::cout << "Step 2: Time Evolution (0, 0.5, 1, 2, 5 Myr)\n";
+    double M_sun = 1.989e30;
+    for (double t_myr : {0.0, 0.5, 1.0, 2.0, 5.0}) {
+        double t = t_myr * 1e6 * 3.156e7;
+        std::cout << "  t = " << t_myr << " Myr: g = " << wd2.compute_g_Westerlund2(t) 
+                  << " m/s^2, M(t) = " << (wd2.M_t(t)/M_sun) << " M_sun\n";
+    }
+    std::cout << "\n";
+    
+    // Step 3: Star formation scaling
+    std::cout << "Step 3: Star Formation Scaling (M_dot_factor x1.4, tau_SF x0.75)\n";
+    wd2.expandStarFormationScale(1.4, 0.75);
+    double t_test = 1e6 * 3.156e7;
+    std::cout << "After expansion: M_dot_factor = " << wd2.getVariable("M_dot_factor") 
+              << ", tau_SF = " << wd2.getVariable("tau_SF") << " s\n";
+    std::cout << "g_Westerlund2(t=1 Myr) = " << wd2.compute_g_Westerlund2(t_test) << " m/s^2\n\n";
+    
+    // Step 4: Wind feedback scaling
+    std::cout << "Step 4: Wind Feedback Scaling (rho_wind x1.6, v_wind x1.25)\n";
+    wd2.expandWindFeedbackScale(1.6, 1.25);
+    std::cout << "After expansion: rho_wind = " << wd2.getVariable("rho_wind") 
+              << " kg/m^3, v_wind = " << wd2.getVariable("v_wind") << " m/s\n";
+    std::cout << "g_Westerlund2(t=1 Myr) = " << wd2.compute_g_Westerlund2(t_test) << " m/s^2\n\n";
+    
+    // Step 5: Magnetic & fluid scaling
+    std::cout << "Step 5: Magnetic & Fluid Scaling (B x1.3, rho_fluid x1.4)\n";
+    wd2.expandMagneticFluidScale(1.3, 1.4);
+    std::cout << "After expansion: B = " << wd2.getVariable("B") 
+              << " T, rho_fluid = " << wd2.getVariable("rho_fluid") << " kg/m^3\n";
+    std::cout << "g_Westerlund2(t=1 Myr) = " << wd2.compute_g_Westerlund2(t_test) << " m/s^2\n\n";
+    
+    // Step 6: State save/restore
+    std::cout << "Step 6: State Management\n";
+    wd2.saveState("expanded_state");
+    wd2.setVariable("M_initial", 50000.0 * M_sun);
+    std::cout << "Modified M_initial to 50000 M_sun: g = " << wd2.compute_g_Westerlund2(t_test) << " m/s^2\n";
+    wd2.restoreState("expanded_state");
+    std::cout << "Restored state: M_initial = " << (wd2.getVariable("M_initial")/M_sun) 
+              << " M_sun, g = " << wd2.compute_g_Westerlund2(t_test) << " m/s^2\n";
+    std::cout << "Saved states: ";
+    for (const auto& s : wd2.listSavedStates()) std::cout << s << " ";
+    std::cout << "\n\n";
+    
+    // Step 7: Sensitivity analysis
+    std::cout << "Step 7: Sensitivity Analysis at t=1 Myr (top 5 parameters)\n";
+    auto sens = wd2.sensitivityAnalysis(t_test, 1.0);
+    std::vector<std::pair<std::string, double>> sens_vec(sens.begin(), sens.end());
+    std::sort(sens_vec.begin(), sens_vec.end(), [](const auto& a, const auto& b) { return a.second > b.second; });
+    for (int i = 0; i < std::min(5, (int)sens_vec.size()); ++i) {
+        std::cout << "  " << sens_vec[i].first << ": " << sens_vec[i].second << "\n";
+    }
+    std::cout << "\n";
+    
+    // Step 8: Generate variations
+    std::cout << "Step 8: Generate Parameter Variations (3 variants, 10% variation)\n";
+    auto variations = wd2.generateVariations(3, 10.0);
+    for (size_t i = 0; i < variations.size(); ++i) {
+        std::cout << "  Variant " << (i+1) << ": M_initial = " << (variations[i]["M_initial"]/M_sun) 
+                  << " M_sun, v_wind = " << variations[i]["v_wind"] << " m/s\n";
+    }
+    std::cout << "\n";
+    
+    // Step 9: Batch transformation
+    std::cout << "Step 9: Batch Transform (scale density parameters by 1.25)\n";
+    wd2.transformVariableGroup({"rho_fluid", "rho_wind"}, [](double v) { return v * 1.25; });
+    std::cout << "After transform: rho_fluid = " << wd2.getVariable("rho_fluid") 
+              << " kg/m^3, rho_wind = " << wd2.getVariable("rho_wind") << " kg/m^3\n";
+    std::cout << "g_Westerlund2(t=1 Myr) = " << wd2.compute_g_Westerlund2(t_test) << " m/s^2\n\n";
+    
+    // Step 10: Consistency validation
+    std::cout << "Step 10: Consistency Validation\n";
+    bool valid = wd2.validateConsistency();
+    std::cout << "System is " << (valid ? "VALID" : "INVALID") << "\n\n";
+    
+    // Step 11: Metric optimization
+    std::cout << "Step 11: Optimize for Maximum g (t=0 to 5 Myr, 100 steps)\n";
+    double max_g = wd2.optimizeForMetric([](double g) { return g; }, 0.0, 5e6 * 3.156e7, 100);
+    std::cout << "Maximum g found: " << max_g << " m/s^2\n\n";
+    
+    // Step 12: Full system report
+    std::cout << "Step 12: Full System Report at t=1.5 Myr\n";
+    double t_report = 1.5e6 * 3.156e7;
+    std::cout << wd2.generateReport(t_report) << "\n";
+    
+    // Step 13: Initial mass sweep
+    std::cout << "Step 13: Initial Mass Sweep (M_initial = 20000, 30000, 40000, 50000 M_sun)\n";
+    wd2.saveState("before_sweep");
+    for (double M_val : {20000.0, 30000.0, 40000.0, 50000.0}) {
+        wd2.setVariable("M_initial", M_val * M_sun);
+        std::cout << "  M_initial = " << M_val << " M_sun: g(t=1Myr) = " << wd2.compute_g_Westerlund2(t_test) << " m/s^2\n";
+    }
+    wd2.restoreState("before_sweep");
+    std::cout << "\n";
+    
+    // Step 14: Star formation rate sweep
+    std::cout << "Step 14: Star Formation Factor Sweep (M_dot_factor = 2.0, 3.33, 5.0, 7.0)\n";
+    for (double M_dot : {2.0, 3.33, 5.0, 7.0}) {
+        wd2.setVariable("M_dot_factor", M_dot);
+        std::cout << "  M_dot_factor = " << M_dot << ": M(t=1Myr) = " << (wd2.M_t(t_test)/M_sun) 
+                  << " M_sun, g = " << wd2.compute_g_Westerlund2(t_test) << " m/s^2\n";
+    }
+    wd2.restoreState("before_sweep");
+    std::cout << "\n";
+    
+    // Step 15: Wind velocity sweep
+    std::cout << "Step 15: Wind Velocity Sweep (v_wind = 1, 2, 3, 4 x 10^6 m/s)\n";
+    for (double v_wind : {1e6, 2e6, 3e6, 4e6}) {
+        wd2.setVariable("v_wind", v_wind);
+        std::cout << "  v_wind = " << (v_wind/1e6) << " x 10^6 m/s: g(t=1Myr) = " << wd2.compute_g_Westerlund2(t_test) << " m/s^2\n";
+    }
+    wd2.restoreState("before_sweep");
+    std::cout << "\n";
+    
+    // Step 16: Magnetic field sweep
+    std::cout << "Step 16: Magnetic Field Sweep (B = 0.5, 1.0, 1.5, 2.0 x 10^-5 T)\n";
+    for (double B_val : {0.5e-5, 1.0e-5, 1.5e-5, 2.0e-5}) {
+        wd2.setVariable("B", B_val);
+        std::cout << "  B = " << (B_val*1e5) << " x 10^-5 T: g(t=1Myr) = " << wd2.compute_g_Westerlund2(t_test) << " m/s^2\n";
+    }
+    wd2.restoreState("before_sweep");
+    std::cout << "\n";
+    
+    // Step 17: DM factor sweep
+    std::cout << "Step 17: Dark Matter Factor Sweep (M_DM_factor = 0.0, 0.1, 0.2, 0.3)\n";
+    for (double dm : {0.0, 0.1, 0.2, 0.3}) {
+        wd2.setVariable("M_DM_factor", dm);
+        std::cout << "  M_DM_factor = " << dm << ": g(t=1Myr) = " << wd2.compute_g_Westerlund2(t_test) << " m/s^2\n";
+    }
+    wd2.restoreState("before_sweep");
+    std::cout << "\n";
+    
+    // Step 18: Export final state
+    std::cout << "Step 18: Export Final State\n";
+    std::cout << wd2.exportState() << "\n";
+    
+    std::cout << "========== ENHANCED EXAMPLE COMPLETE ==========\n\n";
+}

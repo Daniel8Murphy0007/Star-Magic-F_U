@@ -19,6 +19,11 @@
 #include <iostream>
 #include <iomanip>
 #include <complex>
+#include <functional>
+#include <random>
+#include <algorithm>
+#include <sstream>
+#include <vector>
 
 class SgrA_UQFFModule {
 private:
@@ -52,6 +57,48 @@ public:
 
     // Print all current variables (for debugging/updates)
     void printVariables();
+
+    // ========== ENHANCED DYNAMIC CAPABILITIES (25 methods) ==========
+    // Variable Management
+    void createVariable(const std::string& name, double value);
+    void removeVariable(const std::string& name);
+    void cloneVariable(const std::string& source, const std::string& dest);
+    std::vector<std::string> listVariables() const;
+    std::string getSystemName() const { return "SagittariusA_SMBH"; }
+
+    // Batch Operations
+    void transformVariableGroup(const std::vector<std::string>& names, std::function<double(double)> func);
+    void scaleVariableGroup(const std::vector<std::string>& names, double factor);
+
+    // Self-Expansion (exploring different SMBH/accretion configurations)
+    void expandParameterSpace(double scale_factor);
+    void expandSMBHScale(double M_scale, double r_scale);
+    void expandDPMScale(double I_scale, double f_DPM_scale);
+    void expandAccretionScale(double rho_disk_scale, double v_exp_scale);
+
+    // Self-Refinement
+    void autoRefineParameters(const std::vector<std::pair<double, double>>& observations);
+    void calibrateToObservations(const std::vector<std::pair<double, double>>& obs);
+    double optimizeForMetric(std::function<double(double)> metric, double t_start, double t_end, int steps);
+
+    // Parameter Exploration
+    std::vector<std::map<std::string, double>> generateVariations(int count, double variation_percent = 5.0);
+
+    // Adaptive Evolution
+    void mutateParameters(double mutation_rate = 0.05);
+    void evolveSystem(int generations, std::function<double(const SgrA_UQFFModule&)> fitness);
+
+    // State Management
+    void saveState(const std::string& label);
+    void restoreState(const std::string& label);
+    std::vector<std::string> listSavedStates() const;
+    std::string exportState() const;
+
+    // System Analysis
+    std::map<std::string, double> sensitivityAnalysis(double t, double perturbation = 0.01);
+    std::string generateReport(double t) const;
+    bool validateConsistency() const;
+    bool autoCorrectAnomalies();
 };
 
 #endif // SGR_A_UQFF_MODULE_H
@@ -265,6 +312,264 @@ void SgrA_UQFFModule::printVariables() {
 // Sample Output at t=10 Gyr: g ? 1e-30 m/s� (varies with updates; all terms micro-scale per UQFF frequencies).
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 09, 2025.
 
+// ========== ENHANCED DYNAMIC CAPABILITIES IMPLEMENTATION ==========
+namespace {
+    std::map<std::string, std::map<std::string, double>> sgra_saved_states;
+}
+
+// Variable Management
+void SgrA_UQFFModule::createVariable(const std::string& name, double value) {
+    variables[name] = value;
+}
+
+void SgrA_UQFFModule::removeVariable(const std::string& name) {
+    variables.erase(name);
+}
+
+void SgrA_UQFFModule::cloneVariable(const std::string& source, const std::string& dest) {
+    if (variables.find(source) != variables.end()) {
+        variables[dest] = variables[source];
+    }
+}
+
+std::vector<std::string> SgrA_UQFFModule::listVariables() const {
+    std::vector<std::string> names;
+    for (const auto& pair : variables) {
+        names.push_back(pair.first);
+    }
+    return names;
+}
+
+// Batch Operations
+void SgrA_UQFFModule::transformVariableGroup(const std::vector<std::string>& names, std::function<double(double)> func) {
+    for (const auto& name : names) {
+        if (variables.find(name) != variables.end()) {
+            variables[name] = func(variables[name]);
+        }
+    }
+}
+
+void SgrA_UQFFModule::scaleVariableGroup(const std::vector<std::string>& names, double factor) {
+    transformVariableGroup(names, [factor](double v) { return v * factor; });
+}
+
+// Self-Expansion
+void SgrA_UQFFModule::expandParameterSpace(double scale_factor) {
+    std::vector<std::string> scalable = {"M", "r", "I", "f_DPM", "f_THz", "rho_fluid", "v_exp"};
+    scaleVariableGroup(scalable, scale_factor);
+}
+
+void SgrA_UQFFModule::expandSMBHScale(double M_scale, double r_scale) {
+    if (variables.find("M") != variables.end()) {
+        variables["M"] *= M_scale;
+    }
+    if (variables.find("r") != variables.end()) {
+        variables["r"] *= r_scale;
+        // Recalculate dependent geometry
+        variables["A"] = variables["pi"] * std::pow(variables["r"], 2);
+        variables["V_sys"] = (4.0 / 3.0) * variables["pi"] * std::pow(variables["r"], 3);
+    }
+}
+
+void SgrA_UQFFModule::expandDPMScale(double I_scale, double f_DPM_scale) {
+    if (variables.find("I") != variables.end()) {
+        variables["I"] *= I_scale;
+    }
+    if (variables.find("f_DPM") != variables.end()) {
+        variables["f_DPM"] *= f_DPM_scale;
+    }
+}
+
+void SgrA_UQFFModule::expandAccretionScale(double rho_disk_scale, double v_exp_scale) {
+    if (variables.find("rho_fluid") != variables.end()) {
+        variables["rho_fluid"] *= rho_disk_scale;
+        variables["rho"] = variables["rho_fluid"];
+        variables["delta_rho"] = 0.1 * variables["rho_fluid"];
+    }
+    if (variables.find("v_exp") != variables.end()) {
+        variables["v_exp"] *= v_exp_scale;
+    }
+}
+
+// Self-Refinement
+void SgrA_UQFFModule::autoRefineParameters(const std::vector<std::pair<double, double>>& observations) {
+    if (observations.empty()) return;
+    double total_error = 0.0;
+    for (const auto& obs : observations) {
+        double t = obs.first;
+        double g_obs = obs.second;
+        double g_calc = computeG(t);
+        total_error += std::abs(g_calc - g_obs);
+    }
+    double avg_error = total_error / observations.size();
+    if (avg_error > 1e-32) {  // Micro-scale threshold for SMBH
+        double adjustment = 1.0 - (avg_error / (avg_error + 1e-30)) * 0.1;
+        variables["f_DPM"] *= adjustment;
+    }
+}
+
+void SgrA_UQFFModule::calibrateToObservations(const std::vector<std::pair<double, double>>& obs) {
+    autoRefineParameters(obs);
+}
+
+double SgrA_UQFFModule::optimizeForMetric(std::function<double(double)> metric, double t_start, double t_end, int steps) {
+    double best_metric = -1e100;
+    for (int i = 0; i < steps; ++i) {
+        double t = t_start + (t_end - t_start) * i / (steps - 1);
+        double g = computeG(t);
+        double m = metric(g);
+        if (m > best_metric) {
+            best_metric = m;
+        }
+    }
+    return best_metric;
+}
+
+// Parameter Exploration
+std::vector<std::map<std::string, double>> SgrA_UQFFModule::generateVariations(int count, double variation_percent) {
+    std::vector<std::map<std::string, double>> variations;
+    std::default_random_engine gen(std::random_device{}());
+    std::uniform_real_distribution<double> dist(-variation_percent / 100.0, variation_percent / 100.0);
+    
+    for (int i = 0; i < count; ++i) {
+        std::map<std::string, double> variant = variables;
+        for (auto& pair : variant) {
+            if (pair.first != "c" && pair.first != "hbar" && pair.first != "pi") {
+                pair.second *= (1.0 + dist(gen));
+            }
+        }
+        variations.push_back(variant);
+    }
+    return variations;
+}
+
+// Adaptive Evolution
+void SgrA_UQFFModule::mutateParameters(double mutation_rate) {
+    std::default_random_engine gen(std::random_device{}());
+    std::uniform_real_distribution<double> dist(-mutation_rate, mutation_rate);
+    
+    std::vector<std::string> mutable_vars = {"M", "r", "I", "f_DPM", "f_THz", "rho_fluid", "v_exp", "f_TRZ"};
+    for (const auto& name : mutable_vars) {
+        if (variables.find(name) != variables.end()) {
+            variables[name] *= (1.0 + dist(gen));
+        }
+    }
+}
+
+void SgrA_UQFFModule::evolveSystem(int generations, std::function<double(const SgrA_UQFFModule&)> fitness) {
+    for (int gen = 0; gen < generations; ++gen) {
+        double current_fitness = fitness(*this);
+        auto variants = generateVariations(5, 10.0);
+        double best_fitness = current_fitness;
+        std::map<std::string, double> best_vars = variables;
+        
+        for (const auto& variant : variants) {
+            SgrA_UQFFModule temp = *this;
+            temp.variables = variant;
+            double f = fitness(temp);
+            if (f > best_fitness) {
+                best_fitness = f;
+                best_vars = variant;
+            }
+        }
+        variables = best_vars;
+    }
+}
+
+// State Management
+void SgrA_UQFFModule::saveState(const std::string& label) {
+    sgra_saved_states[label] = variables;
+}
+
+void SgrA_UQFFModule::restoreState(const std::string& label) {
+    if (sgra_saved_states.find(label) != sgra_saved_states.end()) {
+        variables = sgra_saved_states[label];
+    }
+}
+
+std::vector<std::string> SgrA_UQFFModule::listSavedStates() const {
+    std::vector<std::string> labels;
+    for (const auto& pair : sgra_saved_states) {
+        labels.push_back(pair.first);
+    }
+    return labels;
+}
+
+std::string SgrA_UQFFModule::exportState() const {
+    std::ostringstream oss;
+    oss << "SagittariusA_SMBH_State:\n";
+    for (const auto& pair : variables) {
+        oss << pair.first << "=" << pair.second << "\n";
+    }
+    return oss.str();
+}
+
+// System Analysis
+std::map<std::string, double> SgrA_UQFFModule::sensitivityAnalysis(double t, double perturbation) {
+    std::map<std::string, double> sensitivities;
+    double g_base = computeG(t);
+    
+    std::vector<std::string> test_vars = {"M", "r", "I", "f_DPM", "f_THz", "rho_fluid", "v_exp", "f_TRZ"};
+    for (const auto& var : test_vars) {
+        if (variables.find(var) != variables.end()) {
+            double original = variables[var];
+            variables[var] = original * (1.0 + perturbation);
+            double g_perturbed = computeG(t);
+            sensitivities[var] = std::abs(g_perturbed - g_base) / (g_base + 1e-100);
+            variables[var] = original;
+        }
+    }
+    return sensitivities;
+}
+
+std::string SgrA_UQFFModule::generateReport(double t) const {
+    std::ostringstream oss;
+    oss << std::fixed << std::setprecision(6);
+    oss << "========== SAGITTARIUS A* SMBH UQFF REPORT ==========\n";
+    oss << "Time: " << (t / 3.156e7 / 1e9) << " Gyr\n";
+    oss << "System: " << getSystemName() << "\n\n";
+    
+    oss << "Key Parameters:\n";
+    oss << "  SMBH Mass M: " << (variables.at("M") / variables.at("M_sun")) << " M_sun (" 
+        << (variables.at("M") / variables.at("M_sun") / 1e6) << " million M_sun)\n";
+    oss << "  Schwarzschild Radius r: " << (variables.at("r") / 1e9) << " × 10^9 m\n";
+    oss << "  DPM Current I: " << variables.at("I") << " A\n";
+    oss << "  DPM Frequency: " << (variables.at("f_DPM") / 1e9) << " GHz\n";
+    oss << "  THz Frequency: " << (variables.at("f_THz") / 1e9) << " GHz\n";
+    oss << "  Accretion Disk Density: " << variables.at("rho_fluid") << " kg/m^3\n";
+    oss << "  Outflow Velocity: " << (variables.at("v_exp") / 1e3) << " km/s\n";
+    oss << "  Time-Reversal Factor: " << variables.at("f_TRZ") << "\n\n";
+    
+    SgrA_UQFFModule temp = *const_cast<SgrA_UQFFModule*>(this);
+    double g = temp.computeG(t);
+    oss << "Computed g_UQFF: " << g << " m/s^2\n";
+    oss << "Dominant Terms: THz/Fluid (frequency-based UQFF for SMBH)\n";
+    oss << "======================================================\n";
+    return oss.str();
+}
+
+bool SgrA_UQFFModule::validateConsistency() const {
+    bool valid = true;
+    if (variables.at("M") <= 0) valid = false;
+    if (variables.at("r") <= 0) valid = false;
+    if (variables.at("I") <= 0) valid = false;
+    if (variables.at("f_DPM") <= 0) valid = false;
+    if (variables.at("f_THz") <= 0) valid = false;
+    if (variables.at("rho_fluid") <= 0) valid = false;
+    return valid;
+}
+
+bool SgrA_UQFFModule::autoCorrectAnomalies() {
+    bool corrected = false;
+    if (variables["M"] <= 0) { variables["M"] = 4.3e6 * variables["M_sun"]; corrected = true; }
+    if (variables["r"] <= 0) { variables["r"] = 1.27e10; corrected = true; }
+    if (variables["I"] <= 0) { variables["I"] = 1e24; corrected = true; }
+    if (variables["f_DPM"] <= 0) { variables["f_DPM"] = 1e9; corrected = true; }
+    if (variables["f_THz"] <= 0) { variables["f_THz"] = 1e9; corrected = true; }
+    if (variables["rho_fluid"] <= 0) { variables["rho_fluid"] = 1e-20; corrected = true; }
+    return corrected;
+}
+
 // Evaluation of SgrA_UQFFModule (UQFF Frequency/Resonance Model for Sagittarius A* SMBH)
 
 **Strengths:**
@@ -284,3 +589,174 @@ void SgrA_UQFFModule::printVariables() {
 
     ** Summary : **
     The module is robust, dynamic, and extensible, supporting runtime updates and changes to all model parameters.It is suitable for advanced UQFF - based SMBH modeling.Minor improvements in error handling, documentation, and physical justification are recommended for production or publication use.
+
+// ========== ENHANCED 18-STEP EXAMPLE FUNCTION ==========
+void example_enhanced_sgra_18_steps() {
+    std::cout << "\n========== ENHANCED SAGITTARIUS A* SMBH 18-STEP DEMONSTRATION ==========\n";
+    std::cout << "Milky Way Galactic Center SMBH with UQFF Frequency/Resonance Model\n\n";
+    
+    SgrA_UQFFModule sgra;
+    double t_current = 10e9 * 3.156e7; // 10 Gyr in seconds
+    
+    // Step 1: Initial state at t = 10 Gyr
+    std::cout << "Step 1: Initial Sgr A* state at t = 10 Gyr\n";
+    double g1 = sgra.computeG(t_current);
+    std::cout << "  SMBH Mass = " << (sgra.variables["M"] / sgra.variables["M_sun"] / 1e6) << " million M_sun\n";
+    std::cout << "  Schwarzschild r = " << (sgra.variables["r"] / 1e9) << " × 10^9 m\n";
+    std::cout << "  g_UQFF = " << g1 << " m/s^2 (micro-scale)\n\n";
+    
+    // Step 2: Save initial state
+    std::cout << "Step 2: Save initial Sgr A* state\n";
+    sgra.saveState("sgra_initial_10Gyr");
+    std::cout << "  State saved as 'sgra_initial_10Gyr'\n\n";
+    
+    // Step 3: Expand SMBH scale (mass and radius)
+    std::cout << "Step 3: Expand SMBH scale (1.5x mass, 1.5x radius)\n";
+    sgra.expandSMBHScale(1.5, 1.5);
+    double g3 = sgra.computeG(t_current);
+    std::cout << "  New M = " << (sgra.variables["M"] / sgra.variables["M_sun"] / 1e6) << " million M_sun\n";
+    std::cout << "  New r = " << (sgra.variables["r"] / 1e9) << " × 10^9 m\n";
+    std::cout << "  g_UQFF = " << g3 << " m/s^2\n\n";
+    
+    // Step 4: Restore and expand DPM scale
+    std::cout << "Step 4: Restore initial state, then expand DPM scale (2x current, 1.3x freq)\n";
+    sgra.restoreState("sgra_initial_10Gyr");
+    sgra.expandDPMScale(2.0, 1.3);
+    double g4 = sgra.computeG(t_current);
+    std::cout << "  New I = " << sgra.variables["I"] << " A\n";
+    std::cout << "  New f_DPM = " << (sgra.variables["f_DPM"] / 1e9) << " GHz\n";
+    std::cout << "  g_UQFF = " << g4 << " m/s^2\n\n";
+    
+    // Step 5: Restore and expand accretion scale
+    std::cout << "Step 5: Restore initial state, then expand accretion scale (1.5x density, 2x velocity)\n";
+    sgra.restoreState("sgra_initial_10Gyr");
+    sgra.expandAccretionScale(1.5, 2.0);
+    double g5 = sgra.computeG(t_current);
+    std::cout << "  New rho_disk = " << sgra.variables["rho_fluid"] << " kg/m^3\n";
+    std::cout << "  New v_outflow = " << (sgra.variables["v_exp"] / 1e3) << " km/s\n";
+    std::cout << "  g_UQFF = " << g5 << " m/s^2\n\n";
+    
+    // Step 6: Time evolution (cosmic time)
+    std::cout << "Step 6: Time evolution from 0 to 13 Gyr (cosmic history)\n";
+    sgra.restoreState("sgra_initial_10Gyr");
+    for (double t_Gyr = 0; t_Gyr <= 13; t_Gyr += 3) {
+        double t_sec = t_Gyr * 1e9 * 3.156e7;
+        double g = sgra.computeG(t_sec);
+        std::cout << "  t = " << t_Gyr << " Gyr: g = " << g << " m/s^2\n";
+    }
+    std::cout << "\n";
+    
+    // Step 7: Create custom tracking variables
+    std::cout << "Step 7: Create custom tracking variables\n";
+    sgra.createVariable("flare_count", 0.0);
+    sgra.createVariable("distance_earth_pc", 8000.0); // ~8 kpc to Earth
+    sgra.createVariable("accretion_rate_msun_yr", 1e-6);
+    std::cout << "  Created 'flare_count', 'distance_earth_pc', 'accretion_rate_msun_yr'\n\n";
+    
+    // Step 8: Generate variations for uncertainty analysis
+    std::cout << "Step 8: Generate 3 parameter variations (5% perturbation)\n";
+    auto variations = sgra.generateVariations(3, 5.0);
+    for (size_t i = 0; i < variations.size(); ++i) {
+        SgrA_UQFFModule temp = sgra;
+        temp.variables = variations[i];
+        double g_var = temp.computeG(t_current);
+        std::cout << "  Variation " << (i+1) << ": g = " << g_var << " m/s^2\n";
+    }
+    std::cout << "\n";
+    
+    // Step 9: Sensitivity analysis
+    std::cout << "Step 9: Sensitivity analysis (1% perturbation)\n";
+    auto sensitivities = sgra.sensitivityAnalysis(t_current, 0.01);
+    std::cout << "  Parameter sensitivities (fractional change in g):\n";
+    for (const auto& s : sensitivities) {
+        std::cout << "    " << s.first << ": " << s.second << "\n";
+    }
+    std::cout << "\n";
+    
+    // Step 10: SMBH mass sweep
+    std::cout << "Step 10: SMBH mass sweep (0.5x, 1x, 2x)\n";
+    sgra.saveState("sgra_before_sweep");
+    for (double scale : {0.5, 1.0, 2.0}) {
+        sgra.restoreState("sgra_before_sweep");
+        sgra.expandSMBHScale(scale, 1.0);
+        double g = sgra.computeG(t_current);
+        double M = sgra.variables["M"] / sgra.variables["M_sun"] / 1e6;
+        std::cout << "  M = " << M << " million M_sun: g = " << g << " m/s^2\n";
+    }
+    std::cout << "\n";
+    
+    // Step 11: DPM frequency sweep
+    std::cout << "Step 11: DPM frequency sweep (0.5x, 1.0x, 1.5x GHz)\n";
+    sgra.restoreState("sgra_before_sweep");
+    for (double scale : {0.5, 1.0, 1.5}) {
+        sgra.restoreState("sgra_before_sweep");
+        sgra.expandDPMScale(1.0, scale);
+        double g = sgra.computeG(t_current);
+        double f = sgra.variables["f_DPM"] / 1e9;
+        std::cout << "  f_DPM = " << f << " GHz: g = " << g << " m/s^2\n";
+    }
+    std::cout << "\n";
+    
+    // Step 12: Accretion disk density sweep
+    std::cout << "Step 12: Accretion disk density sweep (0.5x, 1.0x, 2.0x)\n";
+    sgra.restoreState("sgra_before_sweep");
+    for (double scale : {0.5, 1.0, 2.0}) {
+        sgra.restoreState("sgra_before_sweep");
+        sgra.expandAccretionScale(scale, 1.0);
+        double g = sgra.computeG(t_current);
+        double rho = sgra.variables["rho_fluid"];
+        std::cout << "  rho_disk = " << rho << " kg/m^3: g = " << g << " m/s^2\n";
+    }
+    std::cout << "\n";
+    
+    // Step 13: Batch transform frequency parameters
+    std::cout << "Step 13: Batch transform all frequency parameters (1.2x scale)\n";
+    sgra.restoreState("sgra_before_sweep");
+    sgra.scaleVariableGroup({"f_DPM", "f_THz", "f_super", "f_aether"}, 1.2);
+    double g13 = sgra.computeG(t_current);
+    std::cout << "  f_DPM = " << (sgra.variables["f_DPM"] / 1e9) << " GHz\n";
+    std::cout << "  f_THz = " << (sgra.variables["f_THz"] / 1e9) << " GHz\n";
+    std::cout << "  g_UQFF = " << g13 << " m/s^2\n\n";
+    
+    // Step 14: Validate and auto-correct
+    std::cout << "Step 14: Validate consistency and auto-correct if needed\n";
+    sgra.restoreState("sgra_before_sweep");
+    bool valid = sgra.validateConsistency();
+    std::cout << "  System valid: " << (valid ? "Yes" : "No") << "\n";
+    if (!valid) {
+        bool corrected = sgra.autoCorrectAnomalies();
+        std::cout << "  Auto-corrected: " << (corrected ? "Yes" : "No") << "\n";
+    }
+    std::cout << "\n";
+    
+    // Step 15: Parameter mutation (evolutionary exploration)
+    std::cout << "Step 15: Mutate parameters (3% random variation)\n";
+    sgra.restoreState("sgra_before_sweep");
+    sgra.mutateParameters(0.03);
+    double g15 = sgra.computeG(t_current);
+    std::cout << "  Mutated M = " << (sgra.variables["M"] / sgra.variables["M_sun"] / 1e6) << " million M_sun\n";
+    std::cout << "  Mutated f_DPM = " << (sgra.variables["f_DPM"] / 1e9) << " GHz\n";
+    std::cout << "  g_UQFF = " << g15 << " m/s^2\n\n";
+    
+    // Step 16: List all saved states
+    std::cout << "Step 16: List all saved states\n";
+    auto states = sgra.listSavedStates();
+    std::cout << "  Saved states (" << states.size() << " total):\n";
+    for (const auto& state : states) {
+        std::cout << "    - " << state << "\n";
+    }
+    std::cout << "\n";
+    
+    // Step 17: Generate comprehensive report
+    std::cout << "Step 17: Generate comprehensive system report\n";
+    sgra.restoreState("sgra_initial_10Gyr");
+    std::string report = sgra.generateReport(t_current);
+    std::cout << report << "\n";
+    
+    // Step 18: Export final state
+    std::cout << "Step 18: Export final system state\n";
+    std::string state_export = sgra.exportState();
+    std::cout << state_export << "\n";
+    
+    std::cout << "========== END 18-STEP SAGITTARIUS A* DEMONSTRATION ==========\n\n";
+}

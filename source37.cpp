@@ -20,6 +20,11 @@
 #include <iostream>
 #include <iomanip>
 #include <complex>
+#include <functional>
+#include <random>
+#include <algorithm>
+#include <sstream>
+#include <vector>
 
 class ResonanceSuperconductiveUQFFModule {
 private:
@@ -50,6 +55,48 @@ public:
 
     // Print all current variables (for debugging/updates)
     void printVariables();
+
+    // ========== ENHANCED DYNAMIC CAPABILITIES (25 methods) ==========
+    // Variable management (5)
+    void createVariable(const std::string& name, double value);
+    void removeVariable(const std::string& name);
+    void cloneVariable(const std::string& source, const std::string& dest);
+    std::vector<std::string> listVariables();
+    std::string getSystemName() const { return "Resonance_Superconductive_UQFF"; }
+
+    // Batch operations (2)
+    void transformVariableGroup(const std::vector<std::string>& names, std::function<double(double)> func);
+    void scaleVariableGroup(const std::vector<std::string>& names, double scale);
+
+    // Self-expansion (4)
+    void expandParameterSpace(double scale);
+    void expandResonanceScale(double f_DPM_scale, double f_THz_scale);
+    void expandSuperconductiveScale(double B_crit_scale, double f_super_scale);
+    void expandOscillatoryScale(double A_scale, double omega_scale);
+
+    // Self-refinement (3)
+    void autoRefineParameters(double t, double B, double target_g, double tolerance);
+    void calibrateToObservations(const std::map<std::string, double>& observations);
+    void optimizeForMetric(double t, double B, const std::string& metric);
+
+    // Parameter exploration (1)
+    std::vector<std::map<std::string, double>> generateVariations(int count, double variation_percent);
+
+    // Adaptive evolution (2)
+    void mutateParameters(double mutation_rate);
+    void evolveSystem(double t, double B, int generations, double selection_pressure);
+
+    // State management (4)
+    void saveState(const std::string& label);
+    void restoreState(const std::string& label);
+    std::vector<std::string> listSavedStates();
+    std::string exportState() const;
+
+    // System analysis (4)
+    std::map<std::string, double> sensitivityAnalysis(double t, double B, double perturbation);
+    std::string generateReport(double t, double B);
+    bool validateConsistency();
+    bool autoCorrectAnomalies();
 };
 
 #endif // RESONANCE_SUPERCONDUCTIVE_UQFF_MODULE_H
@@ -242,6 +289,287 @@ void ResonanceSuperconductiveUQFFModule::printVariables() {
 // Sample Output: g_res_sc ? 1e-42 m/s� (varies with updates; micro-scale resonance/superconductive terms).
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 09, 2025.
 
+// ========== ENHANCED DYNAMIC CAPABILITIES IMPLEMENTATION (25 methods) ==========
+
+// Anonymous namespace for state storage
+namespace {
+    std::map<std::string, std::map<std::string, double>> resonance_saved_states;
+}
+
+// Variable management (5 methods)
+void ResonanceSuperconductiveUQFFModule::createVariable(const std::string& name, double value) {
+    variables[name] = value;
+}
+
+void ResonanceSuperconductiveUQFFModule::removeVariable(const std::string& name) {
+    variables.erase(name);
+}
+
+void ResonanceSuperconductiveUQFFModule::cloneVariable(const std::string& source, const std::string& dest) {
+    if (variables.find(source) != variables.end()) {
+        variables[dest] = variables[source];
+    }
+}
+
+std::vector<std::string> ResonanceSuperconductiveUQFFModule::listVariables() {
+    std::vector<std::string> names;
+    for (const auto& pair : variables) {
+        names.push_back(pair.first);
+    }
+    return names;
+}
+
+// Batch operations (2 methods)
+void ResonanceSuperconductiveUQFFModule::transformVariableGroup(const std::vector<std::string>& names, std::function<double(double)> func) {
+    for (const auto& name : names) {
+        if (variables.find(name) != variables.end()) {
+            variables[name] = func(variables[name]);
+        }
+    }
+}
+
+void ResonanceSuperconductiveUQFFModule::scaleVariableGroup(const std::vector<std::string>& names, double scale) {
+    transformVariableGroup(names, [scale](double v) { return v * scale; });
+}
+
+// Self-expansion (4 methods)
+void ResonanceSuperconductiveUQFFModule::expandParameterSpace(double scale) {
+    variables["f_DPM"] *= scale;
+    variables["f_THz"] *= scale;
+    variables["f_aether"] *= scale;
+    variables["f_react"] *= scale;
+    variables["f_osc"] *= scale;
+    variables["I"] *= scale;
+    variables["v_exp"] *= scale;
+    variables["B_crit"] *= scale;
+    variables["f_super"] *= scale;
+    variables["A"] *= scale;
+    variables["omega_osc"] *= scale;
+}
+
+void ResonanceSuperconductiveUQFFModule::expandResonanceScale(double f_DPM_scale, double f_THz_scale) {
+    variables["f_DPM"] *= f_DPM_scale;
+    variables["f_THz"] *= f_THz_scale;
+    variables["f_aether"] *= f_DPM_scale;
+    variables["f_react"] *= f_DPM_scale;
+}
+
+void ResonanceSuperconductiveUQFFModule::expandSuperconductiveScale(double B_crit_scale, double f_super_scale) {
+    variables["B_crit"] *= B_crit_scale;
+    variables["f_super"] *= f_super_scale;
+    variables["f_sc"] *= f_super_scale;
+}
+
+void ResonanceSuperconductiveUQFFModule::expandOscillatoryScale(double A_scale, double omega_scale) {
+    variables["A"] *= A_scale;
+    variables["omega_osc"] *= omega_scale;
+    variables["f_osc"] *= omega_scale;
+}
+
+// Self-refinement (3 methods)
+void ResonanceSuperconductiveUQFFModule::autoRefineParameters(double t, double B, double target_g, double tolerance) {
+    double current_g = computeFullUQFFResSC(t, B);
+    int iterations = 0;
+    while (std::abs(current_g - target_g) > tolerance && iterations < 100) {
+        double ratio = target_g / (current_g + 1e-50);
+        if (std::abs(current_g) < 1e-50) {
+            variables["f_DPM"] *= 1.1;
+            variables["I"] *= 1.1;
+        } else {
+            variables["f_DPM"] *= std::sqrt(ratio);
+            variables["I"] *= std::sqrt(ratio);
+        }
+        current_g = computeFullUQFFResSC(t, B);
+        iterations++;
+    }
+}
+
+void ResonanceSuperconductiveUQFFModule::calibrateToObservations(const std::map<std::string, double>& observations) {
+    for (const auto& obs : observations) {
+        if (variables.find(obs.first) != variables.end()) {
+            variables[obs.first] = obs.second;
+        }
+    }
+}
+
+void ResonanceSuperconductiveUQFFModule::optimizeForMetric(double t, double B, const std::string& metric) {
+    if (metric == "maximize_resonance") {
+        variables["f_DPM"] *= 1.2;
+        variables["f_THz"] *= 1.2;
+        variables["I"] *= 1.2;
+    } else if (metric == "minimize_resonance") {
+        variables["f_DPM"] *= 0.8;
+        variables["f_THz"] *= 0.8;
+        variables["I"] *= 0.8;
+    } else if (metric == "enhance_superconductivity") {
+        variables["B_crit"] *= 1.5;
+        variables["f_super"] *= 1.5;
+    }
+}
+
+// Parameter exploration (1 method)
+std::vector<std::map<std::string, double>> ResonanceSuperconductiveUQFFModule::generateVariations(int count, double variation_percent) {
+    std::vector<std::map<std::string, double>> variations;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(1.0 - variation_percent/100.0, 1.0 + variation_percent/100.0);
+    
+    for (int i = 0; i < count; ++i) {
+        std::map<std::string, double> varied = variables;
+        for (auto& pair : varied) {
+            if (pair.first != "c" && pair.first != "pi" && pair.first != "hbar") {
+                pair.second *= dis(gen);
+            }
+        }
+        variations.push_back(varied);
+    }
+    return variations;
+}
+
+// Adaptive evolution (2 methods)
+void ResonanceSuperconductiveUQFFModule::mutateParameters(double mutation_rate) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(1.0 - mutation_rate, 1.0 + mutation_rate);
+    
+    for (auto& pair : variables) {
+        if (pair.first != "c" && pair.first != "pi" && pair.first != "hbar") {
+            pair.second *= dis(gen);
+        }
+    }
+}
+
+void ResonanceSuperconductiveUQFFModule::evolveSystem(double t, double B, int generations, double selection_pressure) {
+    for (int gen = 0; gen < generations; ++gen) {
+        auto variations = generateVariations(10, 5.0);
+        double best_g = computeFullUQFFResSC(t, B);
+        std::map<std::string, double> best_vars = variables;
+        
+        for (const auto& var : variations) {
+            auto temp_vars = variables;
+            variables = var;
+            double current_g = computeFullUQFFResSC(t, B);
+            if (std::abs(current_g) > std::abs(best_g)) {
+                best_g = current_g;
+                best_vars = var;
+            }
+            variables = temp_vars;
+        }
+        variables = best_vars;
+    }
+}
+
+// State management (4 methods)
+void ResonanceSuperconductiveUQFFModule::saveState(const std::string& label) {
+    resonance_saved_states[label] = variables;
+}
+
+void ResonanceSuperconductiveUQFFModule::restoreState(const std::string& label) {
+    if (resonance_saved_states.find(label) != resonance_saved_states.end()) {
+        variables = resonance_saved_states[label];
+    }
+}
+
+std::vector<std::string> ResonanceSuperconductiveUQFFModule::listSavedStates() {
+    std::vector<std::string> labels;
+    for (const auto& pair : resonance_saved_states) {
+        labels.push_back(pair.first);
+    }
+    return labels;
+}
+
+std::string ResonanceSuperconductiveUQFFModule::exportState() const {
+    std::ostringstream oss;
+    oss << "ResonanceSuperconductiveUQFFModule State Export:\n";
+    for (const auto& pair : variables) {
+        oss << pair.first << " = " << std::scientific << pair.second << "\n";
+    }
+    return oss.str();
+}
+
+// System analysis (4 methods)
+std::map<std::string, double> ResonanceSuperconductiveUQFFModule::sensitivityAnalysis(double t, double B, double perturbation) {
+    std::map<std::string, double> sensitivities;
+    double base_g = computeFullUQFFResSC(t, B);
+    
+    std::vector<std::string> key_params = {"f_DPM", "f_THz", "f_aether", "f_react", "f_osc", "I", "B_crit", "f_super", "A", "omega_osc", "v_exp", "f_TRZ"};
+    
+    for (const auto& param : key_params) {
+        if (variables.find(param) != variables.end()) {
+            double original = variables[param];
+            variables[param] *= (1.0 + perturbation);
+            double perturbed_g = computeFullUQFFResSC(t, B);
+            sensitivities[param] = (perturbed_g - base_g) / (base_g + 1e-50);
+            variables[param] = original;
+        }
+    }
+    return sensitivities;
+}
+
+std::string ResonanceSuperconductiveUQFFModule::generateReport(double t, double B) {
+    std::ostringstream oss;
+    oss << "\n========== RESONANCE SUPERCONDUCTIVE UQFF MODULE REPORT ==========\n";
+    oss << "System: " << getSystemName() << "\n";
+    oss << "Time: " << (t / 3.156e7 / 1e9) << " Gyr\n";
+    oss << "Magnetic Field: " << B << " T\n\n";
+    
+    oss << "Resonance Frequencies:\n";
+    oss << "  f_DPM = " << (variables["f_DPM"] / 1e12) << " THz\n";
+    oss << "  f_THz = " << (variables["f_THz"] / 1e12) << " THz\n";
+    oss << "  f_aether = " << (variables["f_aether"] / 1e3) << " kHz\n";
+    oss << "  f_react = " << (variables["f_react"] / 1e9) << " GHz\n";
+    oss << "  f_osc = " << (variables["f_osc"] / 1e12) << " THz\n\n";
+    
+    oss << "Superconductive Parameters:\n";
+    oss << "  B_crit = " << variables["B_crit"] << " T\n";
+    oss << "  f_super = " << (variables["f_super"] / 1e15) << " PHz\n";
+    oss << "  SC correction = " << computeSuperconductiveCorrection(B) << "\n\n";
+    
+    oss << "Computed Terms:\n";
+    oss << "  a_DPM_res = " << computeDPMResTerm() << " m/s^2\n";
+    oss << "  a_THz_res = " << computeTHzResTerm() << " m/s^2\n";
+    oss << "  a_aether_res = " << computeAetherResTerm() << " m/s^2\n";
+    oss << "  a_U_g4i_res = " << computeU_g4iResTerm() << " m/s^2\n";
+    oss << "  a_osc_res = " << computeOscResTerm(t) << " m/s^2\n";
+    oss << "  a_sc_freq = " << computeSCFreqTerm() << " m/s^2\n\n";
+    
+    oss << "Total Resonance Term: " << computeResonanceTerm(t) << " m/s^2\n";
+    oss << "Full UQFF (Res+SC): " << computeFullUQFFResSC(t, B) << " m/s^2\n";
+    oss << "==================================================================\n";
+    
+    return oss.str();
+}
+
+bool ResonanceSuperconductiveUQFFModule::validateConsistency() {
+    bool valid = true;
+    std::vector<std::string> positive_params = {"f_DPM", "f_THz", "f_aether", "f_react", "f_osc", "I", "B_crit", "f_super", "A", "omega_osc", "E_vac", "c"};
+    
+    for (const auto& param : positive_params) {
+        if (variables.find(param) != variables.end() && variables[param] <= 0) {
+            valid = false;
+            break;
+        }
+    }
+    return valid;
+}
+
+bool ResonanceSuperconductiveUQFFModule::autoCorrectAnomalies() {
+    bool corrected = false;
+    
+    if (variables["f_DPM"] <= 0) { variables["f_DPM"] = 1e12; corrected = true; }
+    if (variables["f_THz"] <= 0) { variables["f_THz"] = 1e12; corrected = true; }
+    if (variables["f_aether"] <= 0) { variables["f_aether"] = 1e4; corrected = true; }
+    if (variables["f_react"] <= 0) { variables["f_react"] = 1e10; corrected = true; }
+    if (variables["f_osc"] <= 0) { variables["f_osc"] = 4.57e14; corrected = true; }
+    if (variables["I"] <= 0) { variables["I"] = 1e21; corrected = true; }
+    if (variables["B_crit"] <= 0) { variables["B_crit"] = 1e11; corrected = true; }
+    if (variables["f_super"] <= 0) { variables["f_super"] = 1.411e16; corrected = true; }
+    if (variables["A"] <= 0) { variables["A"] = 1e-10; corrected = true; }
+    if (variables["omega_osc"] <= 0) { variables["omega_osc"] = 1e15; corrected = true; }
+    
+    return corrected;
+}
+
 // Evaluation of ResonanceSuperconductiveUQFFModule (UQFF Resonance & Superconductive Terms)
 
 **Strengths:**
@@ -261,3 +589,179 @@ void ResonanceSuperconductiveUQFFModule::printVariables() {
 
     ** Summary : **
     The module is robust, dynamic, and extensible, supporting runtime updates and changes to all model parameters.It is suitable for advanced UQFF - based resonance and superconductivity modeling.Minor improvements in error handling, documentation, and physical justification are recommended for production or publication use.
+
+// ========== ENHANCED 18-STEP EXAMPLE FUNCTION ==========
+void example_enhanced_resonance_18_steps() {
+    std::cout << "\n========== ENHANCED RESONANCE SUPERCONDUCTIVE UQFF 18-STEP DEMONSTRATION ==========\n";
+    std::cout << "UQFF Resonance & Superconductive Terms with Dynamic Self-Expansion\n\n";
+    
+    ResonanceSuperconductiveUQFFModule resonance;
+    double t_current = 1e9 * 3.156e7; // 1 Gyr in seconds
+    double B_current = 1e-5;          // 1e-5 T (typical ISM field)
+    
+    // Step 1: Initial state
+    std::cout << "Step 1: Initial resonance/superconductive state at t = 1 Gyr, B = 1e-5 T\n";
+    double g1 = resonance.computeFullUQFFResSC(t_current, B_current);
+    std::cout << "  f_DPM = " << (resonance.variables["f_DPM"] / 1e12) << " THz\n";
+    std::cout << "  B_crit = " << resonance.variables["B_crit"] << " T\n";
+    std::cout << "  g_res_sc = " << g1 << " m/s^2 (micro-scale)\n\n";
+    
+    // Step 2: Save initial state
+    std::cout << "Step 2: Save initial resonance state\n";
+    resonance.saveState("resonance_initial");
+    std::cout << "  State saved as 'resonance_initial'\n\n";
+    
+    // Step 3: Expand resonance scale
+    std::cout << "Step 3: Expand resonance scale (1.5x DPM, 1.2x THz)\n";
+    resonance.expandResonanceScale(1.5, 1.2);
+    double g3 = resonance.computeFullUQFFResSC(t_current, B_current);
+    std::cout << "  New f_DPM = " << (resonance.variables["f_DPM"] / 1e12) << " THz\n";
+    std::cout << "  New f_THz = " << (resonance.variables["f_THz"] / 1e12) << " THz\n";
+    std::cout << "  g_res_sc = " << g3 << " m/s^2\n\n";
+    
+    // Step 4: Restore and expand superconductive scale
+    std::cout << "Step 4: Restore initial state, then expand superconductive scale (2x B_crit, 1.5x f_super)\n";
+    resonance.restoreState("resonance_initial");
+    resonance.expandSuperconductiveScale(2.0, 1.5);
+    double g4 = resonance.computeFullUQFFResSC(t_current, B_current);
+    std::cout << "  New B_crit = " << resonance.variables["B_crit"] << " T\n";
+    std::cout << "  New f_super = " << (resonance.variables["f_super"] / 1e15) << " PHz\n";
+    std::cout << "  SC correction = " << resonance.computeSuperconductiveCorrection(B_current) << "\n";
+    std::cout << "  g_res_sc = " << g4 << " m/s^2\n\n";
+    
+    // Step 5: Restore and expand oscillatory scale
+    std::cout << "Step 5: Restore initial state, then expand oscillatory scale (2x amplitude, 1.5x omega)\n";
+    resonance.restoreState("resonance_initial");
+    resonance.expandOscillatoryScale(2.0, 1.5);
+    double g5 = resonance.computeFullUQFFResSC(t_current, B_current);
+    std::cout << "  New A = " << resonance.variables["A"] << " m\n";
+    std::cout << "  New omega_osc = " << (resonance.variables["omega_osc"] / 1e15) << " Prad/s\n";
+    std::cout << "  g_res_sc = " << g5 << " m/s^2\n\n";
+    
+    // Step 6: Time evolution (cosmic timescales)
+    std::cout << "Step 6: Time evolution from 0 to 5 Gyr\n";
+    resonance.restoreState("resonance_initial");
+    for (double t_Gyr = 0; t_Gyr <= 5; t_Gyr += 1) {
+        double t_sec = t_Gyr * 1e9 * 3.156e7;
+        double g = resonance.computeFullUQFFResSC(t_sec, B_current);
+        std::cout << "  t = " << t_Gyr << " Gyr: g = " << g << " m/s^2\n";
+    }
+    std::cout << "\n";
+    
+    // Step 7: Magnetic field sweep
+    std::cout << "Step 7: Magnetic field sweep (1e-6 to 1e-3 T)\n";
+    for (double B : {1e-6, 1e-5, 1e-4, 1e-3}) {
+        double g = resonance.computeFullUQFFResSC(t_current, B);
+        double sc_corr = resonance.computeSuperconductiveCorrection(B);
+        std::cout << "  B = " << B << " T: SC_corr = " << sc_corr << ", g = " << g << " m/s^2\n";
+    }
+    std::cout << "\n";
+    
+    // Step 8: Create custom tracking variables
+    std::cout << "Step 8: Create custom tracking variables\n";
+    resonance.createVariable("plasma_freq", 1e9); // Hz
+    resonance.createVariable("coherence_length", 1e-9); // m
+    resonance.createVariable("coupling_strength", 0.1);
+    std::cout << "  Created 'plasma_freq', 'coherence_length', 'coupling_strength'\n\n";
+    
+    // Step 9: Generate variations for uncertainty analysis
+    std::cout << "Step 9: Generate 3 parameter variations (5% perturbation)\n";
+    auto variations = resonance.generateVariations(3, 5.0);
+    for (size_t i = 0; i < variations.size(); ++i) {
+        ResonanceSuperconductiveUQFFModule temp = resonance;
+        temp.variables = variations[i];
+        double g_var = temp.computeFullUQFFResSC(t_current, B_current);
+        std::cout << "  Variation " << (i+1) << ": g = " << g_var << " m/s^2\n";
+    }
+    std::cout << "\n";
+    
+    // Step 10: Sensitivity analysis
+    std::cout << "Step 10: Sensitivity analysis (1% perturbation)\n";
+    auto sensitivities = resonance.sensitivityAnalysis(t_current, B_current, 0.01);
+    std::cout << "  Parameter sensitivities (fractional change in g):\n";
+    for (const auto& s : sensitivities) {
+        std::cout << "    " << s.first << ": " << s.second << "\n";
+    }
+    std::cout << "\n";
+    
+    // Step 11: DPM frequency sweep
+    std::cout << "Step 11: DPM frequency sweep (0.5x, 1.0x, 2.0x)\n";
+    resonance.saveState("resonance_before_sweep");
+    for (double scale : {0.5, 1.0, 2.0}) {
+        resonance.restoreState("resonance_before_sweep");
+        resonance.expandResonanceScale(scale, 1.0);
+        double g = resonance.computeFullUQFFResSC(t_current, B_current);
+        double f_DPM = resonance.variables["f_DPM"] / 1e12;
+        std::cout << "  f_DPM = " << f_DPM << " THz: g = " << g << " m/s^2\n";
+    }
+    std::cout << "\n";
+    
+    // Step 12: Critical field sweep
+    std::cout << "Step 12: Critical field sweep (0.5x, 1.0x, 2.0x B_crit)\n";
+    resonance.restoreState("resonance_before_sweep");
+    for (double scale : {0.5, 1.0, 2.0}) {
+        resonance.restoreState("resonance_before_sweep");
+        resonance.expandSuperconductiveScale(scale, 1.0);
+        double g = resonance.computeFullUQFFResSC(t_current, B_current);
+        double B_crit = resonance.variables["B_crit"];
+        std::cout << "  B_crit = " << B_crit << " T: g = " << g << " m/s^2\n";
+    }
+    std::cout << "\n";
+    
+    // Step 13: Batch transform all frequency parameters
+    std::cout << "Step 13: Batch transform all frequency parameters (1.1x scale)\n";
+    resonance.restoreState("resonance_before_sweep");
+    resonance.scaleVariableGroup({"f_DPM", "f_THz", "f_aether", "f_react", "f_osc", "f_super"}, 1.1);
+    double g13 = resonance.computeFullUQFFResSC(t_current, B_current);
+    std::cout << "  All frequencies scaled by 1.1x\n";
+    std::cout << "  f_DPM = " << (resonance.variables["f_DPM"] / 1e12) << " THz\n";
+    std::cout << "  f_super = " << (resonance.variables["f_super"] / 1e15) << " PHz\n";
+    std::cout << "  g_res_sc = " << g13 << " m/s^2\n\n";
+    
+    // Step 14: Validate and auto-correct
+    std::cout << "Step 14: Validate consistency and auto-correct if needed\n";
+    resonance.restoreState("resonance_before_sweep");
+    bool valid = resonance.validateConsistency();
+    std::cout << "  System valid: " << (valid ? "Yes" : "No") << "\n";
+    if (!valid) {
+        bool corrected = resonance.autoCorrectAnomalies();
+        std::cout << "  Auto-corrected: " << (corrected ? "Yes" : "No") << "\n";
+    }
+    std::cout << "\n";
+    
+    // Step 15: Auto-refine to target acceleration
+    std::cout << "Step 15: Auto-refine parameters to target g = 1e-40 m/s^2\n";
+    resonance.restoreState("resonance_before_sweep");
+    double target_g = 1e-40;
+    resonance.autoRefineParameters(t_current, B_current, target_g, 1e-42);
+    double g15 = resonance.computeFullUQFFResSC(t_current, B_current);
+    std::cout << "  Target g = " << target_g << " m/s^2\n";
+    std::cout << "  Achieved g = " << g15 << " m/s^2\n";
+    std::cout << "  Refined f_DPM = " << (resonance.variables["f_DPM"] / 1e12) << " THz\n\n";
+    
+    // Step 16: Parameter mutation (evolutionary exploration)
+    std::cout << "Step 16: Mutate parameters (3% random variation)\n";
+    resonance.restoreState("resonance_before_sweep");
+    resonance.mutateParameters(0.03);
+    double g16 = resonance.computeFullUQFFResSC(t_current, B_current);
+    std::cout << "  Mutated f_DPM = " << (resonance.variables["f_DPM"] / 1e12) << " THz\n";
+    std::cout << "  Mutated B_crit = " << resonance.variables["B_crit"] << " T\n";
+    std::cout << "  g_res_sc = " << g16 << " m/s^2\n\n";
+    
+    // Step 17: List all saved states
+    std::cout << "Step 17: List all saved states\n";
+    auto states = resonance.listSavedStates();
+    std::cout << "  Saved states (" << states.size() << " total):\n";
+    for (const auto& state : states) {
+        std::cout << "    - " << state << "\n";
+    }
+    std::cout << "\n";
+    
+    // Step 18: Generate comprehensive report
+    std::cout << "Step 18: Generate comprehensive system report\n";
+    resonance.restoreState("resonance_initial");
+    std::string report = resonance.generateReport(t_current, B_current);
+    std::cout << report << "\n";
+    
+    std::cout << "========== END 18-STEP RESONANCE SUPERCONDUCTIVE DEMONSTRATION ==========\n\n";
+}

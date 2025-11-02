@@ -21,6 +21,8 @@
 #include <iostream>
 #include <iomanip>
 #include <complex>
+#include <vector>
+#include <functional>
 
 enum class SystemType {
     MAGNETAR_SGR_1745_2900,
@@ -50,10 +52,10 @@ private:
     double computeATHz();
     double computeAvacDiff();
     double computeASuperFreq();
-    double double computeAAetherRes();
+    double computeAAetherRes();
     double computeUg4i();
     double computeAQuantumFreq();
-    double double computeAAetherFreq();
+    double computeAAetherFreq();
     double computeAFluidFreq();
     double computeOscTerm(double t);
     double computeAExpFreq();
@@ -81,6 +83,50 @@ public:
 
     // Print all current variables
     void printVariables();
+
+    // ===== DYNAMIC SELF-UPDATE & SELF-EXPANSION CAPABILITIES =====
+    
+    // Dynamic variable management
+    void createDynamicVariable(const std::string& name, double value);
+    void removeDynamicVariable(const std::string& name);
+    void cloneVariable(const std::string& source, const std::string& dest);
+    void listAllVariables();
+    
+    // Batch operations on variable groups
+    void applyTransformToGroup(const std::vector<std::string>& varNames, 
+                               std::function<double(double)> transform);
+    void scaleVariableGroup(const std::vector<std::string>& varNames, double scale_factor);
+    
+    // Self-expansion capabilities
+    void autoExpandParameterSpace(double scale_factor);
+    void expandMassScale(double mass_multiplier);
+    void expandSpatialScale(double spatial_multiplier);
+    void expandTimeScale(double time_multiplier);
+    
+    // Self-refinement
+    void autoRefineParameters(double tolerance);
+    void calibrateToObservations(const std::map<std::string, double>& observed_values);
+    void optimizeForMetric(const std::string& metric_name, double target_value);
+    
+    // Parameter exploration
+    void generateVariations(int num_variations, double variation_range);
+    void findOptimalParameters(const std::string& objective, int iterations);
+    
+    // Adaptive evolution
+    void mutateParameters(double mutation_rate, double mutation_strength);
+    void evolveSystem(int generations);
+    
+    // State management
+    void saveState(const std::string& label);
+    void restoreState(const std::string& label);
+    void listSavedStates();
+    void exportState(const std::string& filename);
+    
+    // System analysis
+    void analyzeParameterSensitivity(const std::string& param_name);
+    void generateSystemReport();
+    void validatePhysicalConsistency();
+    void autoCorrectAnomalies();
 };
 
 #endif // MUGE_MODULE_H
@@ -510,22 +556,467 @@ void MUGEModule::printVariables() {
     }
 }
 
+// ===== DYNAMIC SELF-UPDATE & SELF-EXPANSION IMPLEMENTATIONS =====
+
+// Static storage for saved states
+static std::map<std::string, std::map<std::string, double>> muge_saved_states;
+
+// 1. Dynamic variable management
+void MUGEModule::createDynamicVariable(const std::string& name, double value) {
+    variables[name] = value;
+    std::cout << "Created dynamic variable: " << name << " = " << value << std::endl;
+}
+
+void MUGEModule::removeDynamicVariable(const std::string& name) {
+    if (variables.find(name) != variables.end()) {
+        variables.erase(name);
+        std::cout << "Removed dynamic variable: " << name << std::endl;
+    } else {
+        std::cerr << "Variable '" << name << "' not found for removal." << std::endl;
+    }
+}
+
+void MUGEModule::cloneVariable(const std::string& source, const std::string& dest) {
+    if (variables.find(source) != variables.end()) {
+        variables[dest] = variables[source];
+        std::cout << "Cloned " << source << " to " << dest << std::endl;
+    } else {
+        std::cerr << "Source variable '" << source << "' not found." << std::endl;
+    }
+}
+
+void MUGEModule::listAllVariables() {
+    std::cout << "=== All MUGE Variables (Total: " << variables.size() << ") ===" << std::endl;
+    std::cout << "System: " << static_cast<int>(current_system) << std::endl;
+    for (const auto& pair : variables) {
+        std::cout << "  " << pair.first << " = " << pair.second << std::endl;
+    }
+}
+
+// 2. Batch operations
+void MUGEModule::applyTransformToGroup(const std::vector<std::string>& varNames,
+                                       std::function<double(double)> transform) {
+    for (const auto& name : varNames) {
+        if (variables.find(name) != variables.end()) {
+            variables[name] = transform(variables[name]);
+            std::cout << "Transformed " << name << " to " << variables[name] << std::endl;
+        }
+    }
+}
+
+void MUGEModule::scaleVariableGroup(const std::vector<std::string>& varNames, double scale_factor) {
+    applyTransformToGroup(varNames, [scale_factor](double val) { return val * scale_factor; });
+}
+
+// 3. Self-expansion capabilities
+void MUGEModule::autoExpandParameterSpace(double scale_factor) {
+    std::cout << "Auto-expanding MUGE parameter space by factor " << scale_factor << std::endl;
+    std::vector<std::string> expandable = {"M", "r", "rho_fluid", "V"};
+    scaleVariableGroup(expandable, scale_factor);
+    // Update dependent variables
+    variables["M_visible"] = (1.0 - variables["DM_fraction"]) * variables["M"];
+    variables["M_DM"] = variables["DM_fraction"] * variables["M"];
+    std::cout << "  Updated M_visible, M_DM" << std::endl;
+}
+
+void MUGEModule::expandMassScale(double mass_multiplier) {
+    std::cout << "Expanding mass scale by " << mass_multiplier << std::endl;
+    variables["M"] *= mass_multiplier;
+    variables["M_visible"] = (1.0 - variables["DM_fraction"]) * variables["M"];
+    variables["M_DM"] = variables["DM_fraction"] * variables["M"];
+    std::cout << "  M_total: " << variables["M"] << " kg" << std::endl;
+}
+
+void MUGEModule::expandSpatialScale(double spatial_multiplier) {
+    std::cout << "Expanding spatial scale by " << spatial_multiplier << std::endl;
+    std::vector<std::string> spatial_vars = {"r", "Delta_x", "V"};
+    scaleVariableGroup(spatial_vars, spatial_multiplier);
+    variables["Delta_p"] = variables["hbar"] / variables["Delta_x"];
+    std::cout << "  Delta_p updated: " << variables["Delta_p"] << " kg·m/s" << std::endl;
+}
+
+void MUGEModule::expandTimeScale(double time_multiplier) {
+    std::cout << "Expanding time scale by " << time_multiplier << std::endl;
+    std::vector<std::string> time_vars = {"t", "t_Hubble"};
+    scaleVariableGroup(time_vars, time_multiplier);
+}
+
+// 4. Self-refinement
+void MUGEModule::autoRefineParameters(double tolerance) {
+    std::cout << "Auto-refining MUGE parameters with tolerance " << tolerance << std::endl;
+    
+    // Validate M = M_visible + M_DM based on DM_fraction
+    double M_expected = variables["M_visible"] + variables["M_DM"];
+    double error = std::abs(variables["M"] - M_expected) / std::max(M_expected, 1e-100);
+    
+    if (error > tolerance) {
+        std::cout << "  Correcting M: " << variables["M"] << " -> " << M_expected << std::endl;
+        variables["M"] = M_expected;
+    }
+    
+    // Validate Delta_p from Delta_x (Heisenberg)
+    double Delta_p_expected = variables["hbar"] / variables["Delta_x"];
+    if (std::abs(variables["Delta_p"] - Delta_p_expected) / Delta_p_expected > tolerance) {
+        std::cout << "  Correcting Delta_p: " << variables["Delta_p"] << " -> " << Delta_p_expected << std::endl;
+        variables["Delta_p"] = Delta_p_expected;
+    }
+    
+    // Validate DM_fraction consistency
+    double DM_fraction_check = variables["M_DM"] / variables["M"];
+    if (std::abs(DM_fraction_check - variables["DM_fraction"]) > tolerance) {
+        std::cout << "  Note: DM_fraction inconsistency detected" << std::endl;
+    }
+    
+    std::cout << "Refinement complete." << std::endl;
+}
+
+void MUGEModule::calibrateToObservations(const std::map<std::string, double>& observed_values) {
+    std::cout << "Calibrating to " << observed_values.size() << " MUGE observations..." << std::endl;
+    for (const auto& obs : observed_values) {
+        if (variables.find(obs.first) != variables.end()) {
+            double old_val = variables[obs.first];
+            updateVariable(obs.first, obs.second);
+            std::cout << "  " << obs.first << ": " << old_val << " -> " << obs.second << std::endl;
+        }
+    }
+    std::cout << "Calibration complete." << std::endl;
+}
+
+void MUGEModule::optimizeForMetric(const std::string& metric_name, double target_value) {
+    std::cout << "Optimizing for metric: " << metric_name << " = " << target_value << std::endl;
+    
+    if (metric_name == "g_compressed" || metric_name == "gravity") {
+        double t = variables["t"];
+        double current_g = computeG_compressed(t);
+        double ratio = target_value / std::max(current_g, 1e-100);
+        
+        // Adjust total mass to reach target
+        variables["M"] *= ratio;
+        variables["M_visible"] = (1.0 - variables["DM_fraction"]) * variables["M"];
+        variables["M_DM"] = variables["DM_fraction"] * variables["M"];
+        std::cout << "  Adjusted total mass by " << ratio << std::endl;
+    } else if (metric_name == "g_resonance") {
+        double t = variables["t"];
+        double current_g = computeG_resonance(t);
+        double ratio = target_value / std::max(current_g, 1e-100);
+        
+        // Scale resonance parameters
+        variables["FDPM"] *= ratio;
+        std::cout << "  Adjusted FDPM by " << ratio << std::endl;
+    }
+    
+    std::cout << "Optimization complete." << std::endl;
+}
+
+// 5. Parameter exploration
+void MUGEModule::generateVariations(int num_variations, double variation_range) {
+    std::cout << "Generating " << num_variations << " MUGE variations with range ±" 
+              << (variation_range * 100) << "%" << std::endl;
+    
+    std::vector<std::string> key_params = {"M", "r", "B", "DM_fraction", "rho_fluid"};
+    
+    for (int i = 0; i < num_variations; ++i) {
+        std::cout << "  Variation " << (i+1) << ":" << std::endl;
+        for (const auto& param : key_params) {
+            if (variables.find(param) != variables.end()) {
+                double base = variables[param];
+                double variation = base * (1.0 + variation_range * (2.0 * (rand() / (double)RAND_MAX) - 1.0));
+                std::cout << "    " << param << ": " << base << " -> " << variation << std::endl;
+            }
+        }
+    }
+}
+
+void MUGEModule::findOptimalParameters(const std::string& objective, int iterations) {
+    std::cout << "Finding optimal MUGE parameters for: " << objective 
+              << " (" << iterations << " iterations)" << std::endl;
+    
+    double best_score = -1e100;
+    std::map<std::string, double> best_params;
+    
+    for (int i = 0; i < iterations; ++i) {
+        mutateParameters(0.7, 0.1);
+        
+        double t = variables["t"];
+        double score = 0.0;
+        
+        if (objective == "maximize_g_compressed") {
+            score = computeG_compressed(t);
+        } else if (objective == "maximize_g_resonance") {
+            score = computeG_resonance(t);
+        } else {
+            score = computeG_compressed(t);
+        }
+        
+        if (score > best_score) {
+            best_score = score;
+            best_params = variables;
+        }
+    }
+    
+    variables = best_params;
+    std::cout << "Optimal score: " << best_score << std::endl;
+}
+
+// 6. Adaptive evolution
+void MUGEModule::mutateParameters(double mutation_rate, double mutation_strength) {
+    std::vector<std::string> mutable_params = {"M", "r", "B", "DM_fraction", "rho_fluid", "v_wind"};
+    
+    for (const auto& param : mutable_params) {
+        if (variables.find(param) != variables.end()) {
+            if ((rand() / (double)RAND_MAX) < mutation_rate) {
+                double mutation = 1.0 + mutation_strength * (2.0 * (rand() / (double)RAND_MAX) - 1.0);
+                variables[param] *= mutation;
+            }
+        }
+    }
+    
+    // Update dependent variables
+    variables["M_visible"] = (1.0 - variables["DM_fraction"]) * variables["M"];
+    variables["M_DM"] = variables["DM_fraction"] * variables["M"];
+}
+
+void MUGEModule::evolveSystem(int generations) {
+    std::cout << "Evolving MUGE system over " << generations << " generations..." << std::endl;
+    
+    for (int gen = 0; gen < generations; ++gen) {
+        mutateParameters(0.3, 0.08);
+        
+        double t = variables["t"];
+        double fitness = computeG_compressed(t);
+        
+        if (gen % 10 == 0) {
+            std::cout << "  Gen " << gen << ": g = " << fitness << " m/s^2" << std::endl;
+        }
+    }
+    
+    std::cout << "Evolution complete." << std::endl;
+}
+
+// 7. State management
+void MUGEModule::saveState(const std::string& label) {
+    muge_saved_states[label] = variables;
+    std::cout << "Saved MUGE state: " << label << " (" << variables.size() << " variables)" << std::endl;
+}
+
+void MUGEModule::restoreState(const std::string& label) {
+    if (muge_saved_states.find(label) != muge_saved_states.end()) {
+        variables = muge_saved_states[label];
+        std::cout << "Restored MUGE state: " << label << std::endl;
+    } else {
+        std::cerr << "State '" << label << "' not found." << std::endl;
+    }
+}
+
+void MUGEModule::listSavedStates() {
+    std::cout << "=== Saved MUGE States (Total: " << muge_saved_states.size() << ") ===" << std::endl;
+    for (const auto& state : muge_saved_states) {
+        std::cout << "  " << state.first << " (" << state.second.size() << " variables)" << std::endl;
+    }
+}
+
+void MUGEModule::exportState(const std::string& filename) {
+    std::cout << "Exporting MUGE state to " << filename << " (not implemented - placeholder)" << std::endl;
+    // In real implementation: write variables to file
+}
+
+// 8. System analysis
+void MUGEModule::analyzeParameterSensitivity(const std::string& param_name) {
+    if (variables.find(param_name) == variables.end()) {
+        std::cerr << "Parameter '" << param_name << "' not found." << std::endl;
+        return;
+    }
+    
+    std::cout << "=== MUGE Sensitivity Analysis: " << param_name << " ===" << std::endl;
+    
+    double base_value = variables[param_name];
+    double t = variables["t"];
+    double base_output = computeG_compressed(t);
+    
+    std::vector<double> perturbations = {0.7, 0.85, 1.0, 1.15, 1.3};
+    
+    for (double factor : perturbations) {
+        updateVariable(param_name, base_value * factor);
+        
+        double new_output = computeG_compressed(t);
+        double sensitivity = (new_output - base_output) / std::max(std::abs(base_output), 1e-100);
+        
+        std::cout << "  " << param_name << " * " << factor << " -> g change: " 
+                  << (sensitivity * 100) << "%" << std::endl;
+    }
+    
+    updateVariable(param_name, base_value);  // Restore
+}
+
+void MUGEModule::generateSystemReport() {
+    std::cout << "\n========== MUGE System Report ==========" << std::endl;
+    std::cout << "System Type: " << static_cast<int>(current_system) << std::endl;
+    std::cout << "Total Variables: " << variables.size() << std::endl;
+    
+    // Key MUGE parameters
+    std::cout << "\nMass Parameters:" << std::endl;
+    if (variables.find("M") != variables.end()) {
+        std::cout << "M_total: " << (variables["M"] / variables["M_sun"]) << " M☉" << std::endl;
+    }
+    if (variables.find("M_visible") != variables.end()) {
+        std::cout << "M_visible: " << (variables["M_visible"] / variables["M_sun"]) << " M☉" << std::endl;
+    }
+    if (variables.find("M_DM") != variables.end()) {
+        std::cout << "M_DM: " << (variables["M_DM"] / variables["M_sun"]) << " M☉ (" 
+                  << (variables["DM_fraction"] * 100) << "%)" << std::endl;
+    }
+    
+    std::cout << "\nSpatial Parameters:" << std::endl;
+    std::cout << "r: " << variables["r"] << " m" << std::endl;
+    std::cout << "z (redshift): " << variables["z"] << std::endl;
+    
+    std::cout << "\nMagnetic Parameters:" << std::endl;
+    std::cout << "B: " << variables["B"] << " T" << std::endl;
+    std::cout << "B_crit: " << variables["B_crit"] << " T" << std::endl;
+    
+    // Current computations
+    double t = variables["t"];
+    double g_comp = computeG_compressed(t);
+    double g_res = computeG_resonance(t);
+    
+    std::cout << "\nCurrent Computations:" << std::endl;
+    std::cout << "g_compressed: " << g_comp << " m/s^2" << std::endl;
+    std::cout << "g_resonance: " << g_res << " m/s^2" << std::endl;
+    
+    std::cout << "\nUg Terms:" << std::endl;
+    std::cout << "Ug1: " << variables["Ug1"] << std::endl;
+    std::cout << "Ug2: " << variables["Ug2"] << std::endl;
+    std::cout << "Ug3_prime: " << variables["Ug3_prime"] << std::endl;
+    std::cout << "Ug4: " << variables["Ug4"] << std::endl;
+    
+    std::cout << "============================================\n" << std::endl;
+}
+
+void MUGEModule::validatePhysicalConsistency() {
+    std::cout << "Validating MUGE physical consistency..." << std::endl;
+    bool consistent = true;
+    
+    // Check for NaN/Inf
+    for (const auto& pair : variables) {
+        if (std::isnan(pair.second) || std::isinf(pair.second)) {
+            std::cerr << "  ERROR: " << pair.first << " is NaN/Inf" << std::endl;
+            consistent = false;
+        }
+    }
+    
+    // M = M_visible + M_DM
+    double M_total_expected = variables["M_visible"] + variables["M_DM"];
+    if (std::abs(variables["M"] - M_total_expected) / M_total_expected > 0.01) {
+        std::cerr << "  ERROR: M != M_visible + M_DM" << std::endl;
+        consistent = false;
+    }
+    
+    // Delta_p from Delta_x (Heisenberg)
+    double Delta_p_expected = variables["hbar"] / variables["Delta_x"];
+    if (std::abs(variables["Delta_p"] - Delta_p_expected) / Delta_p_expected > 0.01) {
+        std::cerr << "  WARNING: Delta_p violates Heisenberg uncertainty" << std::endl;
+        consistent = false;
+    }
+    
+    // B < B_crit
+    if (variables["B"] >= variables["B_crit"]) {
+        std::cerr << "  WARNING: B >= B_crit (superconductivity breakdown)" << std::endl;
+        consistent = false;
+    }
+    
+    // DM_fraction in [0,1]
+    if (variables["DM_fraction"] < 0 || variables["DM_fraction"] > 1) {
+        std::cerr << "  ERROR: DM_fraction outside [0,1]" << std::endl;
+        consistent = false;
+    }
+    
+    if (consistent) {
+        std::cout << "  All checks passed. MUGE system is physically consistent." << std::endl;
+    }
+}
+
+void MUGEModule::autoCorrectAnomalies() {
+    std::cout << "Auto-correcting MUGE anomalies..." << std::endl;
+    
+    // Fix NaN/Inf
+    for (auto& pair : variables) {
+        if (std::isnan(pair.second) || std::isinf(pair.second)) {
+            std::cout << "  Correcting " << pair.first << " (was NaN/Inf)" << std::endl;
+            pair.second = 1.0;
+        }
+    }
+    
+    // Enforce M_total = M_visible + M_DM
+    double M_total_expected = variables["M_visible"] + variables["M_DM"];
+    if (std::abs(variables["M"] - M_total_expected) / M_total_expected > 0.01) {
+        std::cout << "  Correcting M to M_visible + M_DM" << std::endl;
+        variables["M"] = M_total_expected;
+    }
+    
+    // Enforce Delta_p = hbar / Delta_x
+    double Delta_p_expected = variables["hbar"] / variables["Delta_x"];
+    if (std::abs(variables["Delta_p"] - Delta_p_expected) / Delta_p_expected > 0.01) {
+        std::cout << "  Correcting Delta_p to satisfy Heisenberg uncertainty" << std::endl;
+        variables["Delta_p"] = Delta_p_expected;
+    }
+    
+    // Cap B at B_crit
+    if (variables["B"] >= variables["B_crit"]) {
+        std::cout << "  Capping B to 0.99 * B_crit" << std::endl;
+        variables["B"] = variables["B_crit"] * 0.99;
+    }
+    
+    // Clamp DM_fraction to [0,1]
+    if (variables["DM_fraction"] < 0) {
+        std::cout << "  Correcting DM_fraction to 0" << std::endl;
+        variables["DM_fraction"] = 0;
+    } else if (variables["DM_fraction"] > 1) {
+        std::cout << "  Correcting DM_fraction to 1" << std::endl;
+        variables["DM_fraction"] = 1;
+    }
+    
+    std::cout << "Auto-correction complete." << std::endl;
+}
+
 // Example usage snippet:
 // #include "MUGEModule.h"
 // int main() {
+//     // === BASIC COMPUTATION ===
+//     std::cout << "\n=== MUGE - Basic Computation ===" << std::endl;
+//     
 //     MUGEModule mod(SystemType::MAGNETAR_SGR_1745_2900);
 //     double t = 3.799e10;
+//     
 //     double g_comp = mod.computeG_compressed(t);
 //     double g_res = mod.computeG_resonance(t);
-//     std::cout << "Compressed g = " << g_comp << " m/s�\n";
-//     std::cout << "Resonance g = " << g_res << " m/s�\n";
-//     std::cout << mod.getEquationText_compressed() << "\n" << mod.getEquationText_resonance() << std::endl;
-//     mod.updateVariable("M", 2.0 * mod.variables["M_sun"]);
-//     mod.printVariables();
+//     std::cout << "Compressed g = " << g_comp << " m/s²\n";
+//     std::cout << "Resonance g = " << g_res << " m/s²\n";
+//     
+//     // Batch operations and multi-system tests
+//     mod.saveState("magnetar_initial");
+//     mod.createDynamicVariable("test_var", 42.0);
+//     
+//     // Self-expansion example
+//     mod.autoExpandParameterSpace(1.5);
+//     mod.expandMassScale(2.0);
+//     mod.generateSystemReport();
+//     
+//     // Parameter exploration
+//     mod.generateVariations(3, 0.15);
+//     mod.findOptimalParameters("maximize_g_compressed", 50);
+//     
+//     // System analysis
+//     mod.analyzeParameterSensitivity("M");
+//     mod.validatePhysicalConsistency();
+//     mod.autoCorrectAnomalies();
+//     
+//     mod.restoreState("magnetar_initial");
+//     std::cout << "\nFinal g_compressed: " << mod.computeG_compressed(t) << " m/s²" << std::endl;
+//     
 //     return 0;
 // }
 // Compile: g++ -o muge_test muge_test.cpp MUGEModule.cpp -lm
-// Sample: For Magnetar t=3.8e10s, g_comp ~1.79e12 m/s� (base dom.); g_res ~1e-10 m/s� (resonant scaled).
+// Sample: For Magnetar t=3.8e10s, g_comp ~1.79e12 m/s² (base dom.); g_res ~1e-10 m/s² (resonant scaled).
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
 MUGEModule Evaluation
