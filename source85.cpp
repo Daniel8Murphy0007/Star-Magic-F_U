@@ -16,6 +16,8 @@
 #include <iostream>
 #include <iomanip>
 #include <complex>
+#include <vector>
+#include <functional>
 
 class NGC346UQFFModule {
 private:
@@ -55,6 +57,50 @@ public:
 
     // Print all current variables (for debugging)
     void printVariables();
+
+    // ===== DYNAMIC SELF-UPDATE & SELF-EXPANSION CAPABILITIES =====
+    
+    // Dynamic variable management
+    void createDynamicVariable(const std::string& name, double value);
+    void removeDynamicVariable(const std::string& name);
+    void cloneVariable(const std::string& source, const std::string& dest);
+    void listAllVariables();
+    
+    // Batch operations on variable groups
+    void applyTransformToGroup(const std::vector<std::string>& varNames, 
+                               std::function<double(double)> transform);
+    void scaleVariableGroup(const std::vector<std::string>& varNames, double scale_factor);
+    
+    // Self-expansion capabilities
+    void autoExpandParameterSpace(double scale_factor);
+    void expandMassScale(double mass_multiplier);
+    void expandSpatialScale(double spatial_multiplier);
+    void expandTimeScale(double time_multiplier);
+    
+    // Self-refinement
+    void autoRefineParameters(double tolerance);
+    void calibrateToObservations(const std::map<std::string, double>& observed_values);
+    void optimizeForMetric(const std::string& metric_name, double target_value);
+    
+    // Parameter exploration
+    void generateVariations(int num_variations, double variation_range);
+    void findOptimalParameters(const std::string& objective, int iterations);
+    
+    // Adaptive evolution
+    void mutateParameters(double mutation_rate, double mutation_strength);
+    void evolveSystem(int generations);
+    
+    // State management
+    void saveState(const std::string& label);
+    void restoreState(const std::string& label);
+    void listSavedStates();
+    void exportState(const std::string& filename);
+    
+    // System analysis
+    void analyzeParameterSensitivity(const std::string& param_name);
+    void generateSystemReport();
+    void validatePhysicalConsistency();
+    void autoCorrectAnomalies();
 };
 
 #endif // NGC346_UQFF_MODULE_H
@@ -334,17 +380,251 @@ void NGC346UQFFModule::printVariables() {
     }
 }
 
+// ===== DYNAMIC SELF-UPDATE & SELF-EXPANSION IMPLEMENTATIONS =====
+
+// Static storage for saved states
+static std::map<std::string, std::map<std::string, double>> ngc346_saved_states;
+
+// 1. Dynamic variable management
+void NGC346UQFFModule::createDynamicVariable(const std::string& name, double value) {
+    variables[name] = value;
+    std::cout << "Created dynamic variable: " << name << " = " << value << std::endl;
+}
+
+void NGC346UQFFModule::removeDynamicVariable(const std::string& name) {
+    if (variables.find(name) != variables.end()) {
+        variables.erase(name);
+        std::cout << "Removed dynamic variable: " << name << std::endl;
+    } else {
+        std::cerr << "Variable '" << name << "' not found for removal." << std::endl;
+    }
+}
+
+void NGC346UQFFModule::cloneVariable(const std::string& source, const std::string& dest) {
+    if (variables.find(source) != variables.end()) {
+        variables[dest] = variables[source];
+        std::cout << "Cloned " << source << " to " << dest << std::endl;
+    } else {
+        std::cerr << "Source variable '" << source << "' not found." << std::endl;
+    }
+}
+
+void NGC346UQFFModule::listAllVariables() {
+    std::cout << "=== All NGC346 Variables (Total: " << variables.size() << ") ===" << std::endl;
+    for (const auto& pair : variables) {
+        std::cout << "  " << pair.first << " = " << pair.second << std::endl;
+    }
+}
+
+// 2. Batch operations
+void NGC346UQFFModule::applyTransformToGroup(const std::vector<std::string>& varNames,
+                                             std::function<double(double)> transform) {
+    for (const auto& name : varNames) {
+        if (variables.find(name) != variables.end()) {
+            variables[name] = transform(variables[name]);
+            std::cout << "Transformed " << name << " to " << variables[name] << std::endl;
+        }
+    }
+}
+
+void NGC346UQFFModule::scaleVariableGroup(const std::vector<std::string>& varNames, double scale_factor) {
+    applyTransformToGroup(varNames, [scale_factor](double val) { return val * scale_factor; });
+}
+
+// 3. Self-expansion capabilities
+void NGC346UQFFModule::autoExpandParameterSpace(double scale_factor) {
+    std::cout << "Auto-expanding NGC346 parameter space by factor " << scale_factor << std::endl;
+    std::vector<std::string> expandable = {"M_visible", "M_DM", "r", "SFR", "rho_gas"};
+    scaleVariableGroup(expandable, scale_factor);
+    variables["M"] = variables["M_visible"] + variables["M_DM"];
+    std::cout << "  Updated M and spatial scales" << std::endl;
+}
+
+void NGC346UQFFModule::expandMassScale(double mass_multiplier) {
+    std::cout << "Expanding mass scale by " << mass_multiplier << std::endl;
+    std::vector<std::string> mass_vars = {"M_visible", "M_DM"};
+    scaleVariableGroup(mass_vars, mass_multiplier);
+    variables["M"] = variables["M_visible"] + variables["M_DM"];
+    std::cout << "  M_total: " << variables["M"] << std::endl;
+}
+
+void NGC346UQFFModule::expandSpatialScale(double spatial_multiplier) {
+    std::cout << "Expanding spatial scale by " << spatial_multiplier << std::endl;
+    std::vector<std::string> spatial_vars = {"r", "sigma", "V"};
+    scaleVariableGroup(spatial_vars, spatial_multiplier);
+    std::cout << "  r: " << variables["r"] << " m" << std::endl;
+}
+
+void NGC346UQFFModule::expandTimeScale(double time_multiplier) {
+    std::cout << "Expanding time scale by " << time_multiplier << std::endl;
+    std::vector<std::string> time_vars = {"t", "t_Hubble"};
+    scaleVariableGroup(time_vars, time_multiplier);
+}
+
+// 4. Self-refinement
+void NGC346UQFFModule::autoRefineParameters(double tolerance) {
+    std::cout << "Auto-refining NGC346 parameters with tolerance " << tolerance << std::endl;
+    // Ensure total mass consistency
+    double expectedM = variables["M_visible"] + variables["M_DM"];
+    if (std::abs(variables["M"] - expectedM) / std::max(expectedM, 1e-100) > tolerance) {
+        std::cout << "  Correcting M to " << expectedM << std::endl;
+        variables["M"] = expectedM;
+    }
+    // Delta_p check
+    double Delta_p_expected = variables["hbar"] / variables["Delta_x"];
+    if (std::abs(variables["Delta_p"] - Delta_p_expected) / std::max(Delta_p_expected, 1e-100) > tolerance) {
+        std::cout << "  Correcting Delta_p" << std::endl;
+        variables["Delta_p"] = Delta_p_expected;
+    }
+    std::cout << "Refinement complete." << std::endl;
+}
+
+void NGC346UQFFModule::calibrateToObservations(const std::map<std::string, double>& observed_values) {
+    std::cout << "Calibrating to " << observed_values.size() << " observations..." << std::endl;
+    for (const auto& obs : observed_values) {
+        variables[obs.first] = obs.second;
+        std::cout << "  " << obs.first << " -> " << obs.second << std::endl;
+    }
+    if (observed_values.find("M_visible") != observed_values.end() || observed_values.find("M_DM") != observed_values.end()) {
+        variables["M"] = variables["M_visible"] + variables["M_DM"];
+    }
+}
+
+void NGC346UQFFModule::optimizeForMetric(const std::string& metric_name, double target_value) {
+    std::cout << "Optimizing metric " << metric_name << " to " << target_value << std::endl;
+    if (metric_name == "g" || metric_name == "g_NGC346") {
+        double r = variables["r"];
+        double t = variables["t"];
+        double current = computeG(t, r);
+        double ratio = target_value / std::max(current, 1e-100);
+        variables["M"] *= ratio;
+        variables["M_visible"] *= ratio;
+        variables["M_DM"] *= ratio;
+        std::cout << "  Scaled masses by " << ratio << std::endl;
+    }
+}
+
+// 5. Parameter exploration
+void NGC346UQFFModule::generateVariations(int num_variations, double variation_range) {
+    std::cout << "Generating " << num_variations << " variations (±" << variation_range*100 << "% )" << std::endl;
+    std::vector<std::string> keys = {"M_visible","M_DM","SFR","rho_gas","v_rad"};
+    for (int i=0;i<num_variations;++i) {
+        std::cout << " Variation "<<i+1<<":"<<std::endl;
+        for (auto &k: keys) {
+            if (variables.find(k)!=variables.end()){
+                double base=variables[k];
+                double v = base*(1.0 + variation_range*(2.0*(rand()/(double)RAND_MAX)-1.0));
+                std::cout<<"  "<<k<<": "<<base<<" -> "<<v<<std::endl;
+            }
+        }
+    }
+}
+
+void NGC346UQFFModule::findOptimalParameters(const std::string& objective, int iterations) {
+    std::cout<<"Finding optimal parameters for "<<objective<<" over "<<iterations<<" iterations"<<std::endl;
+    double best_score = -1e100; std::map<std::string,double> best;
+    for (int i=0;i<iterations;++i){
+        mutateParameters(0.6,0.1);
+        double val = computeG(variables["t"], variables["r"]);
+        if (val>best_score){ best_score=val; best=variables; }
+    }
+    variables = best;
+    std::cout<<"Best score: "<<best_score<<std::endl;
+}
+
+// 6. Adaptive evolution
+void NGC346UQFFModule::mutateParameters(double mutation_rate, double mutation_strength) {
+    std::vector<std::string> mutables={"M_visible","M_DM","SFR","rho_gas","v_rad"};
+    for (auto &k: mutables){
+        if (variables.find(k)!=variables.end() && (rand()/(double)RAND_MAX) < mutation_rate){
+            double mult = 1.0 + mutation_strength*(2.0*(rand()/(double)RAND_MAX)-1.0);
+            variables[k] *= mult;
+        }
+    }
+    variables["M"] = variables["M_visible"] + variables["M_DM"];
+}
+
+void NGC346UQFFModule::evolveSystem(int generations) {
+    std::cout<<"Evolving system for "<<generations<<" generations"<<std::endl;
+    for (int g=0; g<generations; ++g){
+        mutateParameters(0.3,0.08);
+        if (g%10==0) std::cout<<" Gen "<<g<<" g="<<computeG(variables["t"], variables["r"])<<std::endl;
+    }
+}
+
+// 7. State management
+void NGC346UQFFModule::saveState(const std::string& label){ ngc346_saved_states[label]=variables; std::cout<<"Saved state: "<<label<<std::endl; }
+void NGC346UQFFModule::restoreState(const std::string& label){ if (ngc346_saved_states.find(label)!=ngc346_saved_states.end()){ variables=ngc346_saved_states[label]; std::cout<<"Restored: "<<label<<std::endl;} else std::cerr<<"State not found: "<<label<<std::endl; }
+void NGC346UQFFModule::listSavedStates(){ std::cout<<"Saved states:"<<std::endl; for (auto &p: ngc346_saved_states) std::cout<<"  "<<p.first<<" ("<<p.second.size()<<")"<<std::endl; }
+void NGC346UQFFModule::exportState(const std::string& filename){ std::cout<<"Export placeholder: "<<filename<<std::endl; }
+
+// 8. System analysis
+void NGC346UQFFModule::analyzeParameterSensitivity(const std::string& param_name){
+    if (variables.find(param_name)==variables.end()){ std::cerr<<"Param not found: "<<param_name<<std::endl; return; }
+    double base = variables[param_name]; double base_out = computeG(variables["t"], variables["r"]);
+    std::vector<double> facs={0.7,0.85,1.0,1.15,1.3};
+    for (double f: facs){ variables[param_name]=base*f; double out=computeG(variables["t"], variables["r"]); std::cout<<param_name<<" * "<<f<<" -> Δg%="<<((out-base_out)/std::max(std::abs(base_out),1e-100))*100<<"\n"; }
+    variables[param_name]=base;
+}
+
+void NGC346UQFFModule::generateSystemReport(){
+    std::cout<<"\n=== NGC346 UQFF System Report ==="<<std::endl;
+    std::cout<<"M_visible="<<variables["M_visible"]<<" kg, M_DM="<<variables["M_DM"]<<" kg, M="<<variables["M"]<<std::endl;
+    std::cout<<"r="<<variables["r"]<<" m, SFR="<<variables["SFR"]<<" kg/s"<<std::endl;
+    std::cout<<"rho_gas="<<variables["rho_gas"]<<" kg/m3, v_rad="<<variables["v_rad"]<<" m/s"<<std::endl;
+    std::cout<<"Ug1="<<variables["Ug1"]<<" Ug2="<<variables["Ug2"]<<" Ug3="<<variables["Ug3"]<<" Ug4="<<variables["Ug4"]<<std::endl;
+}
+
+void NGC346UQFFModule::validatePhysicalConsistency(){
+    std::cout<<"Validating..."<<std::endl; bool ok=true;
+    if (variables["M"] <= 0) { std::cerr<<"ERROR: Nonpositive M"<<std::endl; ok=false; }
+    if (variables["rho_gas"] <= 0) { std::cerr<<"ERROR: Nonpositive rho_gas"<<std::endl; ok=false; }
+    if (ok) std::cout<<"All checks passed."<<std::endl;
+}
+
+void NGC346UQFFModule::autoCorrectAnomalies(){
+    std::cout<<"Auto-correcting anomalies..."<<std::endl;
+    if (variables["M"] <= 0) variables["M"] = variables["M_visible"] + variables["M_DM"];
+    if (variables["rho_gas"] <= 0) variables["rho_gas"] = 1e-20;
+}
+
 // Example usage
 // #include "NGC346UQFFModule.h"
 // int main() {
+//     // Initialize module
 //     NGC346UQFFModule mod;
 //     double t = 1e7 * 3.156e7;  // 10 Myr
 //     double r = 1e16;  // 0.3 pc
+//
+//     // Basic computation
+//     std::cout << "\n=== NGC 346 - Basic Computation ===" << std::endl;
 //     double g = mod.computeG(t, r);
 //     std::cout << "g_NGC346 = " << g << " m/s²\n";
 //     std::cout << mod.getEquationText() << std::endl;
-//     mod.updateVariable("SFR", 0.2 * 1.989e30 / (3.156e7));
+//
+//     // Inspect and modify variables
 //     mod.printVariables();
+//     mod.saveState("before_adjust");
+//     mod.createDynamicVariable("test_flag", 1.0);
+//     mod.cloneVariable("M_visible", "M_visible_backup");
+//
+//     // Self-expansion example (simulate larger region)
+//     mod.autoExpandParameterSpace(1.2);
+//     mod.expandSpatialScale(1.5);
+//     mod.generateSystemReport();
+//
+//     // Parameter exploration and optimization
+//     mod.generateVariations(3, 0.15);
+//     mod.findOptimalParameters("maximize_g", 50);
+//     mod.restoreState("before_adjust");
+//
+//     // Sensitivity analysis
+//     mod.analyzeParameterSensitivity("M_DM");
+//     mod.validatePhysicalConsistency();
+//     mod.autoCorrectAnomalies();
+//
+//     std::cout << "\nFinal g_NGC346 = " << mod.computeG(t, r) << " m/s²" << std::endl;
+//     
 //     return 0;
 // }
 // Compile: g++ -o ngc346_sim base.cpp NGC346UQFFModule.cpp -lm

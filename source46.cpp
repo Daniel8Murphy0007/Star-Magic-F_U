@@ -19,6 +19,11 @@
 #include <iostream>
 #include <iomanip>
 #include <complex>
+#include <functional>
+#include <random>
+#include <algorithm>
+#include <sstream>
+#include <vector>
 
 class NGC6302UQFFModule {
 private:
@@ -48,6 +53,48 @@ public:
 
     // Print all current variables (for debugging/updates)
     void printVariables();
+
+    // ===== ENHANCED DYNAMIC CAPABILITIES =====
+    // Variable Management
+    void createVariable(const std::string& name, double value);
+    void removeVariable(const std::string& name);
+    void cloneVariable(const std::string& source, const std::string& dest);
+    std::vector<std::string> listVariables();
+    std::string getSystemName();
+
+    // Batch Operations
+    void transformVariableGroup(const std::vector<std::string>& names, std::function<double(double)> func);
+    void scaleVariableGroup(const std::vector<std::string>& names, double factor);
+
+    // Self-Expansion (domain-specific)
+    void expandParameterSpace(double scale_factor);
+    void expandWindShockScale(double scale_factor);
+    void expandNebularScale(double scale_factor);
+    void expandResonanceScale(double scale_factor);
+
+    // Self-Refinement
+    void autoRefineParameters(double tolerance);
+    void calibrateToObservations(const std::map<std::string, double>& obs_data);
+    void optimizeForMetric(const std::string& var_name, double target_value, int iterations);
+
+    // Parameter Exploration
+    std::vector<std::map<std::string, double>> generateVariations(int n_variations);
+
+    // Adaptive Evolution
+    void mutateParameters(double mutation_rate);
+    void evolveSystem(int generations, std::function<double()> fitness_function);
+
+    // State Management
+    void saveState(const std::string& label);
+    void restoreState(const std::string& label);
+    std::vector<std::string> listSavedStates();
+    std::string exportState(double t);
+
+    // System Analysis
+    std::map<std::string, double> sensitivityAnalysis(const std::string& param, double t, double delta);
+    std::string generateReport(double t);
+    bool validateConsistency();
+    void autoCorrectAnomalies();
 };
 
 #endif // NGC6302_UQFF_MODULE_H
@@ -260,22 +307,502 @@ void NGC6302UQFFModule::printVariables() {
     }
 }
 
+// ===== ENHANCED DYNAMIC CAPABILITIES IMPLEMENTATION =====
+
+namespace {
+    std::map<std::string, std::map<std::string, double>> ngc6302_saved_states;
+}
+
+// Variable Management
+void NGC6302UQFFModule::createVariable(const std::string& name, double value) {
+    variables[name] = value;
+}
+
+void NGC6302UQFFModule::removeVariable(const std::string& name) {
+    variables.erase(name);
+}
+
+void NGC6302UQFFModule::cloneVariable(const std::string& source, const std::string& dest) {
+    if (variables.find(source) != variables.end()) {
+        variables[dest] = variables[source];
+    }
+}
+
+std::vector<std::string> NGC6302UQFFModule::listVariables() {
+    std::vector<std::string> names;
+    for (const auto& pair : variables) {
+        names.push_back(pair.first);
+    }
+    return names;
+}
+
+std::string NGC6302UQFFModule::getSystemName() {
+    return "NGC 6302 (Butterfly Nebula) - Full UQFF & SM Integration";
+}
+
+// Batch Operations
+void NGC6302UQFFModule::transformVariableGroup(const std::vector<std::string>& names, std::function<double(double)> func) {
+    for (const auto& name : names) {
+        if (variables.find(name) != variables.end()) {
+            variables[name] = func(variables[name]);
+        }
+    }
+}
+
+void NGC6302UQFFModule::scaleVariableGroup(const std::vector<std::string>& names, double factor) {
+    transformVariableGroup(names, [factor](double v) { return v * factor; });
+}
+
+// Self-Expansion (domain-specific for NGC 6302)
+void NGC6302UQFFModule::expandParameterSpace(double scale_factor) {
+    // Scale core nebular parameters
+    variables["r"] *= scale_factor;
+    variables["M"] *= scale_factor;
+    variables["rho_fluid"] *= scale_factor;
+    // Update dependent variables
+    variables["M_visible"] = 0.15 * variables["M"];
+    variables["M_DM"] = 0.85 * variables["M"];
+    variables["delta_rho"] = 0.1 * variables["rho_fluid"];
+    variables["rho"] = variables["rho_fluid"];
+}
+
+void NGC6302UQFFModule::expandWindShockScale(double scale_factor) {
+    // Scale wind shock parameters (v_wind, t_eject, rho_fluid)
+    variables["v_wind"] *= scale_factor;
+    variables["t_eject"] *= scale_factor;
+    variables["rho_fluid"] *= scale_factor;
+    variables["delta_rho"] = 0.1 * variables["rho_fluid"];
+    variables["rho"] = variables["rho_fluid"];
+}
+
+void NGC6302UQFFModule::expandNebularScale(double scale_factor) {
+    // Scale nebular field parameters (B, rho_fluid, V)
+    variables["B"] *= scale_factor;
+    variables["rho_fluid"] *= scale_factor;
+    variables["V"] *= scale_factor;
+    variables["delta_rho"] = 0.1 * variables["rho_fluid"];
+    variables["rho"] = variables["rho_fluid"];
+}
+
+void NGC6302UQFFModule::expandResonanceScale(double scale_factor) {
+    // Scale resonant oscillatory parameters (A, omega, k)
+    variables["A"] *= scale_factor;
+    variables["omega"] *= scale_factor;
+    variables["k"] *= scale_factor;
+}
+
+// Self-Refinement
+void NGC6302UQFFModule::autoRefineParameters(double tolerance) {
+    // Enforce physical constraints
+    if (variables["M"] <= 0) variables["M"] = 2 * variables["M_sun"];
+    if (variables["r"] <= 0) variables["r"] = 9.46e15;
+    if (variables["rho_fluid"] <= 0) variables["rho_fluid"] = 1e-20;
+    if (variables["v_wind"] < 0) variables["v_wind"] = 1e5;
+    if (variables["t_eject"] <= 0) variables["t_eject"] = 2000 * variables["year_to_s"];
+    if (variables["B"] < 0) variables["B"] = 1e-5;
+    // Update dependent variables
+    variables["M_visible"] = 0.15 * variables["M"];
+    variables["M_DM"] = 0.85 * variables["M"];
+    variables["delta_rho"] = 0.1 * variables["rho_fluid"];
+    variables["rho"] = variables["rho_fluid"];
+}
+
+void NGC6302UQFFModule::calibrateToObservations(const std::map<std::string, double>& obs_data) {
+    for (const auto& obs : obs_data) {
+        if (variables.find(obs.first) != variables.end()) {
+            variables[obs.first] = obs.second;
+        }
+    }
+    // Update dependent variables
+    if (obs_data.find("M") != obs_data.end()) {
+        variables["M_visible"] = 0.15 * variables["M"];
+        variables["M_DM"] = 0.85 * variables["M"];
+    }
+    if (obs_data.find("rho_fluid") != obs_data.end()) {
+        variables["delta_rho"] = 0.1 * variables["rho_fluid"];
+        variables["rho"] = variables["rho_fluid"];
+    }
+    if (obs_data.find("Delta_x") != obs_data.end()) {
+        variables["Delta_p"] = variables["hbar"] / variables["Delta_x"];
+    }
+}
+
+void NGC6302UQFFModule::optimizeForMetric(const std::string& var_name, double target_value, int iterations) {
+    if (variables.find(var_name) == variables.end()) return;
+    double best_value = variables[var_name];
+    double best_error = std::abs(variables[var_name] - target_value);
+    
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(0.9, 1.1);
+    
+    for (int i = 0; i < iterations; ++i) {
+        double test_value = variables[var_name] * dis(gen);
+        variables[var_name] = test_value;
+        double error = std::abs(test_value - target_value);
+        if (error < best_error) {
+            best_error = error;
+            best_value = test_value;
+        }
+    }
+    variables[var_name] = best_value;
+}
+
+// Parameter Exploration
+std::vector<std::map<std::string, double>> NGC6302UQFFModule::generateVariations(int n_variations) {
+    std::vector<std::map<std::string, double>> variations;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(0.8, 1.2);
+    
+    for (int i = 0; i < n_variations; ++i) {
+        std::map<std::string, double> variation = variables;
+        variation["M"] *= dis(gen);
+        variation["v_wind"] *= dis(gen);
+        variation["rho_fluid"] *= dis(gen);
+        variation["B"] *= dis(gen);
+        variations.push_back(variation);
+    }
+    return variations;
+}
+
+// Adaptive Evolution
+void NGC6302UQFFModule::mutateParameters(double mutation_rate) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(-mutation_rate, mutation_rate);
+    
+    variables["M"] *= (1.0 + dis(gen));
+    variables["v_wind"] *= (1.0 + dis(gen));
+    variables["rho_fluid"] *= (1.0 + dis(gen));
+    variables["B"] *= (1.0 + dis(gen));
+    
+    // Update dependent variables
+    variables["M_visible"] = 0.15 * variables["M"];
+    variables["M_DM"] = 0.85 * variables["M"];
+    variables["delta_rho"] = 0.1 * variables["rho_fluid"];
+    variables["rho"] = variables["rho_fluid"];
+}
+
+void NGC6302UQFFModule::evolveSystem(int generations, std::function<double()> fitness_function) {
+    double best_fitness = fitness_function();
+    std::map<std::string, double> best_state = variables;
+    
+    for (int gen = 0; gen < generations; ++gen) {
+        mutateParameters(0.1);
+        double fitness = fitness_function();
+        if (fitness > best_fitness) {
+            best_fitness = fitness;
+            best_state = variables;
+        } else {
+            variables = best_state;
+        }
+    }
+}
+
+// State Management
+void NGC6302UQFFModule::saveState(const std::string& label) {
+    ngc6302_saved_states[label] = variables;
+}
+
+void NGC6302UQFFModule::restoreState(const std::string& label) {
+    if (ngc6302_saved_states.find(label) != ngc6302_saved_states.end()) {
+        variables = ngc6302_saved_states[label];
+    }
+}
+
+std::vector<std::string> NGC6302UQFFModule::listSavedStates() {
+    std::vector<std::string> labels;
+    for (const auto& pair : ngc6302_saved_states) {
+        labels.push_back(pair.first);
+    }
+    return labels;
+}
+
+std::string NGC6302UQFFModule::exportState(double t) {
+    std::ostringstream oss;
+    oss << std::scientific << std::setprecision(6);
+    oss << "NGC6302 State Export at t=" << t << " s:\n";
+    oss << "M=" << variables["M"] << " kg, r=" << variables["r"] << " m\n";
+    oss << "v_wind=" << variables["v_wind"] << " m/s, t_eject=" << variables["t_eject"] << " s\n";
+    oss << "rho_fluid=" << variables["rho_fluid"] << " kg/m³, B=" << variables["B"] << " T\n";
+    oss << "g_total=" << computeG(t) << " m/s²\n";
+    return oss.str();
+}
+
+// System Analysis
+std::map<std::string, double> NGC6302UQFFModule::sensitivityAnalysis(const std::string& param, double t, double delta) {
+    std::map<std::string, double> result;
+    if (variables.find(param) == variables.end()) return result;
+    
+    double original = variables[param];
+    double g_original = computeG(t);
+    
+    variables[param] = original * (1.0 + delta);
+    double g_plus = computeG(t);
+    
+    variables[param] = original * (1.0 - delta);
+    double g_minus = computeG(t);
+    
+    variables[param] = original;
+    
+    result["dg/d" + param] = (g_plus - g_minus) / (2.0 * delta * original);
+    result["g_original"] = g_original;
+    result["g_plus"] = g_plus;
+    result["g_minus"] = g_minus;
+    
+    return result;
+}
+
+std::string NGC6302UQFFModule::generateReport(double t) {
+    std::ostringstream oss;
+    oss << std::scientific << std::setprecision(6);
+    oss << "===== NGC 6302 UQFF Module Report (t=" << t << " s) =====\n\n";
+    oss << "System: " << getSystemName() << "\n\n";
+    
+    oss << "Core Parameters:\n";
+    oss << "  M = " << variables["M"] << " kg (" << variables["M"]/variables["M_sun"] << " M_sun)\n";
+    oss << "  r = " << variables["r"] << " m (~" << variables["r"]/9.46e15 << " ly)\n";
+    oss << "  v_wind = " << variables["v_wind"] << " m/s (" << variables["v_wind"]/1e3 << " km/s)\n";
+    oss << "  t_eject = " << variables["t_eject"] << " s (" << variables["t_eject"]/variables["year_to_s"] << " yr)\n";
+    oss << "  rho_fluid = " << variables["rho_fluid"] << " kg/m³\n";
+    oss << "  B = " << variables["B"] << " T\n\n";
+    
+    double Hz = computeHz();
+    double expansion = 1.0 + Hz * t;
+    double sc_correction = 1.0 - (variables["B"] / variables["B_crit"]);
+    double tr_factor = 1.0 + variables["f_TRZ"];
+    double g_base = (variables["G"] * variables["M"] / (variables["r"] * variables["r"])) * expansion * sc_correction * tr_factor;
+    double ug_sum = computeUgSum();
+    double lambda_term = variables["Lambda"] * (variables["c"] * variables["c"]) / 3.0;
+    double quantum_term = computeQuantumTerm(variables["t_Hubble"]);
+    double em_base = variables["q"] * variables["v_wind"] * variables["B"] / 1.673e-27;
+    double em_term = em_base * (1.0 + (7.09e-36 / 7.09e-37)) * variables["scale_macro"];
+    double fluid_term = computeFluidTerm(g_base);
+    double resonant_term = computeResonantTerm(t);
+    double dm_term = computeDMTerm();
+    double w_shock = computeW_shock(t);
+    double g_total = computeG(t);
+    
+    oss << "Term Breakdown:\n";
+    oss << "  g_base = " << g_base << " m/s²\n";
+    oss << "  Ug_sum (Ug1+Ug2+Ug3+Ug4) = " << ug_sum << " m/s²\n";
+    oss << "  Lambda_term = " << lambda_term << " m/s²\n";
+    oss << "  Quantum_term = " << quantum_term << " m/s²\n";
+    oss << "  EM_term = " << em_term << " m/s²\n";
+    oss << "  Fluid_term = " << fluid_term << " m/s²\n";
+    oss << "  Resonant_term = " << resonant_term << " m/s²\n";
+    oss << "  DM_term = " << dm_term << " m/s²\n";
+    oss << "  W_shock = " << w_shock << " m/s² [DOMINANT WIND TERM]\n\n";
+    oss << "TOTAL g = " << g_total << " m/s²\n\n";
+    
+    oss << "Physics Notes:\n";
+    oss << "- NGC 6302 is a bipolar planetary nebula with high-velocity winds (~100 km/s)\n";
+    oss << "- W_shock term dominates, modeling stellar wind impact on lobe expansion\n";
+    oss << "- EM term significant due to v×B interaction in ionized gas\n";
+    oss << "- Full UQFF+SM integration: gravity, Ug1-4, Lambda, quantum, EM, fluid, resonance, DM\n";
+    oss << "- Superconductivity correction: (1 - B/B_crit)\n";
+    oss << "- Time-dependent wind shock: W_shock ∝ (1 + t/t_eject)\n\n";
+    
+    return oss.str();
+}
+
+bool NGC6302UQFFModule::validateConsistency() {
+    bool valid = true;
+    if (variables["M"] <= 0) valid = false;
+    if (variables["r"] <= 0) valid = false;
+    if (variables["rho_fluid"] <= 0) valid = false;
+    if (variables["v_wind"] < 0) valid = false;
+    if (variables["t_eject"] <= 0) valid = false;
+    if (variables["B"] < 0) valid = false;
+    return valid;
+}
+
+void NGC6302UQFFModule::autoCorrectAnomalies() {
+    if (variables["M"] <= 0) variables["M"] = 2 * variables["M_sun"];
+    if (variables["r"] <= 0) variables["r"] = 9.46e15;
+    if (variables["rho_fluid"] <= 0) variables["rho_fluid"] = 1e-20;
+    if (variables["v_wind"] < 0) variables["v_wind"] = 1e5;
+    if (variables["t_eject"] <= 0) variables["t_eject"] = 2000 * variables["year_to_s"];
+    if (variables["B"] < 0) variables["B"] = 1e-5;
+    // Update dependent variables
+    variables["M_visible"] = 0.15 * variables["M"];
+    variables["M_DM"] = 0.85 * variables["M"];
+    variables["delta_rho"] = 0.1 * variables["rho_fluid"];
+    variables["rho"] = variables["rho_fluid"];
+}
+
+// Enhanced example usage demonstration
+void enhanced_example_usage() {
+    NGC6302UQFFModule mod;
+    double t_2kyr = 2000 * 3.156e7;  // 2000 years in seconds
+    
+    std::cout << "===== ENHANCED NGC 6302 UQFF MODULE DEMONSTRATION =====\n\n";
+    
+    // Step 1: Variable management
+    std::cout << "Step 1: Variable Management\n";
+    mod.createVariable("custom_wind_factor", 1.15);
+    mod.cloneVariable("v_wind", "v_wind_backup");
+    std::vector<std::string> vars = mod.listVariables();
+    std::cout << "Total variables: " << vars.size() << "\n";
+    std::cout << "System: " << mod.getSystemName() << "\n\n";
+    
+    // Step 2: Batch scaling
+    std::cout << "Step 2: Batch Scaling (Wind parameters)\n";
+    mod.scaleVariableGroup({"v_wind", "rho_fluid", "B"}, 1.1);
+    std::cout << "Scaled v_wind, rho_fluid, B by 1.1\n\n";
+    
+    // Step 3: Self-expansion (different physics domains)
+    std::cout << "Step 3: Self-Expansion\n";
+    mod.expandWindShockScale(1.08);  // Wind +8%
+    std::cout << "Expanded wind shock scale +8%\n";
+    mod.expandNebularScale(1.05);  // Nebular fields +5%
+    std::cout << "Expanded nebular scale +5%\n";
+    mod.expandResonanceScale(1.03);  // Resonance +3%
+    std::cout << "Expanded resonance scale +3%\n\n";
+    
+    // Step 4: Self-refinement
+    std::cout << "Step 4: Self-Refinement\n";
+    mod.autoRefineParameters(1e-10);
+    std::cout << "Auto-refined parameters\n";
+    std::map<std::string, double> obs_data = {
+        {"M", 2.5e30},
+        {"v_wind", 1.2e5},
+        {"rho_fluid", 1.2e-20},
+        {"B", 1.1e-5}
+    };
+    mod.calibrateToObservations(obs_data);
+    std::cout << "Calibrated to observations\n\n";
+    
+    // Step 5: Optimize for specific metric
+    std::cout << "Step 5: Optimize for v_wind~1.2e5 m/s\n";
+    mod.optimizeForMetric("v_wind", 1.2e5, 50);
+    std::cout << "Optimization complete\n\n";
+    
+    // Step 6: Generate variations
+    std::cout << "Step 6: Generate 15 Parameter Variations\n";
+    auto variations = mod.generateVariations(15);
+    std::cout << "Generated " << variations.size() << " variations\n\n";
+    
+    // Step 7: State management
+    std::cout << "Step 7: State Management\n";
+    mod.saveState("initial");
+    mod.scaleVariableGroup({"v_wind", "rho_fluid"}, 1.2);
+    mod.saveState("enhanced_wind");
+    mod.expandNebularScale(0.8);
+    mod.saveState("reduced_nebular");
+    std::cout << "Saved 3 states\n\n";
+    
+    // Step 8: Sensitivity analysis
+    std::cout << "Step 8: Sensitivity Analysis (v_wind at t=2000yr)\n";
+    mod.restoreState("initial");
+    auto sensitivity = mod.sensitivityAnalysis("v_wind", t_2kyr, 0.1);
+    std::cout << "dg/dv_wind = " << std::scientific << sensitivity["dg/dv_wind"] << " (m/s²)/(m/s)\n\n";
+    
+    // Step 9: System validation
+    std::cout << "Step 9: System Validation\n";
+    bool valid = mod.validateConsistency();
+    std::cout << "System consistency: " << (valid ? "VALID" : "INVALID") << "\n";
+    if (!valid) {
+        mod.autoCorrectAnomalies();
+        std::cout << "Auto-corrected anomalies\n";
+    }
+    std::cout << "\n";
+    
+    // Step 10: Comprehensive report
+    std::cout << "Step 10: Comprehensive Report (t=2000yr)\n";
+    std::string report = mod.generateReport(t_2kyr);
+    std::cout << report << "\n";
+    
+    // Step 11: Adaptive evolution
+    std::cout << "Step 11: Adaptive Evolution (25 generations)\n";
+    auto fitness_fn = [&mod, t_2kyr]() -> double {
+        double g = mod.computeG(t_2kyr);
+        return -std::abs(std::log10(std::abs(g)) + 10.0);  // Target g~1e-10 m/s²
+    };
+    mod.evolveSystem(25, fitness_fn);
+    std::cout << "Evolution complete\n\n";
+    
+    // Step 12: Time evolution comparison
+    std::cout << "Step 12: Time Evolution (0 to 10,000 years)\n";
+    std::vector<double> times = {0.0, 500*3.156e7, 1000*3.156e7, 2000*3.156e7, 5000*3.156e7, 10000*3.156e7};
+    for (double t : times) {
+        double g = mod.computeG(t);
+        std::cout << "t=" << std::scientific << t << " s (" << t/(3.156e7) << " yr): g=" << g << " m/s²\n";
+    }
+    std::cout << "\n";
+    
+    // Step 13: Wind shock evolution
+    std::cout << "Step 13: Wind Shock Evolution (t=0 to 10,000 yr)\n";
+    for (double t : times) {
+        double w_shock = mod.computeW_shock(t);
+        std::cout << "t=" << t/(3.156e7) << " yr: W_shock=" << std::scientific << w_shock << " m/s²\n";
+    }
+    std::cout << "\n";
+    
+    // Step 14: Wind velocity sweep
+    std::cout << "Step 14: Wind Velocity Sweep (t=2000yr)\n";
+    std::vector<double> velocities = {5e4, 7.5e4, 1e5, 1.25e5, 1.5e5};
+    for (double v : velocities) {
+        mod.updateVariable("v_wind", v);
+        double g = mod.computeG(t_2kyr);
+        std::cout << "v_wind=" << std::scientific << v << " m/s (" << v/1000 << " km/s): g=" << g << " m/s²\n";
+    }
+    mod.restoreState("initial");
+    std::cout << "\n";
+    
+    // Step 15: Mass impact
+    std::cout << "Step 15: Mass Impact (t=2000yr)\n";
+    std::vector<double> masses = {1e30, 1.5e30, 2e30, 2.5e30, 3e30};
+    for (double M : masses) {
+        mod.updateVariable("M", M);
+        double g = mod.computeG(t_2kyr);
+        std::cout << "M=" << std::scientific << M << " kg (" << M/1.989e30 << " M_sun): g=" << g << " m/s²\n";
+    }
+    mod.restoreState("initial");
+    std::cout << "\n";
+    
+    // Step 16: Multi-parameter sensitivity
+    std::cout << "Step 16: Multi-Parameter Sensitivity (t=2000yr)\n";
+    std::vector<std::string> params = {"M", "v_wind", "rho_fluid", "B", "r"};
+    for (const auto& param : params) {
+        auto sens = mod.sensitivityAnalysis(param, t_2kyr, 0.05);
+        std::cout << "dg/d" << param << " = " << std::scientific << sens["dg/d" + param] << "\n";
+    }
+    std::cout << "\n";
+    
+    // Step 17: Expansion domains comparison
+    std::cout << "Step 17: Expansion Domains Comparison (t=2000yr)\n";
+    mod.restoreState("initial");
+    double g_initial = mod.computeG(t_2kyr);
+    std::cout << "Initial: g=" << std::scientific << g_initial << " m/s²\n";
+    
+    mod.expandWindShockScale(1.2);
+    double g_wind = mod.computeG(t_2kyr);
+    std::cout << "Wind +20%: g=" << g_wind << " m/s² (Δ=" << (g_wind-g_initial)/g_initial*100 << "%)\n";
+    mod.restoreState("initial");
+    
+    mod.expandNebularScale(1.2);
+    double g_nebular = mod.computeG(t_2kyr);
+    std::cout << "Nebular +20%: g=" << g_nebular << " m/s² (Δ=" << (g_nebular-g_initial)/g_initial*100 << "%)\n";
+    mod.restoreState("initial");
+    std::cout << "\n";
+    
+    // Step 18: State restoration
+    std::cout << "Step 18: State Restoration\n";
+    mod.restoreState("initial");
+    std::cout << "Restored initial state\n";
+    g_initial = mod.computeG(t_2kyr);
+    std::cout << "Initial g = " << std::scientific << g_initial << " m/s²\n\n";
+    
+    // Step 19: Final state export
+    std::cout << "Step 19: Final State Export\n";
+    std::cout << mod.exportState(t_2kyr) << "\n";
+    
+    std::cout << "===== DEMONSTRATION COMPLETE =====\n";
+}
+
 // Example usage in base program 'ziqn233h.cpp' (snippet for integration)
-// #include "NGC6302UQFFModule.h"
-// int main() {
-//     NGC6302UQFFModule mod;
-//     double t = 2000 * 3.156e7;  // 2000 years
-//     double g = mod.computeG(t);
-//     std::cout << "g = " << g << " m/s�\n";
-//     std::cout << mod.getEquationText() << std::endl;
-//     mod.updateVariable("M", 4e30);  // Update mass
-//     mod.addToVariable("f_TRZ", 0.05);  // Add to TR factor
-//     mod.printVariables();
-//     return 0;
-// }
-// Compile: g++ -o ziqn233h ziqn233h.cpp NGC6302UQFFModule.cpp -lm
-// Sample Output at t=2000 yr: g ? 1e-10 m/s� (varies with updates; W_shock/EM dominant).
-// Watermark: Copyright - Daniel T. Murphy, analyzed Oct 09, 2025.
 
 // Evaluation of NGC6302UQFFModule (UQFF & Standard Model Integration for NGC 6302 Nebula Evolution)
 

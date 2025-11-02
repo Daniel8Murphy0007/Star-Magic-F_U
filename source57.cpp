@@ -20,6 +20,11 @@
 #include <iostream>
 #include <iomanip>
 #include <complex>
+#include <functional>
+#include <random>
+#include <algorithm>
+#include <sstream>
+#include <vector>
 
 class MultiCompressedUQFFModule {
 private:
@@ -53,6 +58,49 @@ public:
 
     // Print all current variables (for debugging/updates)
     void printVariables();
+
+    // ===== Dynamic Self-Update & Self-Expansion Capabilities =====
+    
+    // 1. Variable Management (4 methods)
+    void createVariable(const std::string& name, double value);
+    void removeVariable(const std::string& name);
+    void cloneVariable(const std::string& source, const std::string& dest);
+    std::vector<std::string> listVariables();
+
+    // 2. Batch Operations (2 methods)
+    void transformVariableGroup(const std::vector<std::string>& names, std::function<double(double)> func);
+    void scaleVariableGroup(const std::vector<std::string>& names, double factor);
+
+    // 3. Self-Expansion (4 methods: parameter space + 3 domain-specific scales)
+    void expandParameterSpace(const std::vector<std::string>& new_params);
+    void expandGravityScale(double factor);
+    void expandCosmologicalScale(double factor);
+    void expandEnvironmentalScale(double factor);
+
+    // 4. Self-Refinement (3 methods)
+    void autoRefineParameters(double tolerance);
+    void calibrateToObservations(const std::map<std::string, double>& obs_data);
+    void optimizeForMetric(std::function<double(MultiCompressedUQFFModule&)> metric);
+
+    // 5. Parameter Exploration (2 methods)
+    std::vector<std::map<std::string, double>> generateVariations(int n_variations);
+    std::map<std::string, double> findOptimalParameters(std::function<double(MultiCompressedUQFFModule&)> objective, int iterations);
+
+    // 6. Adaptive Evolution (2 methods)
+    void mutateParameters(double mutation_rate);
+    void evolveSystem(int generations, std::function<double(MultiCompressedUQFFModule&)> fitness);
+
+    // 7. State Management (4 methods)
+    void saveState(const std::string& label);
+    void restoreState(const std::string& label);
+    std::vector<std::string> listSavedStates();
+    std::map<std::string, double> exportState();
+
+    // 8. System Analysis (4 methods)
+    std::map<std::string, double> sensitivityAnalysis(const std::string& var_name, double delta);
+    std::string generateReport();
+    bool validateConsistency();
+    void autoCorrectAnomalies();
 };
 
 #endif // MULTI_COMPRESSED_UQFF_MODULE_H
@@ -334,18 +382,751 @@ void MultiCompressedUQFFModule::printVariables() {
     }
 }
 
+// ===== Implementation of Dynamic Self-Update & Self-Expansion Capabilities =====
+
+namespace {
+    // Static storage for saved states
+    std::map<std::string, std::map<std::string, double>> compressed_uqff_saved_states;
+    std::map<std::string, std::string> compressed_uqff_saved_systems;
+}
+
+// 1. Variable Management
+
+void MultiCompressedUQFFModule::createVariable(const std::string& name, double value) {
+    variables[name] = value;
+}
+
+void MultiCompressedUQFFModule::removeVariable(const std::string& name) {
+    auto it = variables.find(name);
+    if (it != variables.end()) {
+        variables.erase(it);
+    }
+}
+
+void MultiCompressedUQFFModule::cloneVariable(const std::string& source, const std::string& dest) {
+    auto it = variables.find(source);
+    if (it != variables.end()) {
+        variables[dest] = it->second;
+    }
+}
+
+std::vector<std::string> MultiCompressedUQFFModule::listVariables() {
+    std::vector<std::string> var_names;
+    for (const auto& pair : variables) {
+        var_names.push_back(pair.first);
+    }
+    return var_names;
+}
+
+// 2. Batch Operations
+
+void MultiCompressedUQFFModule::transformVariableGroup(const std::vector<std::string>& names, std::function<double(double)> func) {
+    for (const auto& name : names) {
+        auto it = variables.find(name);
+        if (it != variables.end()) {
+            it->second = func(it->second);
+        }
+    }
+}
+
+void MultiCompressedUQFFModule::scaleVariableGroup(const std::vector<std::string>& names, double factor) {
+    transformVariableGroup(names, [factor](double v) { return v * factor; });
+}
+
+// 3. Self-Expansion
+
+void MultiCompressedUQFFModule::expandParameterSpace(const std::vector<std::string>& new_params) {
+    for (const auto& param : new_params) {
+        if (variables.find(param) == variables.end()) {
+            variables[param] = 0.0;
+        }
+    }
+}
+
+void MultiCompressedUQFFModule::expandGravityScale(double factor) {
+    // Scale gravity-related terms: M, M_ext, M_visible, M_DM
+    std::vector<std::string> gravity_vars = {"M", "M_ext", "M_visible", "M_DM", "M0"};
+    scaleVariableGroup(gravity_vars, factor);
+}
+
+void MultiCompressedUQFFModule::expandCosmologicalScale(double factor) {
+    // Scale cosmological terms: Lambda, H0, Omega_m, Omega_Lambda
+    std::vector<std::string> cosmo_vars = {"Lambda", "H0", "Omega_m", "Omega_Lambda"};
+    scaleVariableGroup(cosmo_vars, factor);
+}
+
+void MultiCompressedUQFFModule::expandEnvironmentalScale(double factor) {
+    // Scale environmental terms: v_wind, SFR, rho_fluid
+    std::vector<std::string> env_vars = {"v_wind", "SFR", "rho_fluid", "B"};
+    scaleVariableGroup(env_vars, factor);
+}
+
+// 4. Self-Refinement
+
+void MultiCompressedUQFFModule::autoRefineParameters(double tolerance) {
+    // Ensure physical positivity for fundamental constants
+    if (variables["c"] <= 0) {
+        variables["c"] = 3e8;
+    }
+    if (variables["G"] <= 0) {
+        variables["G"] = 6.6743e-11;
+    }
+    if (variables["hbar"] <= 0) {
+        variables["hbar"] = 1.0546e-34;
+    }
+    
+    // Ensure masses positivity
+    if (variables["M"] <= 0) {
+        variables["M"] = 1.989e30;  // 1 solar mass default
+    }
+    if (variables["M0"] <= 0) {
+        variables["M0"] = variables["M"];
+    }
+    
+    // Ensure distances positivity
+    if (variables["r"] <= 0) {
+        variables["r"] = 1e10;  // Default 10 km
+    }
+    if (variables["r_ext"] < 0) {
+        variables["r_ext"] = 0.0;
+    }
+    
+    // Ensure redshift non-negativity
+    if (variables["z"] < 0) {
+        variables["z"] = 0.0;
+    }
+    
+    // Ensure cosmological parameters positivity
+    if (variables["H0"] <= 0) {
+        variables["H0"] = 67.15;
+    }
+    if (variables["Omega_m"] < 0 || variables["Omega_m"] > 1) {
+        variables["Omega_m"] = 0.3;
+    }
+    if (variables["Omega_Lambda"] < 0 || variables["Omega_Lambda"] > 1) {
+        variables["Omega_Lambda"] = 0.7;
+    }
+    
+    // Ensure Lambda positivity
+    if (variables["Lambda"] <= 0) {
+        variables["Lambda"] = 1.1e-52;
+    }
+    
+    // Ensure SFR non-negativity
+    if (variables["SFR"] < 0) {
+        variables["SFR"] = 0.0;
+    }
+    
+    // Ensure rho_fluid positivity
+    if (variables["rho_fluid"] <= 0) {
+        variables["rho_fluid"] = 1e-20;
+        variables["V"] = 1.0 / variables["rho_fluid"];
+    }
+    
+    // Ensure B_crit positivity
+    if (variables["B_crit"] <= 0) {
+        variables["B_crit"] = 1e11;
+    }
+    
+    // Update derived quantities
+    if (variables["rho_fluid"] > 0) {
+        variables["V"] = 1.0 / variables["rho_fluid"];
+    }
+}
+
+void MultiCompressedUQFFModule::calibrateToObservations(const std::map<std::string, double>& obs_data) {
+    for (const auto& obs : obs_data) {
+        if (variables.find(obs.first) != variables.end()) {
+            variables[obs.first] = obs.second;
+        }
+    }
+    // Auto-sync dependencies
+    if (variables.count("M")) {
+        variables["M0"] = variables["M"];
+        variables["M_DM"] = 0.85 * variables["M"];
+        variables["M_visible"] = 0.15 * variables["M"];
+    }
+    if (variables.count("rho_fluid")) {
+        variables["V"] = 1.0 / variables["rho_fluid"];
+    }
+    autoRefineParameters(1e-10);
+}
+
+void MultiCompressedUQFFModule::optimizeForMetric(std::function<double(MultiCompressedUQFFModule&)> metric) {
+    double best_score = metric(*this);
+    std::map<std::string, double> best_state = variables;
+    std::string best_system = current_system;
+    
+    std::default_random_engine gen;
+    std::uniform_real_distribution<double> dist(0.9, 1.1);
+    
+    for (int iter = 0; iter < 100; iter++) {
+        // Mutate key parameters
+        std::vector<std::string> key_params = {"M", "r", "SFR", "v_wind", "M_ext"};
+        for (const auto& param : key_params) {
+            if (variables.find(param) != variables.end()) {
+                variables[param] *= dist(gen);
+            }
+        }
+        
+        autoRefineParameters(1e-10);
+        
+        double score = metric(*this);
+        if (score > best_score) {
+            best_score = score;
+            best_state = variables;
+            best_system = current_system;
+        } else {
+            variables = best_state;
+            current_system = best_system;
+        }
+    }
+}
+
+// 5. Parameter Exploration
+
+std::vector<std::map<std::string, double>> MultiCompressedUQFFModule::generateVariations(int n_variations) {
+    std::vector<std::map<std::string, double>> variations;
+    std::default_random_engine gen;
+    std::uniform_real_distribution<double> dist(0.8, 1.2);
+    
+    std::map<std::string, double> original = variables;
+    std::vector<std::string> vary_params = {"M", "r", "z", "SFR", "v_wind", "rho_fluid"};
+    
+    for (int i = 0; i < n_variations; i++) {
+        for (const auto& param : vary_params) {
+            if (variables.find(param) != variables.end()) {
+                variables[param] = original[param] * dist(gen);
+            }
+        }
+        
+        autoRefineParameters(1e-10);
+        variations.push_back(variables);
+    }
+    
+    variables = original;
+    return variations;
+}
+
+std::map<std::string, double> MultiCompressedUQFFModule::findOptimalParameters(std::function<double(MultiCompressedUQFFModule&)> objective, int iterations) {
+    double best_score = objective(*this);
+    std::map<std::string, double> best_params = variables;
+    
+    std::default_random_engine gen;
+    std::uniform_real_distribution<double> dist(0.5, 1.5);
+    
+    for (int iter = 0; iter < iterations; iter++) {
+        std::vector<std::string> opt_params = {"M", "r", "SFR", "v_wind", "M_ext", "rho_fluid"};
+        for (const auto& param : opt_params) {
+            if (variables.find(param) != variables.end()) {
+                variables[param] *= dist(gen);
+            }
+        }
+        
+        autoRefineParameters(1e-10);
+        
+        double score = objective(*this);
+        if (score > best_score) {
+            best_score = score;
+            best_params = variables;
+        }
+    }
+    
+    variables = best_params;
+    return best_params;
+}
+
+// 6. Adaptive Evolution
+
+void MultiCompressedUQFFModule::mutateParameters(double mutation_rate) {
+    std::default_random_engine gen;
+    std::uniform_real_distribution<double> dist(-mutation_rate, mutation_rate);
+    
+    std::vector<std::string> mutable_params = {"M", "r", "z", "SFR", "v_wind", 
+                                                 "M_ext", "r_ext", "rho_fluid", "B", "f_sc"};
+    for (const auto& param : mutable_params) {
+        if (variables.find(param) != variables.end()) {
+            double mutation = 1.0 + dist(gen);
+            variables[param] *= mutation;
+        }
+    }
+    
+    autoRefineParameters(1e-10);
+}
+
+void MultiCompressedUQFFModule::evolveSystem(int generations, std::function<double(MultiCompressedUQFFModule&)> fitness) {
+    for (int gen = 0; gen < generations; gen++) {
+        double current_fitness = fitness(*this);
+        std::map<std::string, double> current_state = variables;
+        
+        mutateParameters(0.1);
+        
+        double new_fitness = fitness(*this);
+        if (new_fitness < current_fitness) {
+            variables = current_state;  // Revert if fitness decreased
+        }
+    }
+}
+
+// 7. State Management
+
+void MultiCompressedUQFFModule::saveState(const std::string& label) {
+    compressed_uqff_saved_states[label] = variables;
+    compressed_uqff_saved_systems[label] = current_system;
+}
+
+void MultiCompressedUQFFModule::restoreState(const std::string& label) {
+    auto it = compressed_uqff_saved_states.find(label);
+    if (it != compressed_uqff_saved_states.end()) {
+        variables = it->second;
+    }
+    auto it_sys = compressed_uqff_saved_systems.find(label);
+    if (it_sys != compressed_uqff_saved_systems.end()) {
+        current_system = it_sys->second;
+    }
+}
+
+std::vector<std::string> MultiCompressedUQFFModule::listSavedStates() {
+    std::vector<std::string> state_labels;
+    for (const auto& pair : compressed_uqff_saved_states) {
+        state_labels.push_back(pair.first);
+    }
+    return state_labels;
+}
+
+std::map<std::string, double> MultiCompressedUQFFModule::exportState() {
+    std::map<std::string, double> state = variables;
+    // Encode system as numeric (0-6 for 7 systems)
+    std::map<std::string, int> system_map = {
+        {"MagnetarSGR1745", 0}, {"SagittariusA", 1}, {"TapestryStarbirth", 2},
+        {"Westerlund2", 3}, {"PillarsCreation", 4}, {"RingsRelativity", 5},
+        {"UniverseGuide", 6}
+    };
+    auto sys_it = system_map.find(current_system);
+    if (sys_it != system_map.end()) {
+        state["system_type"] = static_cast<double>(sys_it->second);
+    } else {
+        state["system_type"] = -1.0;  // Generic/other
+    }
+    return state;
+}
+
+// 8. System Analysis
+
+std::map<std::string, double> MultiCompressedUQFFModule::sensitivityAnalysis(const std::string& var_name, double delta) {
+    std::map<std::string, double> sensitivity;
+    
+    auto it = variables.find(var_name);
+    if (it == variables.end()) {
+        return sensitivity;
+    }
+    
+    double original_val = it->second;
+    double t = variables["t_default"];
+    
+    // Test sensitivity for g_UQFF
+    variables[var_name] = original_val * (1.0 + delta);
+    autoRefineParameters(1e-10);
+    double g_plus = computeG(t);
+    
+    variables[var_name] = original_val * (1.0 - delta);
+    autoRefineParameters(1e-10);
+    double g_minus = computeG(t);
+    
+    double g_sens = (g_plus - g_minus) / (2.0 * delta * original_val);
+    sensitivity["g_UQFF"] = g_sens;
+    
+    // Test sensitivity for Ug_sum
+    variables[var_name] = original_val * (1.0 + delta);
+    autoRefineParameters(1e-10);
+    double ug_plus = computeUgSum(variables["r"]);
+    
+    variables[var_name] = original_val * (1.0 - delta);
+    autoRefineParameters(1e-10);
+    double ug_minus = computeUgSum(variables["r"]);
+    
+    double ug_sens = (ug_plus - ug_minus) / (2.0 * delta * original_val);
+    sensitivity["Ug_sum"] = ug_sens;
+    
+    // Test sensitivity for F_env
+    variables[var_name] = original_val * (1.0 + delta);
+    autoRefineParameters(1e-10);
+    double fenv_plus = computeF_env(t);
+    
+    variables[var_name] = original_val * (1.0 - delta);
+    autoRefineParameters(1e-10);
+    double fenv_minus = computeF_env(t);
+    
+    double fenv_sens = (fenv_plus - fenv_minus) / (2.0 * delta * original_val);
+    sensitivity["F_env"] = fenv_sens;
+    
+    variables[var_name] = original_val;
+    autoRefineParameters(1e-10);
+    return sensitivity;
+}
+
+std::string MultiCompressedUQFFModule::generateReport() {
+    std::ostringstream report;
+    report << "===== Multi-Compressed UQFF Module Report =====\n";
+    report << "System: " << current_system << "\n";
+    report << std::scientific;
+    
+    double t = variables["t_default"];
+    double z = variables["z"];
+    double Hz = computeHtz(z);
+    double f_env = computeF_env(t);
+    double ug_sum = computeUgSum(variables["r"]);
+    double quantum = computeQuantumTerm(variables["t_Hubble"]);
+    double g_uqff = computeG(t);
+    double msf = computeMsfFactor(t);
+    double dm_pert = computeDMPertTerm(variables["r"]);
+    
+    report << "\nCore UQFF Components:\n";
+    report << "  t = " << t << " s (" << t / variables["year_to_s"] << " yr)\n";
+    report << "  z = " << z << " (redshift)\n";
+    report << "  H(z) = " << Hz << " s⁻¹\n";
+    report << "  F_env(t) = " << f_env << "\n";
+    report << "  Ug_sum = " << ug_sum << " m/s²\n";
+    report << "    Ug1 = " << variables["Ug1"] << " m/s²\n";
+    report << "    Ug2 = " << variables["Ug2"] << " m/s²\n";
+    report << "    Ug3' = " << variables["Ug3"] << " m/s²\n";
+    report << "    Ug4 = " << variables["Ug4"] << " m/s²\n";
+    report << "  Quantum term = " << quantum << " m/s²\n";
+    report << "  DM pert = " << dm_pert << " m/s²\n";
+    report << "  g_UQFF = " << g_uqff << " m/s²\n\n";
+    
+    report << "System Parameters:\n";
+    report << "  M = " << variables["M"] << " kg (" << variables["M"] / 1.989e30 << " M☉)\n";
+    report << "  M_visible = " << variables["M_visible"] << " kg\n";
+    report << "  M_DM = " << variables["M_DM"] << " kg\n";
+    report << "  M_ext = " << variables["M_ext"] << " kg\n";
+    report << "  r = " << variables["r"] << " m\n";
+    report << "  r_ext = " << variables["r_ext"] << " m\n\n";
+    
+    report << "Star Formation:\n";
+    report << "  SFR = " << variables["SFR"] << " M☉/yr\n";
+    report << "  M_sf(t) = " << msf << " (factor)\n";
+    report << "  M(t) = " << variables["M"] * (1.0 + msf) << " kg\n\n";
+    
+    report << "Environmental Factors:\n";
+    report << "  v_wind = " << variables["v_wind"] << " m/s\n";
+    report << "  ρ_fluid = " << variables["rho_fluid"] << " kg/m³\n";
+    report << "  B = " << variables["B"] << " T\n";
+    report << "  B_crit = " << variables["B_crit"] << " T\n\n";
+    
+    report << "Cosmological Parameters:\n";
+    report << "  H₀ = " << variables["H0"] << " km/s/Mpc\n";
+    report << "  Ω_m = " << variables["Omega_m"] << "\n";
+    report << "  Ω_Λ = " << variables["Omega_Lambda"] << "\n";
+    report << "  Λ = " << variables["Lambda"] << " m⁻²\n\n";
+    
+    report << "Saved states: " << compressed_uqff_saved_states.size() << "\n";
+    report << "Total systems: 7 (Magnetar, SgrA*, Tapestry, Westerlund2, Pillars, Rings, Universe)\n";
+    report << "================================================\n";
+    return report.str();
+}
+
+bool MultiCompressedUQFFModule::validateConsistency() {
+    bool valid = true;
+    
+    // Check fundamental constants
+    if (variables["c"] <= 0 || variables["G"] <= 0 || variables["hbar"] <= 0) {
+        valid = false;
+    }
+    
+    // Check masses
+    if (variables["M"] <= 0 || variables["M0"] <= 0) {
+        valid = false;
+    }
+    
+    // Check distances
+    if (variables["r"] <= 0) {
+        valid = false;
+    }
+    
+    // Check redshift
+    if (variables["z"] < 0) {
+        valid = false;
+    }
+    
+    // Check cosmological parameters
+    if (variables["H0"] <= 0) {
+        valid = false;
+    }
+    if (variables["Omega_m"] < 0 || variables["Omega_m"] > 1) {
+        valid = false;
+    }
+    if (variables["Omega_Lambda"] < 0 || variables["Omega_Lambda"] > 1) {
+        valid = false;
+    }
+    
+    // Check Lambda
+    if (variables["Lambda"] <= 0) {
+        valid = false;
+    }
+    
+    // Check SFR
+    if (variables["SFR"] < 0) {
+        valid = false;
+    }
+    
+    // Check rho_fluid
+    if (variables["rho_fluid"] <= 0) {
+        valid = false;
+    }
+    
+    // Check B_crit
+    if (variables["B_crit"] <= 0) {
+        valid = false;
+    }
+    
+    return valid;
+}
+
+void MultiCompressedUQFFModule::autoCorrectAnomalies() {
+    // Enforce fundamental constant defaults
+    if (variables["c"] <= 0) {
+        variables["c"] = 3e8;
+    }
+    if (variables["G"] <= 0) {
+        variables["G"] = 6.6743e-11;
+    }
+    if (variables["hbar"] <= 0) {
+        variables["hbar"] = 1.0546e-34;
+    }
+    
+    // Enforce mass defaults
+    if (variables["M"] <= 0) {
+        variables["M"] = 1.989e30;  // 1 solar mass
+    }
+    if (variables["M0"] <= 0) {
+        variables["M0"] = variables["M"];
+    }
+    if (variables["M_visible"] <= 0) {
+        variables["M_visible"] = 0.15 * variables["M"];
+    }
+    if (variables["M_DM"] <= 0) {
+        variables["M_DM"] = 0.85 * variables["M"];
+    }
+    
+    // Enforce distance defaults
+    if (variables["r"] <= 0) {
+        variables["r"] = 1e10;
+    }
+    if (variables["r_ext"] < 0) {
+        variables["r_ext"] = 0.0;
+    }
+    
+    // Enforce redshift default
+    if (variables["z"] < 0) {
+        variables["z"] = 0.0;
+    }
+    
+    // Enforce cosmological defaults
+    if (variables["H0"] <= 0) {
+        variables["H0"] = 67.15;
+    }
+    if (variables["Omega_m"] < 0 || variables["Omega_m"] > 1) {
+        variables["Omega_m"] = 0.3;
+    }
+    if (variables["Omega_Lambda"] < 0 || variables["Omega_Lambda"] > 1) {
+        variables["Omega_Lambda"] = 0.7;
+    }
+    if (variables["Lambda"] <= 0) {
+        variables["Lambda"] = 1.1e-52;
+    }
+    
+    // Enforce SFR default
+    if (variables["SFR"] < 0) {
+        variables["SFR"] = 0.0;
+    }
+    
+    // Enforce rho_fluid default
+    if (variables["rho_fluid"] <= 0) {
+        variables["rho_fluid"] = 1e-20;
+        variables["V"] = 1.0 / variables["rho_fluid"];
+    }
+    
+    // Enforce B_crit default
+    if (variables["B_crit"] <= 0) {
+        variables["B_crit"] = 1e11;
+    }
+    
+    // Enforce B default
+    if (variables["B"] < 0) {
+        variables["B"] = 1e-5;
+    }
+    
+    // Enforce f_sc default
+    if (variables["f_sc"] <= 0) {
+        variables["f_sc"] = 10.0;
+    }
+    
+    // Recalculate derived factors
+    autoRefineParameters(1e-10);
+}
+
 // Example usage in base program 'ziqn233h.cpp' (snippet for integration)
 // #include "MultiCompressedUQFFModule.h"
 // int main() {
 //     MultiCompressedUQFFModule mod("PillarsCreation");
-//     double t = mod.variables["t_default"];
-//     double g = mod.computeG(t);
-//     std::cout << "g = " << g << " m/s²\n";
+//     double t = mod.exportState()["t_default"];
 //     std::cout << mod.getEquationText() << std::endl;
-//     mod.setSystem("SagittariusA");
-//     g = mod.computeG(t);
-//     std::cout << "SgrA* g = " << g << " m/s²\n";
 //     mod.printVariables();
+//
+//     // ===== Demonstrate Dynamic Self-Update & Self-Expansion =====
+//     
+//     // 1. Variable management
+//     mod.createVariable("custom_mass", 1e33);
+//     mod.cloneVariable("M", "M_backup");
+//     std::cout << "Variables: " << mod.listVariables().size() << " total\n";
+//     
+//     // 2. Batch operations on masses
+//     std::vector<std::string> mass_group = {"M", "M_visible", "M_DM", "M_ext"};
+//     mod.scaleVariableGroup(mass_group, 1.12);  // 12% mass boost
+//     
+//     // 3. Self-expansion
+//     mod.expandGravityScale(1.08);  // 8% gravity enhancement
+//     mod.expandCosmologicalScale(1.05);  // 5% cosmological expansion
+//     mod.expandEnvironmentalScale(1.15);  // 15% environmental factors boost
+//     std::cout << "After expansion: g_UQFF = " << mod.computeG(t) << " m/s²\n";
+//     
+//     // 4. Self-refinement
+//     mod.autoRefineParameters(1e-10);
+//     std::map<std::string, double> obs = {{"M", 1000 * 1.989e30}, {"v_wind", 1.2e4}};
+//     mod.calibrateToObservations(obs);
+//     
+//     // 5. Parameter exploration (optimize g_UQFF)
+//     auto g_objective = [t](MultiCompressedUQFFModule& m) {
+//         double g = m.computeG(t);
+//         return -std::abs(g - 1e-10);  // Target specific g
+//     };
+//     mod.optimizeForMetric(g_objective);
+//     
+//     // 6. Generate system scenario variations
+//     auto variations = mod.generateVariations(15);
+//     std::cout << "Generated " << variations.size() << " system scenarios\n";
+//     
+//     // 7. State management for multi-system comparisons
+//     mod.setSystem("PillarsCreation");
+//     mod.saveState("pillars_optimal");
+//     mod.setSystem("SagittariusA");
+//     mod.expandGravityScale(1.2);
+//     mod.saveState("sgra_enhanced");
+//     mod.setSystem("MagnetarSGR1745");
+//     mod.saveState("magnetar_baseline");
+//     mod.setSystem("TapestryStarbirth");
+//     mod.saveState("tapestry_starburst");
+//     mod.setSystem("RingsRelativity");
+//     mod.saveState("rings_cosmological");
+//     std::cout << "Saved states: " << mod.listSavedStates().size() << "\n";
+//     
+//     // 8. Sensitivity analysis for M
+//     auto m_sensitivity = mod.sensitivityAnalysis("M", 0.1);
+//     std::cout << "M sensitivity:\n";
+//     for (const auto& s : m_sensitivity) {
+//         std::cout << "  " << s.first << ": " << s.second << "\n";
+//     }
+//     
+//     // 9. System validation
+//     bool valid = mod.validateConsistency();
+//     std::cout << "System consistency: " << (valid ? "VALID" : "INVALID") << "\n";
+//     if (!valid) mod.autoCorrectAnomalies();
+//     
+//     // 10. Comprehensive report
+//     std::cout << mod.generateReport();
+//     
+//     // 11. Adaptive evolution (optimize g_UQFF with constraints)
+//     auto g_fitness = [t](MultiCompressedUQFFModule& m) {
+//         double g = m.computeG(t);
+//         // Maximize g while keeping in physical range
+//         return g * (g > 1e-13 && g < 1e-9 ? 1.0 : 0.1);
+//     };
+//     mod.evolveSystem(30, g_fitness);
+//     std::cout << "Evolved g_UQFF over 30 generations\n";
+//     
+//     // 12. Multi-system UQFF comparison
+//     mod.setSystem("PillarsCreation");
+//     double g_pillars = mod.computeG(mod.exportState()["t_default"]);
+//     double ug_pillars = mod.computeUgSum(mod.exportState()["r"]);
+//     double fenv_pillars = mod.computeF_env(mod.exportState()["t_default"]);
+//     
+//     mod.setSystem("SagittariusA");
+//     double g_sgra = mod.computeG(mod.exportState()["t_default"]);
+//     double ug_sgra = mod.computeUgSum(mod.exportState()["r"]);
+//     double fenv_sgra = mod.computeF_env(mod.exportState()["t_default"]);
+//     
+//     mod.setSystem("MagnetarSGR1745");
+//     double g_magnetar = mod.computeG(mod.exportState()["t_default"]);
+//     double ug_magnetar = mod.computeUgSum(mod.exportState()["r"]);
+//     double fenv_magnetar = mod.computeF_env(mod.exportState()["t_default"]);
+//     
+//     std::cout << "Pillars: g = " << g_pillars << ", Ug = " << ug_pillars << ", F_env = " << fenv_pillars << "\n";
+//     std::cout << "Sgr A*: g = " << g_sgra << ", Ug = " << ug_sgra << ", F_env = " << fenv_sgra << "\n";
+//     std::cout << "Magnetar: g = " << g_magnetar << ", Ug = " << ug_magnetar << ", F_env = " << fenv_magnetar << "\n";
+//     
+//     // 13. Ug component breakdown
+//     mod.setSystem("PillarsCreation");
+//     mod.computeG(mod.exportState()["t_default"]);
+//     std::cout << "Pillars Ug components:\n";
+//     std::cout << "  Ug1 = " << mod.exportState()["Ug1"] << " m/s²\n";
+//     std::cout << "  Ug2 = " << mod.exportState()["Ug2"] << " m/s²\n";
+//     std::cout << "  Ug3' = " << mod.exportState()["Ug3"] << " m/s² (M_ext=" << mod.exportState()["M_ext"] << " kg)\n";
+//     std::cout << "  Ug4 = " << mod.exportState()["Ug4"] << " m/s² (f_sc=" << mod.exportState()["f_sc"] << ")\n";
+//     
+//     // 14. Star formation time evolution
+//     mod.setSystem("TapestryStarbirth");
+//     std::cout << "Tapestry star formation time evolution:\n";
+//     for (double t_val = 0; t_val <= 5e6 * 3.156e7; t_val += 1e6 * 3.156e7) {
+//         double msf = mod.computeMsfFactor(t_val);
+//         double g_t = mod.computeG(t_val);
+//         std::cout << "  t = " << t_val / 3.156e7 << " yr: M_sf = " << msf << ", g = " << g_t << " m/s²\n";
+//     }
+//     
+//     // 15. F_env comparison across systems
+//     std::cout << "F_env across systems (t=1 Myr):\n";
+//     double t_myr = 1e6 * 3.156e7;
+//     std::vector<std::string> systems = {"MagnetarSGR1745", "SagittariusA", "TapestryStarbirth",
+//                                          "PillarsCreation", "RingsRelativity", "UniverseGuide"};
+//     for (const auto& sys : systems) {
+//         mod.setSystem(sys);
+//         double fenv = mod.computeF_env(t_myr);
+//         std::cout << "  " << sys << ": F_env = " << fenv << "\n";
+//     }
+//     
+//     // 16. Redshift H(z) analysis
+//     mod.setSystem("RingsRelativity");
+//     std::cout << "H(z) vs. redshift:\n";
+//     for (double z_val = 0; z_val <= 1.0; z_val += 0.2) {
+//         mod.updateVariable("z", z_val);
+//         double hz = mod.computeHtz(z_val);
+//         std::cout << "  z = " << z_val << ": H(z) = " << hz << " s⁻¹\n";
+//     }
+//     
+//     // 17. DM/visible perturbation effects
+//     mod.setSystem("PillarsCreation");
+//     std::cout << "DM perturbation vs. r:\n";
+//     for (double r_val = 1e16; r_val <= 1e18; r_val *= 10) {
+//         double dm_pert = mod.computeDMPertTerm(r_val);
+//         std::cout << "  r = " << r_val << " m: DM pert = " << dm_pert << " m/s²\n";
+//     }
+//     
+//     // 18. Final state export with all UQFF components
+//     auto final_state = mod.exportState();
+//     double final_g = mod.computeG(final_state["t_default"]);
+//     double final_ug = mod.computeUgSum(final_state["r"]);
+//     double final_fenv = mod.computeF_env(final_state["t_default"]);
+//     double final_quantum = mod.computeQuantumTerm(final_state["t_Hubble"]);
+//     
+//     std::cout << "Final g_UQFF = " << final_g << " m/s²\n";
+//     std::cout << "Final Ug_sum = " << final_ug << " m/s²\n";
+//     std::cout << "Final F_env = " << final_fenv << "\n";
+//     std::cout << "Final Quantum = " << final_quantum << " m/s²\n";
+//     std::cout << "Final M = " << final_state["M"] << " kg (" << final_state["M"]/1.989e30 << " M☉)\n";
+//     std::cout << "Final z = " << final_state["z"] << "\n";
+//     std::cout << "Final H₀ = " << final_state["H0"] << " km/s/Mpc\n";
+//     std::cout << "System: " << mod.exportState()["system_type"] << " (0-6 for 7 systems)\n";
+//
 //     return 0;
 // }
 // Compile: g++ -o ziqn233h ziqn233h.cpp MultiCompressedUQFFModule.cpp -lm

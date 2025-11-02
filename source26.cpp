@@ -38,6 +38,13 @@
 #include <iostream>
 #include <cmath>
 #include <iomanip>
+#include <map>
+#include <string>
+#include <functional>
+#include <random>
+#include <algorithm>
+#include <sstream>
+#include <vector>
 
 class HUDFGalaxies {
 private:
@@ -346,6 +353,502 @@ public:
         double t_example = 5e9 * 3.156e7;
         return compute_g_HUDF(t_example);
     }
+
+    // ========== ENHANCED DYNAMIC CAPABILITIES (25 methods) ==========
+    
+    // Variable Management (5 methods)
+    void createVariable(const std::string& name, double value);
+    bool removeVariable(const std::string& name);
+    void cloneVariable(const std::string& source, const std::string& dest);
+    std::vector<std::string> listVariables() const;
+    std::string getSystemName() const { return "HUDFGalaxies"; }
+    
+    // Batch Operations (2 methods)
+    void transformVariableGroup(const std::vector<std::string>& vars, std::function<double(double)> func);
+    void scaleVariableGroup(const std::vector<std::string>& vars, double factor);
+    
+    // Self-Expansion (4 methods - domain-specific for cosmic field)
+    void expandParameterSpace(double scale_factor);
+    void expandCosmicFieldScale(double M0_scale, double r_scale);
+    void expandStarFormationScale(double SFR_factor_scale, double tau_SF_scale);
+    void expandInteractionScale(double I0_scale, double tau_inter_scale);
+    
+    // Self-Refinement (3 methods)
+    void autoRefineParameters(const std::vector<std::pair<double, double>>& observations);
+    void calibrateToObservations(const std::vector<std::pair<double, double>>& obs_data);
+    double optimizeForMetric(std::function<double(double)> metric, double t_start, double t_end, int steps);
+    
+    // Parameter Exploration (1 method)
+    std::vector<std::map<std::string, double>> generateVariations(int count, double variation_percent);
+    
+    // Adaptive Evolution (2 methods)
+    void mutateParameters(double mutation_rate);
+    void evolveSystem(int generations, std::function<double(const HUDFGalaxies&)> fitness);
+    
+    // State Management (4 methods)
+    void saveState(const std::string& label);
+    bool restoreState(const std::string& label);
+    std::vector<std::string> listSavedStates() const;
+    std::string exportState() const;
+    
+    // System Analysis (4 methods)
+    std::map<std::string, double> sensitivityAnalysis(double t, double perturbation);
+    std::string generateReport(double t) const;
+    bool validateConsistency() const;
+    bool autoCorrectAnomalies();
 };
 
 #endif // HUDF_GALAXIES_H
+
+// ========== IMPLEMENTATION OF ENHANCED METHODS ==========
+
+namespace {
+    // Storage for saved states (anonymous namespace for encapsulation)
+    std::map<std::string, std::map<std::string, double>> hudf_saved_states;
+}
+
+// Variable Management
+void HUDFGalaxies::createVariable(const std::string& name, double value) {
+    setVariable(name, value);
+}
+
+bool HUDFGalaxies::removeVariable(const std::string& name) {
+    // Cannot truly remove core variables, but can reset to defaults
+    initializeDefaults();
+    return true;
+}
+
+void HUDFGalaxies::cloneVariable(const std::string& source, const std::string& dest) {
+    double value = getVariable(source);
+    setVariable(dest, value);
+}
+
+std::vector<std::string> HUDFGalaxies::listVariables() const {
+    return {"G", "M0", "r", "Hz", "B", "B_crit", "Lambda", "c_light", "q_charge", "gas_v", 
+            "f_TRZ", "SFR_factor", "tau_SF", "I0", "tau_inter", "rho_wind", "v_wind", 
+            "rho_fluid", "rho_vac_UA", "rho_vac_SCm", "scale_EM", "proton_mass", "z_avg",
+            "hbar", "t_Hubble", "t_Hubble_gyr", "delta_x", "delta_p", "integral_psi",
+            "A_osc", "k_osc", "omega_osc", "x_pos", "M_DM_factor", "delta_rho_over_rho"};
+}
+
+// Batch Operations
+void HUDFGalaxies::transformVariableGroup(const std::vector<std::string>& vars, std::function<double(double)> func) {
+    for (const auto& var : vars) {
+        double current = getVariable(var);
+        setVariable(var, func(current));
+    }
+}
+
+void HUDFGalaxies::scaleVariableGroup(const std::vector<std::string>& vars, double factor) {
+    transformVariableGroup(vars, [factor](double v) { return v * factor; });
+}
+
+// Self-Expansion (domain-specific for cosmic field)
+void HUDFGalaxies::expandParameterSpace(double scale_factor) {
+    std::vector<std::string> scalable = {"M0", "r", "I0", "tau_inter", "SFR_factor", "tau_SF", 
+                                          "rho_wind", "v_wind", "B"};
+    scaleVariableGroup(scalable, scale_factor);
+}
+
+void HUDFGalaxies::expandCosmicFieldScale(double M0_scale, double r_scale) {
+    setVariable("M0", getVariable("M0") * M0_scale);
+    setVariable("r", getVariable("r") * r_scale);
+}
+
+void HUDFGalaxies::expandStarFormationScale(double SFR_factor_scale, double tau_SF_scale) {
+    setVariable("SFR_factor", getVariable("SFR_factor") * SFR_factor_scale);
+    setVariable("tau_SF", getVariable("tau_SF") * tau_SF_scale);
+}
+
+void HUDFGalaxies::expandInteractionScale(double I0_scale, double tau_inter_scale) {
+    setVariable("I0", getVariable("I0") * I0_scale);
+    setVariable("tau_inter", getVariable("tau_inter") * tau_inter_scale);
+}
+
+// Self-Refinement
+void HUDFGalaxies::autoRefineParameters(const std::vector<std::pair<double, double>>& observations) {
+    calibrateToObservations(observations);
+}
+
+void HUDFGalaxies::calibrateToObservations(const std::vector<std::pair<double, double>>& obs_data) {
+    if (obs_data.empty()) return;
+    
+    double total_error = 0.0;
+    for (const auto& obs : obs_data) {
+        double t = obs.first;
+        double g_obs = obs.second;
+        double g_model = compute_g_HUDF(t);
+        total_error += std::abs(g_model - g_obs);
+    }
+    
+    double avg_error = total_error / obs_data.size();
+    if (avg_error > 1e-9) {
+        double correction = 0.95;
+        setVariable("SFR_factor", getVariable("SFR_factor") * correction);
+    }
+}
+
+double HUDFGalaxies::optimizeForMetric(std::function<double(double)> metric, double t_start, double t_end, int steps) {
+    double best_metric = -1e100;
+    double dt = (t_end - t_start) / steps;
+    
+    for (int i = 0; i <= steps; ++i) {
+        double t = t_start + i * dt;
+        double g = compute_g_HUDF(t);
+        double m = metric(g);
+        if (m > best_metric) best_metric = m;
+    }
+    return best_metric;
+}
+
+// Parameter Exploration
+std::vector<std::map<std::string, double>> HUDFGalaxies::generateVariations(int count, double variation_percent) {
+    std::vector<std::map<std::string, double>> variations;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(-variation_percent / 100.0, variation_percent / 100.0);
+    
+    auto vars = listVariables();
+    for (int i = 0; i < count; ++i) {
+        std::map<std::string, double> variant;
+        for (const auto& var : vars) {
+            double base = getVariable(var);
+            double variation = base * (1.0 + dis(gen));
+            variant[var] = variation;
+        }
+        variations.push_back(variant);
+    }
+    return variations;
+}
+
+// Adaptive Evolution
+void HUDFGalaxies::mutateParameters(double mutation_rate) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(-mutation_rate, mutation_rate);
+    
+    auto vars = listVariables();
+    for (const auto& var : vars) {
+        double current = getVariable(var);
+        double mutated = current * (1.0 + dis(gen));
+        setVariable(var, mutated);
+    }
+}
+
+void HUDFGalaxies::evolveSystem(int generations, std::function<double(const HUDFGalaxies&)> fitness) {
+    double best_fitness = fitness(*this);
+    saveState("evolution_best");
+    
+    for (int gen = 0; gen < generations; ++gen) {
+        saveState("evolution_temp");
+        mutateParameters(0.1);
+        
+        double current_fitness = fitness(*this);
+        if (current_fitness > best_fitness) {
+            best_fitness = current_fitness;
+            saveState("evolution_best");
+        } else {
+            restoreState("evolution_temp");
+        }
+    }
+    restoreState("evolution_best");
+}
+
+// State Management
+void HUDFGalaxies::saveState(const std::string& label) {
+    std::map<std::string, double> state;
+    auto vars = listVariables();
+    for (const auto& var : vars) {
+        state[var] = getVariable(var);
+    }
+    hudf_saved_states[label] = state;
+}
+
+bool HUDFGalaxies::restoreState(const std::string& label) {
+    auto it = hudf_saved_states.find(label);
+    if (it == hudf_saved_states.end()) return false;
+    
+    for (const auto& pair : it->second) {
+        setVariable(pair.first, pair.second);
+    }
+    return true;
+}
+
+std::vector<std::string> HUDFGalaxies::listSavedStates() const {
+    std::vector<std::string> labels;
+    for (const auto& pair : hudf_saved_states) {
+        labels.push_back(pair.first);
+    }
+    return labels;
+}
+
+std::string HUDFGalaxies::exportState() const {
+    std::ostringstream oss;
+    oss << std::fixed << std::setprecision(15);
+    oss << "HUDFGalaxies State Export\n";
+    oss << "==========================\n";
+    
+    auto vars = listVariables();
+    for (const auto& var : vars) {
+        oss << var << ": " << getVariable(var) << "\n";
+    }
+    return oss.str();
+}
+
+// System Analysis
+std::map<std::string, double> HUDFGalaxies::sensitivityAnalysis(double t, double perturbation) {
+    std::map<std::string, double> sensitivities;
+    double baseline = compute_g_HUDF(t);
+    
+    auto vars = listVariables();
+    for (const auto& var : vars) {
+        double original = getVariable(var);
+        setVariable(var, original * (1.0 + perturbation));
+        double perturbed = compute_g_HUDF(t);
+        sensitivities[var] = std::abs(perturbed - baseline) / baseline;
+        setVariable(var, original);
+    }
+    return sensitivities;
+}
+
+std::string HUDFGalaxies::generateReport(double t) const {
+    std::ostringstream oss;
+    oss << std::fixed << std::setprecision(6);
+    oss << "=== HUDF Galaxies System Report ===\n";
+    oss << "Time: " << (t / (1e9 * 3.156e7)) << " Gyr\n";
+    oss << "M(t): " << (M_t(t) / 1.989e30) << " M_sun\n";
+    oss << "I(t) interaction factor: " << I_t(t) << "\n";
+    oss << "g_HUDF: " << compute_g_HUDF(t) << " m/s^2\n";
+    oss << "Core parameters: M0=" << (M0/1.989e30) << " M_sun, r=" << (r/9.461e15) << " ly\n";
+    oss << "Cosmic field: z_avg=" << z_avg << ", Hz=" << Hz << " s^-1\n";
+    oss << "Star formation: SFR_factor=" << SFR_factor << ", tau_SF=" << (tau_SF/(1e9*3.156e7)) << " Gyr\n";
+    oss << "Interactions: I0=" << I0 << ", tau_inter=" << (tau_inter/(1e9*3.156e7)) << " Gyr\n";
+    return oss.str();
+}
+
+bool HUDFGalaxies::validateConsistency() const {
+    bool valid = true;
+    if (M0 <= 0 || r <= 0 || tau_SF <= 0 || tau_inter <= 0) valid = false;
+    if (I0 < 0 || I0 > 1) valid = false;
+    if (SFR_factor < 0) valid = false;
+    if (z_avg < 0) valid = false;
+    return valid;
+}
+
+bool HUDFGalaxies::autoCorrectAnomalies() {
+    bool corrected = false;
+    if (M0 <= 0) { M0 = 1e12 * 1.989e30; corrected = true; }
+    if (r <= 0) { r = 1.3e11 * 9.461e15; corrected = true; }
+    if (tau_SF <= 0) { tau_SF = 1e9 * 3.156e7; corrected = true; }
+    if (tau_inter <= 0) { tau_inter = 1e9 * 3.156e7; corrected = true; }
+    if (I0 < 0) { I0 = 0.0; corrected = true; }
+    if (I0 > 1) { I0 = 1.0; corrected = true; }
+    if (SFR_factor < 0) { SFR_factor = 1.0; corrected = true; }
+    if (z_avg < 0) { z_avg = 3.5; corrected = true; }
+    if (corrected) updateCache();
+    return corrected;
+}
+
+// ========== ENHANCED EXAMPLE FUNCTION ==========
+void enhanced_hudf_example() {
+    std::cout << std::fixed << std::setprecision(6);
+    std::cout << "=========================================================\n";
+    std::cout << "ENHANCED HUDF GALAXIES DEMONSTRATION\n";
+    std::cout << "Hubble Ultra Deep Field - Cosmic Field of Galaxies\n";
+    std::cout << "=========================================================\n\n";
+    
+    HUDFGalaxies hudf;
+    
+    // Step 1: Initial state and validation
+    std::cout << "Step 1: Initial State and Validation\n";
+    std::cout << "System: " << hudf.getSystemName() << "\n";
+    std::cout << "Validation: " << (hudf.validateConsistency() ? "PASS" : "FAIL") << "\n";
+    std::cout << "Auto-corrected: " << (hudf.autoCorrectAnomalies() ? "Yes" : "No") << "\n\n";
+    
+    // Step 2: Time evolution showing M(t) and I(t)
+    std::cout << "Step 2: Time Evolution (Cosmic Field Mass M(t) and Interaction I(t))\n";
+    double t_Gyr_array[] = {0.0, 1.0, 2.0, 5.0, 10.0};
+    for (double t_Gyr : t_Gyr_array) {
+        double t = t_Gyr * 1e9 * 3.156e7;
+        double Mt = hudf.M_t(t);
+        double It = hudf.I_t(t);
+        double g = hudf.compute_g_HUDF(t);
+        double M_sun = 1.989e30;
+        std::cout << "  t = " << t_Gyr << " Gyr: M(t) = " << (Mt/M_sun) << " M_sun, I(t) = " << It << ", g = " << g << " m/s^2\n";
+    }
+    std::cout << "\n";
+    
+    // Step 3: Variable listing
+    std::cout << "Step 3: Variable Listing\n";
+    auto vars = hudf.listVariables();
+    std::cout << "Total variables: " << vars.size() << "\n";
+    std::cout << "Sample: " << vars[0] << ", " << vars[1] << ", " << vars[13] << " (I0), " 
+              << vars[22] << " (z_avg)\n\n";
+    
+    // Step 4: Cosmic field mass scaling
+    std::cout << "Step 4: Cosmic Field Mass Scaling (M0 sweeps)\n";
+    hudf.saveState("original");
+    double M_factors[] = {0.5, 1.0, 2.0};
+    for (double factor : M_factors) {
+        hudf.restoreState("original");
+        hudf.expandCosmicFieldScale(factor, 1.0);
+        double t = 5e9 * 3.156e7;
+        double g = hudf.compute_g_HUDF(t);
+        double M_sun = 1.989e30;
+        double M = hudf.getVariable("M0");
+        std::cout << "  M0 × " << factor << ": M0 = " << (M/M_sun) << " M_sun, g(5 Gyr) = " << g << " m/s^2\n";
+    }
+    hudf.restoreState("original");
+    std::cout << "\n";
+    
+    // Step 5: Cosmic field radius scaling (UNIQUE to HUDF cosmic scale)
+    std::cout << "Step 5: Cosmic Field Radius Scaling (r sweeps) - COSMIC SCALE FEATURE\n";
+    double r_factors[] = {0.5, 1.0, 2.0};
+    for (double factor : r_factors) {
+        hudf.restoreState("original");
+        hudf.expandCosmicFieldScale(1.0, factor);
+        double t = 5e9 * 3.156e7;
+        double g = hudf.compute_g_HUDF(t);
+        double ly = 9.461e15;
+        double r = hudf.getVariable("r");
+        std::cout << "  r × " << factor << ": r = " << (r/ly) << " ly, g = " << g << " m/s^2\n";
+    }
+    hudf.restoreState("original");
+    std::cout << "\n";
+    
+    // Step 6: Star formation rate scaling
+    std::cout << "Step 6: Star Formation Rate Scaling (SFR_factor sweeps)\n";
+    double SFR_factors[] = {0.5, 1.0, 2.0};
+    for (double factor : SFR_factors) {
+        hudf.restoreState("original");
+        hudf.expandStarFormationScale(factor, 1.0);
+        double t = 5e9 * 3.156e7;
+        double Mt = hudf.M_t(t);
+        double M_sun = 1.989e30;
+        std::cout << "  SFR_factor × " << factor << ": M(5 Gyr) = " << (Mt/M_sun) << " M_sun\n";
+    }
+    hudf.restoreState("original");
+    std::cout << "\n";
+    
+    // Step 7: Galaxy interaction scaling
+    std::cout << "Step 7: Galaxy Interaction Scaling (I0 sweeps)\n";
+    double I0_factors[] = {0.5, 1.0, 2.0};
+    for (double factor : I0_factors) {
+        hudf.restoreState("original");
+        hudf.expandInteractionScale(factor, 1.0);
+        double t = 5e9 * 3.156e7;
+        double It = hudf.I_t(t);
+        double g = hudf.compute_g_HUDF(t);
+        std::cout << "  I0 × " << factor << ": I(5 Gyr) = " << It << ", g = " << g << " m/s^2\n";
+    }
+    hudf.restoreState("original");
+    std::cout << "\n";
+    
+    // Step 8: Interaction timescale sweeps
+    std::cout << "Step 8: Interaction Timescale Sweeps (tau_inter)\n";
+    double tau_inter_factors[] = {0.5, 1.0, 2.0};
+    for (double factor : tau_inter_factors) {
+        hudf.restoreState("original");
+        hudf.expandInteractionScale(1.0, factor);
+        double t = 5e9 * 3.156e7;
+        double It = hudf.I_t(t);
+        std::cout << "  tau_inter × " << factor << ": I(5 Gyr) = " << It << "\n";
+    }
+    hudf.restoreState("original");
+    std::cout << "\n";
+    
+    // Step 9: Parameter space expansion
+    std::cout << "Step 9: Parameter Space Expansion (all scalable params)\n";
+    hudf.expandParameterSpace(1.2);
+    double M_after = hudf.getVariable("M0");
+    double M_sun = 1.989e30;
+    std::cout << "  After 1.2× expansion: M0 = " << (M_after/M_sun) << " M_sun\n";
+    hudf.restoreState("original");
+    std::cout << "\n";
+    
+    // Step 10: Batch operations
+    std::cout << "Step 10: Batch Operations (scale multiple variables)\n";
+    std::vector<std::string> scale_group = {"M0", "I0", "SFR_factor"};
+    hudf.scaleVariableGroup(scale_group, 1.1);
+    std::cout << "  Scaled {M0, I0, SFR_factor} by 1.1×\n";
+    hudf.restoreState("original");
+    std::cout << "\n";
+    
+    // Step 11: State management
+    std::cout << "Step 11: State Management\n";
+    hudf.saveState("state_A");
+    hudf.expandInteractionScale(1.5, 1.2);
+    hudf.saveState("state_B");
+    auto states = hudf.listSavedStates();
+    std::cout << "  Saved states: ";
+    for (const auto& s : states) std::cout << s << " ";
+    std::cout << "\n";
+    hudf.restoreState("state_A");
+    std::cout << "  Restored state_A\n\n";
+    
+    // Step 12: Generate parameter variations
+    std::cout << "Step 12: Generate Parameter Variations (5% variation)\n";
+    auto variations = hudf.generateVariations(3, 5.0);
+    std::cout << "  Generated " << variations.size() << " variants with 5% random variation\n";
+    std::cout << "  Variant 1 M0 = " << variations[0]["M0"] << " kg\n\n";
+    
+    // Step 13: Sensitivity analysis
+    std::cout << "Step 13: Sensitivity Analysis at 5 Gyr\n";
+    double t_sens = 5e9 * 3.156e7;
+    auto sensitivities = hudf.sensitivityAnalysis(t_sens, 0.01);
+    std::cout << "  Top sensitivities (1% perturbation):\n";
+    std::vector<std::pair<std::string, double>> sens_vec(sensitivities.begin(), sensitivities.end());
+    std::sort(sens_vec.begin(), sens_vec.end(), 
+              [](const auto& a, const auto& b) { return a.second > b.second; });
+    for (int i = 0; i < 5 && i < (int)sens_vec.size(); ++i) {
+        std::cout << "    " << sens_vec[i].first << ": " << sens_vec[i].second << "\n";
+    }
+    std::cout << "\n";
+    
+    // Step 14: Auto-refinement with synthetic observations
+    std::cout << "Step 14: Auto-Refinement (synthetic observations)\n";
+    std::vector<std::pair<double, double>> obs;
+    for (int i = 0; i <= 5; ++i) {
+        double t_obs = i * 2e9 * 3.156e7;
+        double g_obs = hudf.compute_g_HUDF(t_obs) * (1.0 + 0.01 * (rand() % 100 - 50) / 100.0);
+        obs.push_back({t_obs, g_obs});
+    }
+    hudf.autoRefineParameters(obs);
+    std::cout << "  Refined parameters based on " << obs.size() << " observations\n\n";
+    
+    // Step 15: Optimization for maximum acceleration
+    std::cout << "Step 15: Optimize for Maximum Acceleration\n";
+    hudf.restoreState("original");
+    auto metric = [](double g) { return g; };
+    double t_opt_start = 0.0;
+    double t_opt_end = 10e9 * 3.156e7;
+    double best_g = hudf.optimizeForMetric(metric, t_opt_start, t_opt_end, 50);
+    std::cout << "  Best g over 10 Gyr: " << best_g << " m/s^2\n\n";
+    
+    // Step 16: Evolutionary system adaptation
+    std::cout << "Step 16: Evolutionary System Adaptation (5 generations)\n";
+    hudf.restoreState("original");
+    auto fitness = [](const HUDFGalaxies& h) {
+        double t = 5e9 * 3.156e7;
+        return h.compute_g_HUDF(t);
+    };
+    hudf.evolveSystem(5, fitness);
+    std::cout << "  Evolved system over 5 generations (fitness = g at 5 Gyr)\n\n";
+    
+    // Step 17: Full system report
+    std::cout << "Step 17: Full System Report at 5 Gyr\n";
+    hudf.restoreState("original");
+    double t_report = 5e9 * 3.156e7;
+    std::string report = hudf.generateReport(t_report);
+    std::cout << report << "\n";
+    
+    // Step 18: Full state export
+    std::cout << "Step 18: Full State Export\n";
+    std::string exported = hudf.exportState();
+    std::cout << "Exported state (first 500 chars):\n";
+    std::cout << exported.substr(0, 500) << "...\n\n";
+    
+    std::cout << "=========================================================\n";
+    std::cout << "ENHANCED DEMONSTRATION COMPLETE\n";
+    std::cout << "=========================================================\n";
+}
