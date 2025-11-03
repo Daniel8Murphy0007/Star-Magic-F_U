@@ -1,5 +1,28 @@
 {
+  "name": "star-magic-uqff",
+  "version": "2.0.0",
+  "description": "Unified Quantum Field Force (UQFF) Computational Engine - 79 Astrophysical Systems",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "node integration_check.js",
+    "demo": "node quick_demo.js",
+    "verify": "node h154_verify.js"
+  },
+  "keywords": [
+    "physics",
+    "quantum",
+    "field-theory",
+    "astrophysics",
+    "UQFF",
+    "aetheric-propulsion"
+  ],
+  "author": "Daniel T. Murphy",
+  "license": "MIT",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.68.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
   }
 }
