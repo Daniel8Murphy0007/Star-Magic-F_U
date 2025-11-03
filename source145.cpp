@@ -660,8 +660,8 @@ bool M87JetUQFFModule::validateConsistency() const {
     // Luminosity check (AGN jet)
     if (L_X_val < 1e33 || L_X_val > 1e36) return false;
     
-    // Velocity check (relativistic but sub-c)
-    if (V_val < 0 || V_val >= c_val) return false;
+    // Velocity check (relativistic but sub-c, < 0.99c for stability)
+    if (V_val < 0 || V_val >= 0.99 * c_val) return false;
     
     return true;
 }

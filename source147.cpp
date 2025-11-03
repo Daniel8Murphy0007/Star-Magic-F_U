@@ -30,6 +30,8 @@ using cdouble = std::complex<double>;
 class NGC2207UQFFModule {
 private:
     std::map<std::string, cdouble> variables;
+    std::map<std::string, std::map<std::string, cdouble>> saved_states;
+    std::mt19937 rng;
     cdouble computeIntegrand(double t);
     cdouble computeDPM_resonance();
     cdouble computeX2();
@@ -116,7 +118,7 @@ public:
 #include <complex>
 
 // Constructor: Set all variables with NGC 2207-specific values
-NGC2207UQFFModule::NGC2207UQFFModule() {
+NGC2207UQFFModule::NGC2207UQFFModule() : rng(std::random_device{}()) {
     double pi_val = 3.141592653589793;
     cdouble zero = {0.0, 0.0};
     cdouble i_small = {0.0, 1e-37};
@@ -360,11 +362,6 @@ void NGC2207UQFFModule::printVariables() {
 
 const double pi_val = 3.141592653589793;
 
-// Namespace for saved states
-namespace saved_states_ngc2207 {
-    std::map<std::string, std::map<std::string, cdouble>> states;
-}
-
 // 1. Variable Management
 
 void NGC2207UQFFModule::createVariable(const std::string& name, cdouble value) {
@@ -455,17 +452,15 @@ void NGC2207UQFFModule::expandInteractionScale(double tidal_factor, double lumin
 // 4. Self-Refinement
 
 void NGC2207UQFFModule::autoRefineParameters(const std::string& target_metric) {
-    std::random_device rd;
-    std::mt19937 gen(rd());
     std::uniform_real_distribution<> mass_dist(1e40, 1e41);
     std::uniform_real_distribution<> radius_dist(1e20, 1e21);
     std::uniform_real_distribution<> dpm_dist(0.01, 10.0);
     std::uniform_real_distribution<> lenr_dist(1e-12, 1e-8);
     
-    variables["M"] = cdouble(mass_dist(gen), 0.0);
-    variables["r"] = cdouble(radius_dist(gen), 0.0);
-    variables["DPM_momentum"] = cdouble(dpm_dist(gen), variables["DPM_momentum"].imag());
-    variables["k_LENR"] = cdouble(lenr_dist(gen), 0.0);
+    variables["M"] = cdouble(mass_dist(rng), 0.0);
+    variables["r"] = cdouble(radius_dist(rng), 0.0);
+    variables["DPM_momentum"] = cdouble(dpm_dist(rng), variables["DPM_momentum"].imag());
+    variables["k_LENR"] = cdouble(lenr_dist(rng), 0.0);
 }
 
 void NGC2207UQFFModule::calibrateToObservations(const std::map<std::string, cdouble>& observed_values) {
@@ -505,15 +500,13 @@ void NGC2207UQFFModule::optimizeForMetric(const std::string& metric_name) {
 
 std::vector<std::map<std::string, cdouble>> NGC2207UQFFModule::generateVariations(int count, double variation_percent) {
     std::vector<std::map<std::string, cdouble>> variations;
-    std::random_device rd;
-    std::mt19937 gen(rd());
     std::uniform_real_distribution<> dist(-variation_percent / 100.0, variation_percent / 100.0);
     
     for (int i = 0; i < count; ++i) {
         std::map<std::string, cdouble> variant = variables;
         for (auto& pair : variant) {
-            double delta_real = dist(gen);
-            double delta_imag = dist(gen);
+            double delta_real = dist(rng);
+            double delta_imag = dist(rng);
             cdouble delta(pair.second.real() * delta_real, pair.second.imag() * delta_imag);
             pair.second += delta;
         }
@@ -525,13 +518,11 @@ std::vector<std::map<std::string, cdouble>> NGC2207UQFFModule::generateVariation
 // 6. Adaptive Evolution
 
 void NGC2207UQFFModule::mutateParameters(double mutation_rate) {
-    std::random_device rd;
-    std::mt19937 gen(rd());
     std::uniform_real_distribution<> dist(-mutation_rate, mutation_rate);
     
     for (auto& pair : variables) {
-        double delta_real = dist(gen);
-        double delta_imag = dist(gen);
+        double delta_real = dist(rng);
+        double delta_imag = dist(rng);
         cdouble delta(pair.second.real() * delta_real, pair.second.imag() * delta_imag);
         pair.second += delta;
     }
@@ -557,18 +548,18 @@ void NGC2207UQFFModule::evolveSystem(int generations, std::function<double(const
 // 7. State Management
 
 void NGC2207UQFFModule::saveState(const std::string& state_name) {
-    saved_states_ngc2207::states[state_name] = variables;
+    saved_states[state_name] = variables;
 }
 
 void NGC2207UQFFModule::restoreState(const std::string& state_name) {
-    if (saved_states_ngc2207::states.find(state_name) != saved_states_ngc2207::states.end()) {
-        variables = saved_states_ngc2207::states[state_name];
+    if (saved_states.find(state_name) != saved_states.end()) {
+        variables = saved_states[state_name];
     }
 }
 
 std::vector<std::string> NGC2207UQFFModule::listSavedStates() const {
     std::vector<std::string> names;
-    for (const auto& pair : saved_states_ngc2207::states) {
+    for (const auto& pair : saved_states) {
         names.push_back(pair.first);
     }
     return names;
@@ -600,7 +591,15 @@ std::map<std::string, double> NGC2207UQFFModule::sensitivityAnalysis(const std::
             cdouble perturbed = computeF(t_test);
             variables[param] = original;
             
-            double sensitivity = std::abs(perturbed - baseline) / std::abs(baseline);
+            constexpr double baseline_threshold = 1e-12;
+            double baseline_mag = std::abs(baseline);
+            double sensitivity;
+            if (baseline_mag < baseline_threshold) {
+                // Use absolute difference if baseline is too small to avoid division by zero/NaN
+                sensitivity = std::abs(perturbed - baseline);
+            } else {
+                sensitivity = std::abs(perturbed - baseline) / baseline_mag;
+            }
             sensitivities[param] = sensitivity;
         }
     }

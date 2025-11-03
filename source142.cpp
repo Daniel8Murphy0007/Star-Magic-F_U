@@ -421,7 +421,8 @@ void JupiterAuroraeUQFFModule::expandPlanetaryScale(double mass_factor, double r
     variables["r"] *= radius_factor;
     variables["rho_gas"] *= mass_factor / pow(radius_factor, 3);
     
-    // Adjust X-ray luminosity with surface area (L ~ r²)
+    // X-ray luminosity scaling depends on magnetic field and particle energy flux, not just surface area.
+    // For correct scaling, see expandAuroralScale().
     variables["L_X"] *= pow(radius_factor, 2);
 }
 
