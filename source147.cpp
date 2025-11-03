@@ -30,6 +30,7 @@ using cdouble = std::complex<double>;
 class NGC2207UQFFModule {
 private:
     std::map<std::string, cdouble> variables;
+    std::map<std::string, std::map<std::string, cdouble>> saved_states;
     cdouble computeIntegrand(double t);
     cdouble computeDPM_resonance();
     cdouble computeX2();
@@ -360,11 +361,6 @@ void NGC2207UQFFModule::printVariables() {
 
 const double pi_val = 3.141592653589793;
 
-// Namespace for saved states
-namespace saved_states_ngc2207 {
-    std::map<std::string, std::map<std::string, cdouble>> states;
-}
-
 // 1. Variable Management
 
 void NGC2207UQFFModule::createVariable(const std::string& name, cdouble value) {
@@ -557,18 +553,18 @@ void NGC2207UQFFModule::evolveSystem(int generations, std::function<double(const
 // 7. State Management
 
 void NGC2207UQFFModule::saveState(const std::string& state_name) {
-    saved_states_ngc2207::states[state_name] = variables;
+    saved_states[state_name] = variables;
 }
 
 void NGC2207UQFFModule::restoreState(const std::string& state_name) {
-    if (saved_states_ngc2207::states.find(state_name) != saved_states_ngc2207::states.end()) {
-        variables = saved_states_ngc2207::states[state_name];
+    if (saved_states.find(state_name) != saved_states.end()) {
+        variables = saved_states[state_name];
     }
 }
 
 std::vector<std::string> NGC2207UQFFModule::listSavedStates() const {
     std::vector<std::string> names;
-    for (const auto& pair : saved_states_ngc2207::states) {
+    for (const auto& pair : saved_states) {
         names.push_back(pair.first);
     }
     return names;
