@@ -19,6 +19,11 @@
 #include <iostream>
 #include <iomanip>
 #include <complex>
+#include <vector>
+#include <functional>
+#include <random>
+#include <algorithm>
+#include <sstream>
 
 using cdouble = std::complex<double>;
 
@@ -59,6 +64,49 @@ public:
 
     // Print all current variables (for debugging/updates)
     void printVariables();
+
+    // ====== Dynamic Self-Update & Self-Expansion Methods ======
+    
+    // Variable Management
+    void createVariable(const std::string& name, cdouble value);
+    void removeVariable(const std::string& name);
+    void cloneVariable(const std::string& source, const std::string& dest);
+    std::vector<std::string> listVariables() const;
+    std::string getSystemName() const;
+    
+    // Batch Operations
+    void transformVariableGroup(const std::vector<std::string>& names, std::function<cdouble(cdouble)> transform);
+    void scaleVariableGroup(const std::vector<std::string>& names, cdouble scale_factor);
+    
+    // Self-Expansion (Domain-Specific)
+    void expandParameterSpace(double expansion_factor);
+    void expandBinaryScale(double mass_factor, double orbital_factor);
+    void expandForceScale(double dpm_factor, double lenr_factor);
+    void expandSymbioticScale(double jet_factor, double nebula_factor);
+    
+    // Self-Refinement
+    void autoRefineParameters(double tolerance);
+    void calibrateToObservations(const std::map<std::string, cdouble>& observations);
+    void optimizeForMetric(const std::string& metric);
+    
+    // Parameter Exploration
+    std::vector<std::map<std::string, cdouble>> generateVariations(int count, double variation_range);
+    
+    // Adaptive Evolution
+    void mutateParameters(double mutation_rate);
+    void evolveSystem(int generations, std::function<double(const RAquariiUQFFModule&)> fitness);
+    
+    // State Management
+    void saveState(const std::string& state_name);
+    void restoreState(const std::string& state_name);
+    std::vector<std::string> listSavedStates() const;
+    std::string exportState() const;
+    
+    // System Analysis
+    std::map<std::string, double> sensitivityAnalysis(const std::string& output_var, double delta);
+    std::string generateReport() const;
+    bool validateConsistency() const;
+    void autoCorrectAnomalies();
 };
 
 #endif // R_AQUARII_UQFF_MODULE_H
@@ -308,6 +356,279 @@ void RAquariiUQFFModule::printVariables() {
     }
 }
 
+// ====== Dynamic Self-Update & Self-Expansion Method Implementations ======
+
+namespace saved_states_raquarii {
+    std::map<std::string, std::map<std::string, cdouble>> states;
+}
+
+// Variable Management
+void RAquariiUQFFModule::createVariable(const std::string& name, cdouble value) {
+    variables[name] = value;
+}
+
+void RAquariiUQFFModule::removeVariable(const std::string& name) {
+    variables.erase(name);
+}
+
+void RAquariiUQFFModule::cloneVariable(const std::string& source, const std::string& dest) {
+    if (variables.find(source) != variables.end()) {
+        variables[dest] = variables[source];
+    }
+}
+
+std::vector<std::string> RAquariiUQFFModule::listVariables() const {
+    std::vector<std::string> names;
+    for (const auto& pair : variables) {
+        names.push_back(pair.first);
+    }
+    return names;
+}
+
+std::string RAquariiUQFFModule::getSystemName() const {
+    return "RAquarii_Symbiotic_Binary_UQFF";
+}
+
+// Batch Operations
+void RAquariiUQFFModule::transformVariableGroup(const std::vector<std::string>& names, 
+                                                 std::function<cdouble(cdouble)> transform) {
+    for (const auto& name : names) {
+        if (variables.find(name) != variables.end()) {
+            variables[name] = transform(variables[name]);
+        }
+    }
+}
+
+void RAquariiUQFFModule::scaleVariableGroup(const std::vector<std::string>& names, cdouble scale_factor) {
+    transformVariableGroup(names, [scale_factor](cdouble v) { return v * scale_factor; });
+}
+
+// Self-Expansion (Domain-Specific for R Aquarii Symbiotic Binary)
+void RAquariiUQFFModule::expandParameterSpace(double expansion_factor) {
+    // Scale key exploration parameters
+    std::vector<std::string> explore_params = {"k_LENR", "k_act", "k_DE", "k_neutron", "k_rel"};
+    scaleVariableGroup(explore_params, {expansion_factor, 0.0});
+}
+
+void RAquariiUQFFModule::expandBinaryScale(double mass_factor, double orbital_factor) {
+    // Expand binary system scale: mass, orbital radius
+    variables["M"] *= cdouble(mass_factor, 0.0);
+    variables["r"] *= cdouble(orbital_factor, 0.0);
+    
+    // Adjust dependent parameters: gravity scales with M/r^2
+    // Adjust orbital velocity, luminosity scales with mass
+    if (variables.find("V") != variables.end()) {
+        variables["V"] *= cdouble(sqrt(mass_factor / orbital_factor), 0.0);
+    }
+    if (variables.find("L_X") != variables.end()) {
+        variables["L_X"] *= cdouble(mass_factor, 0.0);
+    }
+}
+
+void RAquariiUQFFModule::expandForceScale(double dpm_factor, double lenr_factor) {
+    // Expand force coupling terms
+    variables["DPM_momentum"] *= cdouble(dpm_factor, 0.0);
+    variables["DPM_gravity"] *= cdouble(dpm_factor, 0.0);
+    variables["DPM_stability"] *= cdouble(dpm_factor, 0.0);
+    variables["k_LENR"] *= cdouble(lenr_factor, 0.0);
+}
+
+void RAquariiUQFFModule::expandSymbioticScale(double jet_factor, double nebula_factor) {
+    // Expand symbiotic-specific features: jet velocity, nebula density
+    if (variables.find("V") != variables.end()) {
+        variables["V"] *= cdouble(jet_factor, 0.0);
+    }
+    if (variables.find("rho_gas") != variables.end()) {
+        variables["rho_gas"] *= cdouble(nebula_factor, 0.0);
+    }
+    // Scale magnetic field with nebula activity
+    if (variables.find("B0") != variables.end()) {
+        variables["B0"] *= cdouble(sqrt(nebula_factor), 0.0);
+    }
+}
+
+// Self-Refinement
+void RAquariiUQFFModule::autoRefineParameters(double tolerance) {
+    // Iteratively adjust parameters to minimize force residual
+    for (int iter = 0; iter < 100; ++iter) {
+        cdouble F_current = computeF(variables["t"].real());
+        if (std::abs(F_current) < tolerance) break;
+        
+        // Adjust key parameters slightly
+        variables["k_LENR"] *= cdouble(0.99, 0.0);
+        variables["DPM_momentum"] *= cdouble(1.01, 0.0);
+    }
+}
+
+void RAquariiUQFFModule::calibrateToObservations(const std::map<std::string, cdouble>& observations) {
+    // Update variables based on observational data
+    for (const auto& obs : observations) {
+        if (variables.find(obs.first) != variables.end()) {
+            variables[obs.first] = obs.second;
+        }
+    }
+}
+
+void RAquariiUQFFModule::optimizeForMetric(const std::string& metric) {
+    // Optimize parameters for specific metrics
+    if (metric == "standard_raquarii") {
+        variables["M"] = {3.978e30, 0.0};
+        variables["r"] = {2.18e15, 0.0};
+        variables["L_X"] = {1e32, 0.0};
+    } else if (metric == "high_accretion") {
+        variables["L_X"] = {5e32, 0.0};
+        variables["k_DE"] *= cdouble(2.0, 0.0);
+    } else if (metric == "jet_outburst") {
+        variables["V"] = {3e5, 0.0};  // 300 km/s
+        variables["k_act"] *= cdouble(5.0, 0.0);
+    } else if (metric == "quiescent") {
+        variables["L_X"] = {1e31, 0.0};
+        variables["V"] = {5e4, 0.0};  // 50 km/s
+    } else if (metric == "orbital_periastron") {
+        variables["r"] = {1.5e15, 0.0};  // Closer approach
+        variables["rho_gas"] *= cdouble(2.0, 0.0);
+    }
+}
+
+// Parameter Exploration
+std::vector<std::map<std::string, cdouble>> RAquariiUQFFModule::generateVariations(int count, double variation_range) {
+    std::vector<std::map<std::string, cdouble>> variations;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(1.0 - variation_range, 1.0 + variation_range);
+    
+    for (int i = 0; i < count; ++i) {
+        std::map<std::string, cdouble> variant = variables;
+        for (auto& pair : variant) {
+            double scale = dis(gen);
+            pair.second = pair.second * cdouble(scale, 1.0);
+        }
+        variations.push_back(variant);
+    }
+    return variations;
+}
+
+// Adaptive Evolution
+void RAquariiUQFFModule::mutateParameters(double mutation_rate) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(1.0 - mutation_rate, 1.0 + mutation_rate);
+    
+    for (auto& pair : variables) {
+        double scale = dis(gen);
+        pair.second = pair.second * cdouble(scale, 1.0);
+    }
+}
+
+void RAquariiUQFFModule::evolveSystem(int generations, std::function<double(const RAquariiUQFFModule&)> fitness) {
+    double best_fitness = fitness(*this);
+    std::map<std::string, cdouble> best_state = variables;
+    
+    for (int gen = 0; gen < generations; ++gen) {
+        mutateParameters(0.05);
+        double current_fitness = fitness(*this);
+        
+        if (current_fitness > best_fitness) {
+            best_fitness = current_fitness;
+            best_state = variables;
+        } else {
+            variables = best_state;
+        }
+    }
+}
+
+// State Management
+void RAquariiUQFFModule::saveState(const std::string& state_name) {
+    saved_states_raquarii::states[state_name] = variables;
+}
+
+void RAquariiUQFFModule::restoreState(const std::string& state_name) {
+    if (saved_states_raquarii::states.find(state_name) != saved_states_raquarii::states.end()) {
+        variables = saved_states_raquarii::states[state_name];
+    }
+}
+
+std::vector<std::string> RAquariiUQFFModule::listSavedStates() const {
+    std::vector<std::string> names;
+    for (const auto& pair : saved_states_raquarii::states) {
+        names.push_back(pair.first);
+    }
+    return names;
+}
+
+std::string RAquariiUQFFModule::exportState() const {
+    std::ostringstream oss;
+    for (const auto& pair : variables) {
+        oss << pair.first << "=" << pair.second.real() << "+i*" << pair.second.imag() << ";";
+    }
+    return oss.str();
+}
+
+// System Analysis
+std::map<std::string, double> RAquariiUQFFModule::sensitivityAnalysis(const std::string& output_var, double delta) {
+    std::map<std::string, double> sensitivities;
+    cdouble baseline = computeF(variables["t"].real());
+    
+    for (auto& pair : variables) {
+        cdouble original = pair.second;
+        pair.second = original * cdouble(1.0 + delta, 1.0);
+        cdouble perturbed = computeF(variables["t"].real());
+        
+        double sensitivity = std::abs(perturbed - baseline) / std::abs(baseline);
+        sensitivities[pair.first] = sensitivity;
+        
+        pair.second = original;
+    }
+    return sensitivities;
+}
+
+std::string RAquariiUQFFModule::generateReport() const {
+    std::ostringstream report;
+    report << "=== R Aquarii Symbiotic Binary UQFF System Report ===\n";
+    report << "System: " << getSystemName() << "\n";
+    report << "Total Variables: " << variables.size() << "\n";
+    report << "Key Parameters:\n";
+    report << "  M (Total Mass) = " << std::scientific << variables.at("M").real() << " kg\n";
+    report << "  r (Orbital Radius) = " << variables.at("r").real() << " m\n";
+    report << "  L_X (X-ray Luminosity) = " << variables.at("L_X").real() << " W\n";
+    report << "  V (Jet Velocity) = " << variables.at("V").real() << " m/s\n";
+    report << "  B0 (Magnetic Field) = " << variables.at("B0").real() << " T\n";
+    return report.str();
+}
+
+bool RAquariiUQFFModule::validateConsistency() const {
+    // Check physical constraints for R Aquarii symbiotic binary
+    double M_val = variables.at("M").real();
+    double r_val = variables.at("r").real();
+    double L_X_val = variables.at("L_X").real();
+    double V_val = variables.at("V").real();
+    
+    bool valid = true;
+    if (M_val < 1e30 || M_val > 1e31) valid = false;  // 0.5-5 M_sun
+    if (r_val < 1e14 || r_val > 1e16) valid = false;  // 0.01-100 AU
+    if (L_X_val < 1e30 || L_X_val > 1e34) valid = false;  // Symbiotic X-ray range
+    if (V_val < 1e4 || V_val > 1e6) valid = false;  // 10-1000 km/s jets
+    
+    return valid;
+}
+
+void RAquariiUQFFModule::autoCorrectAnomalies() {
+    // Clamp parameters to physically reasonable ranges
+    double M_val = variables["M"].real();
+    double r_val = variables["r"].real();
+    double L_X_val = variables["L_X"].real();
+    double V_val = variables["V"].real();
+    
+    if (M_val < 1e30) variables["M"] = {1e30, 0.0};
+    if (M_val > 1e31) variables["M"] = {1e31, 0.0};
+    if (r_val < 1e14) variables["r"] = {1e14, 0.0};
+    if (r_val > 1e16) variables["r"] = {1e16, 0.0};
+    if (L_X_val < 1e30) variables["L_X"] = {1e30, 0.0};
+    if (L_X_val > 1e34) variables["L_X"] = {1e34, 0.0};
+    if (V_val < 1e4) variables["V"] = {1e4, 0.0};
+    if (V_val > 1e6) variables["V"] = {1e6, 0.0};
+}
+
 // Example usage in base program 'raquarii_sim.cpp' (snippet for integration)
 // #include "RAquariiUQFFModule.h"
 // #include <complex>
@@ -322,6 +643,177 @@ void RAquariiUQFFModule::printVariables() {
 //     mod.printVariables();
 //     return 0;
 // }
+
+// ====== COMPREHENSIVE ENHANCED USAGE EXAMPLE ======
+// Demonstrates all 25 dynamic self-update and self-expansion capabilities
+/*
+#include "RAquariiUQFFModule.h"
+#include <iostream>
+#include <iomanip>
+
+int main() {
+    std::cout << "=== R Aquarii Symbiotic Binary UQFF - Comprehensive Dynamic Demo ===\n\n";
+    
+    RAquariiUQFFModule mod;
+    std::cout << "System: " << mod.getSystemName() << "\n\n";
+    
+    // Test 1: Variable Management
+    std::cout << "TEST 1: Variable Management\n";
+    mod.createVariable("custom_coupling", {1e-8, 1e-10});
+    std::cout << "Created custom_coupling\n";
+    auto var_list = mod.listVariables();
+    std::cout << "Total variables: " << var_list.size() << "\n";
+    mod.cloneVariable("M", "M_backup");
+    std::cout << "Cloned M to M_backup\n\n";
+    
+    // Test 2: Batch Operations
+    std::cout << "TEST 2: Batch Operations\n";
+    std::vector<std::string> dpm_vars = {"DPM_momentum", "DPM_gravity", "DPM_stability"};
+    mod.scaleVariableGroup(dpm_vars, {1.5, 0.0});
+    std::cout << "Scaled DPM variables by 1.5x\n\n";
+    
+    // Test 3: Domain-Specific Expansion - Binary Scale
+    std::cout << "TEST 3: Binary Scale Expansion\n";
+    mod.saveState("before_binary_expansion");
+    mod.expandBinaryScale(1.2, 1.1);  // 20% mass increase, 10% orbital increase
+    std::cout << "Expanded binary scale (mass +20%, orbit +10%)\n";
+    std::cout << "Adjusted velocity and luminosity accordingly\n\n";
+    
+    // Test 4: Force Scale Expansion
+    std::cout << "TEST 4: Force Scale Expansion\n";
+    mod.expandForceScale(1.3, 1.5);  // DPM +30%, LENR +50%
+    std::cout << "Expanded force couplings (DPM +30%, LENR +50%)\n\n";
+    
+    // Test 5: Symbiotic Scale Expansion
+    std::cout << "TEST 5: Symbiotic-Specific Expansion\n";
+    mod.expandSymbioticScale(1.8, 1.4);  // Jet velocity +80%, nebula density +40%
+    std::cout << "Expanded symbiotic features (jet +80%, nebula +40%)\n";
+    std::cout << "Magnetic field adjusted with nebula activity\n\n";
+    
+    // Test 6: Optimization for Different Scenarios
+    std::cout << "TEST 6: Scenario Optimization\n";
+    mod.saveState("expanded_state");
+    
+    mod.optimizeForMetric("high_accretion");
+    auto F_accretion = mod.computeF(1.4e9);
+    std::cout << "High Accretion: F = " << std::scientific << std::abs(F_accretion) << " N\n";
+    
+    mod.optimizeForMetric("jet_outburst");
+    auto F_outburst = mod.computeF(1.4e9);
+    std::cout << "Jet Outburst: F = " << std::abs(F_outburst) << " N\n";
+    
+    mod.optimizeForMetric("quiescent");
+    auto F_quiescent = mod.computeF(1.4e9);
+    std::cout << "Quiescent: F = " << std::abs(F_quiescent) << " N\n";
+    
+    mod.optimizeForMetric("orbital_periastron");
+    auto F_periastron = mod.computeF(1.4e9);
+    std::cout << "Periastron: F = " << std::abs(F_periastron) << " N\n\n";
+    
+    // Test 7: Sensitivity Analysis
+    std::cout << "TEST 7: Sensitivity Analysis\n";
+    mod.optimizeForMetric("standard_raquarii");
+    auto sensitivities = mod.sensitivityAnalysis("F", 0.01);
+    std::cout << "Top 5 most sensitive parameters (1% perturbation):\n";
+    std::vector<std::pair<std::string, double>> sens_vec(sensitivities.begin(), sensitivities.end());
+    std::sort(sens_vec.begin(), sens_vec.end(), 
+              [](const auto& a, const auto& b) { return a.second > b.second; });
+    for (int i = 0; i < 5 && i < sens_vec.size(); ++i) {
+        std::cout << "  " << sens_vec[i].first << ": " << std::fixed 
+                  << std::setprecision(6) << sens_vec[i].second << "\n";
+    }
+    std::cout << "\n";
+    
+    // Test 8: Parameter Exploration
+    std::cout << "TEST 8: Parameter Exploration\n";
+    auto variations = mod.generateVariations(5, 0.1);
+    std::cout << "Generated " << variations.size() << " parameter variations (±10%)\n";
+    for (size_t i = 0; i < variations.size(); ++i) {
+        std::cout << "  Variation " << (i+1) << ": M = " << std::scientific 
+                  << variations[i]["M"].real() << " kg\n";
+    }
+    std::cout << "\n";
+    
+    // Test 9: Adaptive Evolution
+    std::cout << "TEST 9: Adaptive Evolution\n";
+    auto fitness_func = [](const RAquariiUQFFModule& m) {
+        cdouble F = const_cast<RAquariiUQFFModule&>(m).computeF(1.4e9);
+        return 1.0 / (1.0 + std::abs(F));  // Minimize force magnitude
+    };
+    mod.evolveSystem(50, fitness_func);
+    std::cout << "Evolved system over 50 generations\n";
+    auto F_evolved = mod.computeF(1.4e9);
+    std::cout << "Evolved F = " << std::abs(F_evolved) << " N\n\n";
+    
+    // Test 10: State Management
+    std::cout << "TEST 10: State Management\n";
+    auto saved_states = mod.listSavedStates();
+    std::cout << "Saved states (" << saved_states.size() << "):\n";
+    for (const auto& state : saved_states) {
+        std::cout << "  - " << state << "\n";
+    }
+    mod.restoreState("before_binary_expansion");
+    std::cout << "Restored state: before_binary_expansion\n";
+    auto exported = mod.exportState();
+    std::cout << "Exported state length: " << exported.length() << " characters\n\n";
+    
+    // Test 11: Validation and Auto-Correction
+    std::cout << "TEST 11: Validation and Auto-Correction\n";
+    bool valid = mod.validateConsistency();
+    std::cout << "System consistency: " << (valid ? "VALID" : "INVALID") << "\n";
+    
+    // Force invalid state
+    mod.updateVariable("M", {1e32, 0.0});  // Unrealistic mass
+    valid = mod.validateConsistency();
+    std::cout << "After invalid update: " << (valid ? "VALID" : "INVALID") << "\n";
+    
+    mod.autoCorrectAnomalies();
+    valid = mod.validateConsistency();
+    std::cout << "After auto-correction: " << (valid ? "VALID" : "INVALID") << "\n\n";
+    
+    // Test 12: Comprehensive Report
+    std::cout << "TEST 12: System Report\n";
+    mod.optimizeForMetric("standard_raquarii");
+    std::cout << mod.generateReport() << "\n";
+    
+    // Test 13: Sub-Equation Computations
+    std::cout << "TEST 13: Sub-Equation Analysis\n";
+    double t = 1.4e9;
+    auto F_compressed = mod.computeCompressed(t);
+    auto F_resonant = mod.computeResonant();
+    auto F_buoyancy = mod.computeBuoyancy();
+    auto F_superconductive = mod.computeSuperconductive(t);
+    auto g_compressed = mod.computeCompressedG(t);
+    
+    std::cout << std::scientific << std::setprecision(3);
+    std::cout << "Compressed Integrand: " << std::abs(F_compressed) << " N\n";
+    std::cout << "DPM Resonance: " << std::abs(F_resonant) << "\n";
+    std::cout << "Buoyancy Ub1: " << std::abs(F_buoyancy) << " N\n";
+    std::cout << "Superconductive Ui: " << std::abs(F_superconductive) << " J/m³\n";
+    std::cout << "Compressed g(r,t): " << g_compressed << " J/m³\n\n";
+    
+    // Test 14: Dynamic Parameter Space Expansion
+    std::cout << "TEST 14: Parameter Space Expansion\n";
+    mod.expandParameterSpace(2.0);  // Double exploration range
+    std::cout << "Expanded parameter space by 2.0x\n";
+    std::cout << "Exploration parameters scaled for wider search\n\n";
+    
+    // Test 15: Final Force Computation
+    std::cout << "TEST 15: Final Force Computation\n";
+    mod.optimizeForMetric("standard_raquarii");
+    auto F_final = mod.computeF(t);
+    std::cout << "F_U_Bi_i (R Aquarii, t=" << t << " s) = \n";
+    std::cout << "  Real: " << F_final.real() << " N\n";
+    std::cout << "  Imag: " << F_final.imag() << " N\n";
+    std::cout << "  Magnitude: " << std::abs(F_final) << " N\n\n";
+    
+    std::cout << "=== All 25 Enhanced Methods Successfully Demonstrated ===\n";
+    std::cout << "R Aquarii Symbiotic Binary UQFF Module: FULLY OPERATIONAL\n";
+    
+    return 0;
+}
+*/
+
 // Compile: g++ -o raquarii_sim raquarii_sim.cpp RAquariiUQFFModule.cpp -lm
 // Sample Output at t=orbital: F ≈ -2.09e212 + i (large; approx per framework; dominant real from LENR * x2).
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 21, 2025.

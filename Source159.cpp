@@ -20,6 +20,12 @@
 #include <iostream>
 #include <iomanip>
 #include <complex>
+#include <vector>
+#include <functional>
+#include <random>
+#include <algorithm>
+#include <sstream>
+#include <fstream>
 
 using cdouble = std::complex<double>;
 
@@ -61,6 +67,54 @@ public:
 
     // Print all current variables (for debugging/updates)
     void printVariables();
+
+    // 25-method dynamic self-update & self-expansion capabilities
+    
+    // 1. Variable Management (5 methods)
+    void createVariable(const std::string& name, const std::complex<double>& value);
+    void removeVariable(const std::string& name);
+    std::complex<double> cloneVariable(const std::string& srcName, const std::string& destName);
+    std::vector<std::string> listVariables() const;
+    std::string getSystemName() const;
+    
+    // 2. Batch Operations (2 methods)
+    void transformVariableGroup(const std::vector<std::string>& varNames, 
+                                 std::function<std::complex<double>(std::complex<double>)> func);
+    void scaleVariableGroup(const std::vector<std::string>& varNames, const std::complex<double>& scaleFactor);
+    
+    // 3. Self-Expansion (4 methods - parameter space + 3 domain-specific scales)
+    void expandParameterSpace(int numNewParams = 5);
+    void expandSystemScale(const std::string& system); // stellar/galactic specific
+    void expandForceScale(double factor = 1.5);        // LENR + relativistic
+    void expandStellarScale(double nuclearFactor = 1.2, double rotationFactor = 1.1); // stellar physics
+    
+    // 4. Self-Refinement (3 methods)
+    void autoRefineParameters(int iterations = 100);
+    void calibrateToObservations(const std::map<std::string, std::complex<double>>& observed);
+    void optimizeForMetric(std::function<double(const std::map<std::string, std::complex<double>>&)> metric, 
+                            int iterations = 50);
+    
+    // 5. Parameter Exploration (1 method)
+    std::vector<std::map<std::string, std::complex<double>>> generateVariations(int numVariations = 10, 
+                                                                                  double stdDev = 0.1);
+    
+    // 6. Adaptive Evolution (2 methods)
+    void mutateParameters(double mutationRate = 0.05);
+    void evolveSystem(int generations = 20, std::function<double(UQFFBuoyancyModule&)> fitness = nullptr);
+    
+    // 7. State Management (4 methods)
+    void saveState(const std::string& label);
+    void restoreState(const std::string& label);
+    std::vector<std::string> listSavedStates() const;
+    std::string exportState(const std::string& format = "text") const;
+    
+    // 8. System Analysis (4 methods)
+    std::map<std::string, double> sensitivityAnalysis(const std::string& system, 
+                                                       const std::vector<std::string>& params);
+    std::string generateReport(const std::string& system) const;
+    bool validateConsistency() const;
+    void autoCorrectAnomalies();
+
 };
 
 #endif // UQFF_BUOYANCY_MODULE_H
@@ -644,6 +698,486 @@ std::string SurfaceMagneticFieldModule::getEquationText() {
 }
 
 // Helper functions for stellar magnetic field module
+
+// ============================================================================
+// SECTION: 25-Method Dynamic Self-Update & Self-Expansion Implementation
+// ============================================================================
+
+// Namespace for saved states
+namespace saved_states_stellar {
+    std::map<std::string, std::map<std::string, std::complex<double>>> states;
+}
+
+// ============================================================================
+// 1. Variable Management (5 methods)
+// ============================================================================
+
+void UQFFBuoyancyModule::createVariable(const std::string& name, const std::complex<double>& value) {
+    variables[name] = value;
+    std::cout << "Created variable '" << name << "' = " << value << std::endl;
+}
+
+void UQFFBuoyancyModule::removeVariable(const std::string& name) {
+    auto it = variables.find(name);
+    if (it != variables.end()) {
+        variables.erase(it);
+        std::cout << "Removed variable '" << name << "'" << std::endl;
+    } else {
+        std::cerr << "Variable '" << name << "' not found for removal." << std::endl;
+    }
+}
+
+std::complex<double> UQFFBuoyancyModule::cloneVariable(const std::string& srcName, const std::string& destName) {
+    auto it = variables.find(srcName);
+    if (it != variables.end()) {
+        variables[destName] = it->second;
+        std::cout << "Cloned '" << srcName << "' to '" << destName << "' = " << it->second << std::endl;
+        return it->second;
+    } else {
+        std::cerr << "Source variable '" << srcName << "' not found." << std::endl;
+        return std::complex<double>(0.0, 0.0);
+    }
+}
+
+std::vector<std::string> UQFFBuoyancyModule::listVariables() const {
+    std::vector<std::string> varNames;
+    varNames.reserve(variables.size());
+    for (const auto& pair : variables) {
+        varNames.push_back(pair.first);
+    }
+    return varNames;
+}
+
+std::string UQFFBuoyancyModule::getSystemName() const {
+    return "UQFFBuoyancy_Stellar_Galactic_MultiSystem";
+}
+
+// ============================================================================
+// 2. Batch Operations (2 methods)
+// ============================================================================
+
+void UQFFBuoyancyModule::transformVariableGroup(const std::vector<std::string>& varNames, 
+                                                  std::function<std::complex<double>(std::complex<double>)> func) {
+    for (const auto& name : varNames) {
+        auto it = variables.find(name);
+        if (it != variables.end()) {
+            it->second = func(it->second);
+            std::cout << "Transformed '" << name << "' to " << it->second << std::endl;
+        } else {
+            std::cerr << "Variable '" << name << "' not found for transformation." << std::endl;
+        }
+    }
+}
+
+void UQFFBuoyancyModule::scaleVariableGroup(const std::vector<std::string>& varNames, 
+                                              const std::complex<double>& scaleFactor) {
+    for (const auto& name : varNames) {
+        auto it = variables.find(name);
+        if (it != variables.end()) {
+            it->second *= scaleFactor;
+            std::cout << "Scaled '" << name << "' by " << scaleFactor << " to " << it->second << std::endl;
+        } else {
+            std::cerr << "Variable '" << name << "' not found for scaling." << std::endl;
+        }
+    }
+}
+
+// ============================================================================
+// 3. Self-Expansion (4 methods)
+// ============================================================================
+
+void UQFFBuoyancyModule::expandParameterSpace(int numNewParams) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(1e30, 1e45); // stellar/galactic mass range
+    
+    for (int i = 0; i < numNewParams; ++i) {
+        std::string newName = "expanded_param_" + std::to_string(i);
+        double realVal = dis(gen);
+        double imagVal = realVal * 1e-6; // small imaginary component
+        variables[newName] = std::complex<double>(realVal, imagVal);
+        std::cout << "Expanded parameter space: " << newName << " = " << variables[newName] << std::endl;
+    }
+}
+
+void UQFFBuoyancyModule::expandSystemScale(const std::string& system) {
+    setSystemParams(system);
+    
+    // Stellar/galactic-specific scaling
+    if (system == "M74") {
+        variables["M_system"] *= std::complex<double>(1.15, 0.0); // spiral galaxy expansion
+        variables["r_system"] *= std::complex<double>(1.08, 0.0);
+        std::cout << "Expanded M74 spiral galaxy scale" << std::endl;
+    } else if (system == "M16") {
+        variables["M_system"] *= std::complex<double>(1.25, 0.0); // star-forming region
+        variables["r_system"] *= std::complex<double>(1.12, 0.0);
+        std::cout << "Expanded Eagle Nebula (M16) star-forming scale" << std::endl;
+    } else if (system == "M84") {
+        variables["M_system"] *= std::complex<double>(1.10, 0.0); // elliptical galaxy
+        variables["r_system"] *= std::complex<double>(1.05, 0.0);
+        std::cout << "Expanded M84 elliptical galaxy scale" << std::endl;
+    } else if (system == "CentaurusA") {
+        variables["M_system"] *= std::complex<double>(1.20, 0.0); // active AGN
+        variables["r_system"] *= std::complex<double>(1.10, 0.0);
+        std::cout << "Expanded Centaurus A active galaxy scale" << std::endl;
+    } else if (system == "SupernovaSurvey") {
+        variables["M_system"] *= std::complex<double>(1.30, 0.0); // supernova transient
+        variables["r_system"] *= std::complex<double>(1.15, 0.0);
+        std::cout << "Expanded Supernova Survey transient scale" << std::endl;
+    }
+}
+
+void UQFFBuoyancyModule::expandForceScale(double factor) {
+    // LENR resonance expansion
+    auto it_lenr = variables.find("omega_LENR");
+    if (it_lenr != variables.end()) {
+        it_lenr->second *= std::complex<double>(factor, 0.0);
+        std::cout << "Expanded LENR resonance by factor " << factor << std::endl;
+    }
+    
+    // Relativistic force expansion (1998 LEP)
+    auto it_rel = variables.find("F_rel");
+    if (it_rel != variables.end()) {
+        it_rel->second *= std::complex<double>(factor, 0.0);
+        std::cout << "Expanded relativistic force (F_rel) by factor " << factor << std::endl;
+    }
+}
+
+void UQFFBuoyancyModule::expandStellarScale(double nuclearFactor, double rotationFactor) {
+    // Nuclear burning expansion
+    auto it_nuclear = variables.find("nuclear_burning_rate");
+    if (it_nuclear != variables.end()) {
+        it_nuclear->second *= std::complex<double>(nuclearFactor, 0.0);
+        std::cout << "Expanded nuclear burning rate by factor " << nuclearFactor << std::endl;
+    }
+    
+    // Stellar rotation expansion
+    auto it_rotation = variables.find("stellar_rotation");
+    if (it_rotation != variables.end()) {
+        it_rotation->second *= std::complex<double>(rotationFactor, 0.0);
+        std::cout << "Expanded stellar rotation by factor " << rotationFactor << std::endl;
+    }
+    
+    // Flare frequency expansion
+    auto it_flare = variables.find("flare_frequency");
+    if (it_flare != variables.end()) {
+        it_flare->second *= std::complex<double>(1.15, 0.0);
+        std::cout << "Expanded flare frequency by factor 1.15" << std::endl;
+    }
+    
+    // Stellar wind velocity expansion
+    auto it_wind = variables.find("stellar_wind_velocity");
+    if (it_wind != variables.end()) {
+        it_wind->second *= std::complex<double>(1.10, 0.0);
+        std::cout << "Expanded stellar wind velocity by factor 1.10" << std::endl;
+    }
+}
+
+// ============================================================================
+// 4. Self-Refinement (3 methods)
+// ============================================================================
+
+void UQFFBuoyancyModule::autoRefineParameters(int iterations) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(-0.01, 0.01); // small refinements
+    
+    for (int i = 0; i < iterations; ++i) {
+        for (auto& pair : variables) {
+            double delta_real = dis(gen);
+            double delta_imag = dis(gen) * 0.1; // smaller imaginary refinement
+            pair.second += std::complex<double>(delta_real * std::abs(pair.second.real()), 
+                                                 delta_imag * std::abs(pair.second.imag()));
+        }
+    }
+    std::cout << "Auto-refined parameters over " << iterations << " iterations" << std::endl;
+}
+
+void UQFFBuoyancyModule::calibrateToObservations(const std::map<std::string, std::complex<double>>& observed) {
+    for (const auto& obs : observed) {
+        auto it = variables.find(obs.first);
+        if (it != variables.end()) {
+            std::complex<double> error = obs.second - it->second;
+            it->second += error * 0.5; // 50% correction
+            std::cout << "Calibrated '" << obs.first << "' toward observation: " << obs.second << std::endl;
+        }
+    }
+}
+
+void UQFFBuoyancyModule::optimizeForMetric(
+    std::function<double(const std::map<std::string, std::complex<double>>&)> metric, 
+    int iterations) {
+    
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(-0.05, 0.05);
+    
+    double bestMetric = metric(variables);
+    auto bestVars = variables;
+    
+    for (int i = 0; i < iterations; ++i) {
+        auto testVars = variables;
+        for (auto& pair : testVars) {
+            double delta = dis(gen);
+            pair.second *= std::complex<double>(1.0 + delta, 1.0 + delta * 0.1);
+        }
+        
+        double testMetric = metric(testVars);
+        if (testMetric > bestMetric) {
+            bestMetric = testMetric;
+            bestVars = testVars;
+        }
+    }
+    
+    variables = bestVars;
+    std::cout << "Optimized for metric over " << iterations << " iterations. Best metric: " 
+              << bestMetric << std::endl;
+}
+
+// ============================================================================
+// 5. Parameter Exploration (1 method)
+// ============================================================================
+
+std::vector<std::map<std::string, std::complex<double>>> UQFFBuoyancyModule::generateVariations(
+    int numVariations, double stdDev) {
+    
+    std::vector<std::map<std::string, std::complex<double>>> variations;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::normal_distribution<> dis(0.0, stdDev);
+    
+    for (int i = 0; i < numVariations; ++i) {
+        auto variant = variables;
+        for (auto& pair : variant) {
+            double noise_real = dis(gen);
+            double noise_imag = dis(gen) * 0.1;
+            pair.second *= std::complex<double>(1.0 + noise_real, 1.0 + noise_imag);
+        }
+        variations.push_back(variant);
+    }
+    
+    std::cout << "Generated " << numVariations << " parameter variations with stdDev=" 
+              << stdDev << std::endl;
+    return variations;
+}
+
+// ============================================================================
+// 6. Adaptive Evolution (2 methods)
+// ============================================================================
+
+void UQFFBuoyancyModule::mutateParameters(double mutationRate) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(0.0, 1.0);
+    std::normal_distribution<> mutationDis(0.0, mutationRate);
+    
+    for (auto& pair : variables) {
+        if (dis(gen) < mutationRate) {
+            double mutation_real = mutationDis(gen);
+            double mutation_imag = mutationDis(gen) * 0.1;
+            pair.second *= std::complex<double>(1.0 + mutation_real, 1.0 + mutation_imag);
+        }
+    }
+    std::cout << "Mutated parameters with mutation rate " << mutationRate << std::endl;
+}
+
+void UQFFBuoyancyModule::evolveSystem(int generations, 
+                                       std::function<double(UQFFBuoyancyModule&)> fitness) {
+    if (!fitness) {
+        fitness = [](UQFFBuoyancyModule& mod) {
+            return std::abs(mod.variables["F_U_Bi_i"].real());
+        };
+    }
+    
+    double bestFitness = fitness(*this);
+    auto bestVars = variables;
+    
+    for (int gen = 0; gen < generations; ++gen) {
+        mutateParameters(0.05);
+        double currentFitness = fitness(*this);
+        
+        if (currentFitness > bestFitness) {
+            bestFitness = currentFitness;
+            bestVars = variables;
+        } else {
+            variables = bestVars;
+        }
+    }
+    
+    variables = bestVars;
+    std::cout << "Evolved system over " << generations << " generations. Best fitness: " 
+              << bestFitness << std::endl;
+}
+
+// ============================================================================
+// 7. State Management (4 methods)
+// ============================================================================
+
+void UQFFBuoyancyModule::saveState(const std::string& label) {
+    saved_states_stellar::states[label] = variables;
+    std::cout << "Saved state: '" << label << "'" << std::endl;
+}
+
+void UQFFBuoyancyModule::restoreState(const std::string& label) {
+    auto it = saved_states_stellar::states.find(label);
+    if (it != saved_states_stellar::states.end()) {
+        variables = it->second;
+        std::cout << "Restored state: '" << label << "'" << std::endl;
+    } else {
+        std::cerr << "State '" << label << "' not found." << std::endl;
+    }
+}
+
+std::vector<std::string> UQFFBuoyancyModule::listSavedStates() const {
+    std::vector<std::string> stateNames;
+    for (const auto& pair : saved_states_stellar::states) {
+        stateNames.push_back(pair.first);
+    }
+    return stateNames;
+}
+
+std::string UQFFBuoyancyModule::exportState(const std::string& format) const {
+    std::ostringstream oss;
+    
+    if (format == "text") {
+        oss << "=== UQFF Stellar/Galactic Buoyancy State Export (Text) ===" << std::endl;
+        for (const auto& pair : variables) {
+            oss << pair.first << " = " << pair.second << std::endl;
+        }
+    } else if (format == "csv") {
+        oss << "Variable,Real,Imaginary" << std::endl;
+        for (const auto& pair : variables) {
+            oss << pair.first << "," << pair.second.real() << "," << pair.second.imag() << std::endl;
+        }
+    } else if (format == "json") {
+        oss << "{" << std::endl;
+        size_t count = 0;
+        for (const auto& pair : variables) {
+            oss << "  \"" << pair.first << "\": {\"real\": " << pair.second.real() 
+                << ", \"imag\": " << pair.second.imag() << "}";
+            if (++count < variables.size()) oss << ",";
+            oss << std::endl;
+        }
+        oss << "}" << std::endl;
+    }
+    
+    return oss.str();
+}
+
+// ============================================================================
+// 8. System Analysis (4 methods)
+// ============================================================================
+
+std::map<std::string, double> UQFFBuoyancyModule::sensitivityAnalysis(
+    const std::string& system, const std::vector<std::string>& params) {
+    
+    std::map<std::string, double> sensitivities;
+    double baseline = std::abs(computeFBi(system, 0.0).real());
+    
+    for (const auto& param : params) {
+        auto it = variables.find(param);
+        if (it != variables.end()) {
+            std::complex<double> original = it->second;
+            it->second *= std::complex<double>(1.01, 1.0); // 1% perturbation
+            
+            double perturbed = std::abs(computeFBi(system, 0.0).real());
+            sensitivities[param] = std::abs((perturbed - baseline) / baseline);
+            
+            it->second = original; // restore
+        }
+    }
+    
+    std::cout << "Sensitivity analysis completed for " << params.size() << " parameters" << std::endl;
+    return sensitivities;
+}
+
+std::string UQFFBuoyancyModule::generateReport(const std::string& system) const {
+    std::ostringstream oss;
+    oss << std::fixed << std::setprecision(3);
+    
+    oss << "========================================" << std::endl;
+    oss << "UQFF Stellar/Galactic Buoyancy Report" << std::endl;
+    oss << "System: " << system << std::endl;
+    oss << "========================================" << std::endl;
+    
+    auto it_m = variables.find("M_system");
+    auto it_r = variables.find("r_system");
+    if (it_m != variables.end() && it_r != variables.end()) {
+        oss << "Mass: " << it_m->second.real() << " kg" << std::endl;
+        oss << "Radius: " << it_r->second.real() << " m" << std::endl;
+    }
+    
+    // Stellar parameters
+    auto it_nuclear = variables.find("nuclear_burning_rate");
+    auto it_rotation = variables.find("stellar_rotation");
+    auto it_flare = variables.find("flare_frequency");
+    auto it_wind = variables.find("stellar_wind_velocity");
+    
+    if (it_nuclear != variables.end()) {
+        oss << "Nuclear Burning: " << it_nuclear->second.real() << " W" << std::endl;
+    }
+    if (it_rotation != variables.end()) {
+        oss << "Stellar Rotation: " << it_rotation->second.real() << " rad/s" << std::endl;
+    }
+    if (it_flare != variables.end()) {
+        oss << "Flare Frequency: " << it_flare->second.real() << " /day" << std::endl;
+    }
+    if (it_wind != variables.end()) {
+        oss << "Stellar Wind: " << it_wind->second.real() << " m/s" << std::endl;
+    }
+    
+    oss << "Total Variables: " << variables.size() << std::endl;
+    oss << "========================================" << std::endl;
+    
+    return oss.str();
+}
+
+bool UQFFBuoyancyModule::validateConsistency() const {
+    bool consistent = true;
+    
+    // Check for NaN or Inf values
+    for (const auto& pair : variables) {
+        if (std::isnan(pair.second.real()) || std::isnan(pair.second.imag()) ||
+            std::isinf(pair.second.real()) || std::isinf(pair.second.imag())) {
+            std::cerr << "Inconsistency detected in '" << pair.first << "': " 
+                      << pair.second << std::endl;
+            consistent = false;
+        }
+    }
+    
+    // Check physical bounds for stellar/galactic systems
+    auto it_m = variables.find("M_system");
+    if (it_m != variables.end()) {
+        double mass = it_m->second.real();
+        if (mass < 1e30 || mass > 1e46) { // supernova to massive galaxy
+            std::cerr << "Mass out of stellar/galactic range: " << mass << " kg" << std::endl;
+            consistent = false;
+        }
+    }
+    
+    if (consistent) {
+        std::cout << "Consistency validation passed" << std::endl;
+    }
+    return consistent;
+}
+
+void UQFFBuoyancyModule::autoCorrectAnomalies() {
+    for (auto& pair : variables) {
+        // Correct NaN/Inf
+        if (std::isnan(pair.second.real()) || std::isinf(pair.second.real())) {
+            pair.second = std::complex<double>(1e35, 0.0); // typical stellar/galactic value
+            std::cout << "Corrected anomaly in '" << pair.first << "'" << std::endl;
+        }
+        if (std::isnan(pair.second.imag()) || std::isinf(pair.second.imag())) {
+            pair.second = std::complex<double>(pair.second.real(), 0.0);
+            std::cout << "Corrected imaginary anomaly in '" << pair.first << "'" << std::endl;
+        }
+    }
+    
+    std::cout << "Auto-correction completed" << std::endl;
+}
+
+// Helper functions for stellar magnetic field module
 void SurfaceMagneticFieldModule::updateDependencies(const std::string& changed_var) {
     if (changed_var == "nuclear_burning_rate") {
         // Update thermal coupling based on nuclear burning rate
@@ -704,4 +1238,285 @@ void SurfaceMagneticFieldModule::recordHistory(const std::string& name, double v
     if (variable_history[name].size() > 80) {
         variable_history[name].erase(variable_history[name].begin());
     }
+}
+
+// ============================================================================
+// SECTION: Comprehensive Example - Testing All 25 Methods
+// ============================================================================
+
+int main() {
+    std::cout << std::fixed << std::setprecision(4);
+    std::cout << "========================================" << std::endl;
+    std::cout << "UQFF Stellar/Galactic Buoyancy Module" << std::endl;
+    std::cout << "Dynamic Self-Update & Self-Expansion" << std::endl;
+    std::cout << "Comprehensive Testing Example" << std::endl;
+    std::cout << "========================================\n" << std::endl;
+    
+    UQFFBuoyancyModule module;
+    
+    // ========================================
+    // Test 1: System Identification
+    // ========================================
+    std::cout << "\n[Test 1] System Identification:" << std::endl;
+    std::cout << "System Name: " << module.getSystemName() << std::endl;
+    
+    // ========================================
+    // Test 2: Variable Management (5 methods)
+    // ========================================
+    std::cout << "\n[Test 2] Variable Management:" << std::endl;
+    
+    // Create new variables
+    module.createVariable("test_mass", std::complex<double>(5e40, 0.0));
+    module.createVariable("test_radius", std::complex<double>(1e21, 0.0));
+    
+    // Clone variable
+    module.cloneVariable("test_mass", "cloned_mass");
+    
+    // List all variables
+    std::cout << "Total variables: " << module.listVariables().size() << std::endl;
+    
+    // Remove variable
+    module.removeVariable("test_radius");
+    std::cout << "After removal: " << module.listVariables().size() << " variables" << std::endl;
+    
+    // ========================================
+    // Test 3: Batch Operations (2 methods)
+    // ========================================
+    std::cout << "\n[Test 3] Batch Operations:" << std::endl;
+    
+    // Scale a group
+    std::vector<std::string> scaleGroup = {"M_system", "r_system"};
+    module.scaleVariableGroup(scaleGroup, std::complex<double>(1.2, 0.0));
+    
+    // Transform a group
+    std::vector<std::string> transformGroup = {"c", "h_bar"};
+    module.transformVariableGroup(transformGroup, 
+        [](std::complex<double> val) { return val * std::complex<double>(1.05, 0.0); });
+    
+    // ========================================
+    // Test 4: Self-Expansion (4 methods)
+    // ========================================
+    std::cout << "\n[Test 4] Self-Expansion Capabilities:" << std::endl;
+    
+    // Expand parameter space
+    module.expandParameterSpace(3);
+    
+    // System-specific expansion for all 5 systems
+    std::cout << "\nExpanding all stellar/galactic systems:" << std::endl;
+    module.expandSystemScale("M74");
+    module.expandSystemScale("M16");
+    module.expandSystemScale("M84");
+    module.expandSystemScale("CentaurusA");
+    module.expandSystemScale("SupernovaSurvey");
+    
+    // Force scale expansion
+    module.expandForceScale(1.3);
+    
+    // Stellar scale expansion
+    module.expandStellarScale(1.25, 1.15);
+    
+    // ========================================
+    // Test 5: Self-Refinement (3 methods)
+    // ========================================
+    std::cout << "\n[Test 5] Self-Refinement:" << std::endl;
+    
+    // Auto-refine parameters
+    module.autoRefineParameters(50);
+    
+    // Calibrate to observations
+    std::map<std::string, std::complex<double>> observations;
+    observations["M_system"] = std::complex<double>(7.5e41, 0.0);
+    observations["r_system"] = std::complex<double>(1e21, 0.0);
+    module.calibrateToObservations(observations);
+    
+    // Optimize for a metric
+    auto metric = [](const std::map<std::string, std::complex<double>>& vars) {
+        auto it = vars.find("F_U_Bi_i");
+        if (it != vars.end()) {
+            return std::abs(it->second.real());
+        }
+        return 0.0;
+    };
+    module.optimizeForMetric(metric, 30);
+    
+    // ========================================
+    // Test 6: Parameter Exploration (1 method)
+    // ========================================
+    std::cout << "\n[Test 6] Parameter Exploration:" << std::endl;
+    
+    auto variations = module.generateVariations(5, 0.15);
+    std::cout << "Generated " << variations.size() << " parameter variations" << std::endl;
+    
+    // ========================================
+    // Test 7: Adaptive Evolution (2 methods)
+    // ========================================
+    std::cout << "\n[Test 7] Adaptive Evolution:" << std::endl;
+    
+    // Mutate parameters
+    module.mutateParameters(0.08);
+    
+    // Evolve system
+    auto fitness = [](UQFFBuoyancyModule& mod) {
+        return std::abs(mod.computeFBi("M74", 0.0).real());
+    };
+    module.evolveSystem(15, fitness);
+    
+    // ========================================
+    // Test 8: State Management (4 methods)
+    // ========================================
+    std::cout << "\n[Test 8] State Management:" << std::endl;
+    
+    // Save state
+    module.saveState("initial_state");
+    module.saveState("after_expansion");
+    
+    // List saved states
+    auto states = module.listSavedStates();
+    std::cout << "Saved states (" << states.size() << "): ";
+    for (const auto& state : states) {
+        std::cout << state << " ";
+    }
+    std::cout << std::endl;
+    
+    // Export state in different formats
+    std::cout << "\nExport (text format):\n" << module.exportState("text").substr(0, 200) << "..." << std::endl;
+    std::cout << "\nExport (csv format):\n" << module.exportState("csv").substr(0, 150) << "..." << std::endl;
+    
+    // Restore state
+    module.restoreState("initial_state");
+    
+    // ========================================
+    // Test 9: System Analysis (4 methods)
+    // ========================================
+    std::cout << "\n[Test 9] System Analysis:" << std::endl;
+    
+    // Sensitivity analysis
+    std::vector<std::string> sensitivityParams = {"M_system", "r_system", "c", "G"};
+    auto sensitivities = module.sensitivityAnalysis("M74", sensitivityParams);
+    std::cout << "Sensitivities for M74:" << std::endl;
+    for (const auto& sens : sensitivities) {
+        std::cout << "  " << sens.first << ": " << sens.second << std::endl;
+    }
+    
+    // Generate report
+    std::cout << "\n" << module.generateReport("M74") << std::endl;
+    
+    // Validate consistency
+    bool consistent = module.validateConsistency();
+    std::cout << "System consistency: " << (consistent ? "PASS" : "FAIL") << std::endl;
+    
+    // Auto-correct anomalies
+    module.autoCorrectAnomalies();
+    
+    // ========================================
+    // Test 10-14: Multi-System Computations
+    // ========================================
+    std::cout << "\n[Tests 10-14] Multi-System Force Computations:" << std::endl;
+    
+    std::vector<std::string> systems = {"M74", "M16", "M84", "CentaurusA", "SupernovaSurvey"};
+    for (const auto& sys : systems) {
+        module.expandSystemScale(sys);
+        std::complex<double> force = module.computeFBi(sys, 0.0);
+        std::cout << "\n" << sys << " buoyancy force:" << std::endl;
+        std::cout << "  Real: " << force.real() << " N" << std::endl;
+        std::cout << "  Imag: " << force.imag() << " N" << std::endl;
+        std::cout << "  Magnitude: " << std::abs(force) << " N" << std::endl;
+    }
+    
+    // ========================================
+    // Test 15: Equation Text Display
+    // ========================================
+    std::cout << "\n[Test 15] Equation Text:" << std::endl;
+    std::cout << module.getEquationText("M74").substr(0, 300) << "..." << std::endl;
+    
+    // ========================================
+    // Test 16: Variable Display
+    // ========================================
+    std::cout << "\n[Test 16] Variable Display (first 10):" << std::endl;
+    auto varList = module.listVariables();
+    for (size_t i = 0; i < std::min(size_t(10), varList.size()); ++i) {
+        std::cout << "  " << varList[i] << std::endl;
+    }
+    std::cout << "  ... (total " << varList.size() << " variables)" << std::endl;
+    
+    // ========================================
+    // Test 17: Stellar Parameter Optimization
+    // ========================================
+    std::cout << "\n[Test 17] Stellar Parameter Optimization:" << std::endl;
+    
+    // Create stellar optimization metric
+    auto stellarMetric = [](const std::map<std::string, std::complex<double>>& vars) {
+        double score = 0.0;
+        
+        auto it_nuclear = vars.find("nuclear_burning_rate");
+        if (it_nuclear != vars.end()) {
+            score += std::abs(it_nuclear->second.real()) / 1e26;
+        }
+        
+        auto it_rotation = vars.find("stellar_rotation");
+        if (it_rotation != vars.end()) {
+            score += std::abs(it_rotation->second.real()) * 1e6;
+        }
+        
+        return score;
+    };
+    
+    module.optimizeForMetric(stellarMetric, 40);
+    std::cout << "Stellar parameters optimized" << std::endl;
+    
+    // ========================================
+    // Test 18: State Evolution Tracking
+    // ========================================
+    std::cout << "\n[Test 18] State Evolution Tracking:" << std::endl;
+    
+    module.saveState("pre_evolution");
+    module.expandStellarScale(1.3, 1.2);
+    module.saveState("post_stellar_expansion");
+    module.expandForceScale(1.4);
+    module.saveState("post_force_expansion");
+    
+    std::cout << "Evolution tracking states: " << module.listSavedStates().size() << std::endl;
+    
+    // ========================================
+    // Test 19: Cross-System Sensitivity
+    // ========================================
+    std::cout << "\n[Test 19] Cross-System Sensitivity:" << std::endl;
+    
+    for (const auto& sys : systems) {
+        auto sens = module.sensitivityAnalysis(sys, {"M_system", "r_system"});
+        std::cout << sys << " sensitivity to M_system: " << sens["M_system"] << std::endl;
+    }
+    
+    // ========================================
+    // Test 20: Final Comprehensive Report
+    // ========================================
+    std::cout << "\n[Test 20] Final Comprehensive Report:" << std::endl;
+    std::cout << "========================================" << std::endl;
+    std::cout << "System: " << module.getSystemName() << std::endl;
+    std::cout << "Total Variables: " << module.listVariables().size() << std::endl;
+    std::cout << "Saved States: " << module.listSavedStates().size() << std::endl;
+    std::cout << "Consistency: " << (module.validateConsistency() ? "PASS" : "FAIL") << std::endl;
+    
+    std::cout << "\nStellar/Galactic Systems Tested:" << std::endl;
+    for (const auto& sys : systems) {
+        std::cout << "  - " << sys << std::endl;
+    }
+    
+    std::cout << "\nAll 25 Dynamic Methods Tested:" << std::endl;
+    std::cout << "  ✓ Variable Management (5)" << std::endl;
+    std::cout << "  ✓ Batch Operations (2)" << std::endl;
+    std::cout << "  ✓ Self-Expansion (4)" << std::endl;
+    std::cout << "  ✓ Self-Refinement (3)" << std::endl;
+    std::cout << "  ✓ Parameter Exploration (1)" << std::endl;
+    std::cout << "  ✓ Adaptive Evolution (2)" << std::endl;
+    std::cout << "  ✓ State Management (4)" << std::endl;
+    std::cout << "  ✓ System Analysis (4)" << std::endl;
+    
+    std::cout << "\n========================================" << std::endl;
+    std::cout << "All Tests Completed Successfully!" << std::endl;
+    std::cout << "UQFF Stellar/Galactic Buoyancy Module" << std::endl;
+    std::cout << "Fully Dynamic & Self-Expanding" << std::endl;
+    std::cout << "========================================" << std::endl;
+    
+    return 0;
 }

@@ -19,6 +19,12 @@
 #include <iostream>
 #include <iomanip>
 #include <complex>
+#include <vector>
+#include <functional>
+#include <random>
+#include <algorithm>
+#include <sstream>
+#include <fstream>
 
 using cdouble = std::complex<double>;
 
@@ -59,6 +65,49 @@ public:
 
     // Print all current variables (for debugging/updates)
     void printVariables();
+    
+    // ====== Dynamic Self-Update & Self-Expansion Methods ======
+    
+    // Variable Management
+    void createVariable(const std::string& name, cdouble value);
+    void removeVariable(const std::string& name);
+    void cloneVariable(const std::string& source, const std::string& dest);
+    std::vector<std::string> listVariables() const;
+    std::string getSystemName() const;
+    
+    // Batch Operations
+    void transformVariableGroup(const std::vector<std::string>& names, std::function<cdouble(cdouble)> transform);
+    void scaleVariableGroup(const std::vector<std::string>& names, cdouble scale_factor);
+    
+    // Self-Expansion (Domain-Specific for Abell 2256 Galaxy Cluster)
+    void expandParameterSpace(double expansion_factor);
+    void expandClusterScale(double mass_factor, double radius_factor);
+    void expandForceScale(double dpm_factor, double lenr_factor);
+    void expandICMScale(double gas_factor, double magnetic_factor);
+    
+    // Self-Refinement
+    void autoRefineParameters(double tolerance);
+    void calibrateToObservations(const std::map<std::string, cdouble>& observations);
+    void optimizeForMetric(const std::string& metric);
+    
+    // Parameter Exploration
+    std::vector<std::map<std::string, cdouble>> generateVariations(int count, double variation_range);
+    
+    // Adaptive Evolution
+    void mutateParameters(double mutation_rate);
+    void evolveSystem(int generations, std::function<double(const Abell2256UQFFModule&)> fitness);
+    
+    // State Management
+    void saveState(const std::string& state_name);
+    void restoreState(const std::string& state_name);
+    std::vector<std::string> listSavedStates() const;
+    std::string exportState() const;
+    
+    // System Analysis
+    std::map<std::string, double> sensitivityAnalysis(const std::string& output_var, double delta);
+    std::string generateReport() const;
+    bool validateConsistency() const;
+    void autoCorrectAnomalies();
 };
 
 #endif // ABELL2256_UQFF_MODULE_H
@@ -308,7 +357,488 @@ void Abell2256UQFFModule::printVariables() {
     }
 }
 
+// ====== Dynamic Self-Update & Self-Expansion Method Implementations ======
+
+namespace saved_states_abell2256 {
+    std::map<std::string, std::map<std::string, cdouble>> states;
+}
+
+// Variable Management
+void Abell2256UQFFModule::createVariable(const std::string& name, cdouble value) {
+    variables[name] = value;
+}
+
+void Abell2256UQFFModule::removeVariable(const std::string& name) {
+    variables.erase(name);
+}
+
+void Abell2256UQFFModule::cloneVariable(const std::string& source, const std::string& dest) {
+    if (variables.find(source) != variables.end()) {
+        variables[dest] = variables[source];
+    }
+}
+
+std::vector<std::string> Abell2256UQFFModule::listVariables() const {
+    std::vector<std::string> names;
+    for (const auto& pair : variables) {
+        names.push_back(pair.first);
+    }
+    return names;
+}
+
+std::string Abell2256UQFFModule::getSystemName() const {
+    return "Abell2256_Cluster_UQFF";
+}
+
+// Batch Operations
+void Abell2256UQFFModule::transformVariableGroup(const std::vector<std::string>& names, 
+                                                  std::function<cdouble(cdouble)> transform) {
+    for (const auto& name : names) {
+        if (variables.find(name) != variables.end()) {
+            variables[name] = transform(variables[name]);
+        }
+    }
+}
+
+void Abell2256UQFFModule::scaleVariableGroup(const std::vector<std::string>& names, cdouble scale_factor) {
+    transformVariableGroup(names, [scale_factor](cdouble v) { return v * scale_factor; });
+}
+
+// Self-Expansion (Domain-Specific for Abell 2256 Galaxy Cluster)
+void Abell2256UQFFModule::expandParameterSpace(double expansion_factor) {
+    // Scale key exploration parameters
+    std::vector<std::string> explore_params = {"k_LENR", "k_act", "k_DE", "k_neutron", "k_rel"};
+    scaleVariableGroup(explore_params, {expansion_factor, 0.0});
+}
+
+void Abell2256UQFFModule::expandClusterScale(double mass_factor, double radius_factor) {
+    // Expand galaxy cluster scale: M500 mass and virial radius
+    variables["M"] *= cdouble(mass_factor, 0.0);
+    variables["r"] *= cdouble(radius_factor, 0.0);
+    
+    // Adjust dependent parameters: X-ray luminosity scales with M and r
+    // L_X ~ M^(4/3) / r^2 for cluster
+    if (variables.find("L_X") != variables.end()) {
+        variables["L_X"] *= cdouble(std::pow(mass_factor, 4.0/3.0) / (radius_factor * radius_factor), 0.0);
+    }
+    // ICM gas density scales inversely with volume
+    if (variables.find("rho_gas") != variables.end()) {
+        variables["rho_gas"] *= cdouble(mass_factor / (radius_factor * radius_factor * radius_factor), 0.0);
+    }
+    // Velocity dispersion scales with sqrt(M/r)
+    if (variables.find("velocity_dispersion") != variables.end()) {
+        variables["velocity_dispersion"] *= cdouble(std::sqrt(mass_factor / radius_factor), 0.0);
+    }
+}
+
+void Abell2256UQFFModule::expandForceScale(double dpm_factor, double lenr_factor) {
+    // Expand force coupling terms
+    variables["DPM_momentum"] *= cdouble(dpm_factor, 0.0);
+    variables["DPM_gravity"] *= cdouble(dpm_factor, 0.0);
+    variables["DPM_stability"] *= cdouble(dpm_factor, 0.0);
+    variables["k_LENR"] *= cdouble(lenr_factor, 0.0);
+}
+
+void Abell2256UQFFModule::expandICMScale(double gas_factor, double magnetic_factor) {
+    // Expand intracluster medium (ICM) features: gas density and magnetic field
+    if (variables.find("rho_gas") != variables.end()) {
+        variables["rho_gas"] *= cdouble(gas_factor, 0.0);
+    }
+    if (variables.find("B0") != variables.end()) {
+        variables["B0"] *= cdouble(magnetic_factor, 0.0);
+    }
+    // X-ray luminosity scales with gas density and magnetic field
+    if (variables.find("L_X") != variables.end()) {
+        variables["L_X"] *= cdouble(gas_factor * gas_factor * std::sqrt(magnetic_factor), 0.0);
+    }
+    // Magnetic energy density
+    if (variables.find("u_magnetic") != variables.end()) {
+        variables["u_magnetic"] *= cdouble(magnetic_factor * magnetic_factor, 0.0);
+    }
+}
+
+// Self-Refinement
+void Abell2256UQFFModule::autoRefineParameters(double tolerance) {
+    // Iteratively adjust parameters to minimize force residual
+    for (int iter = 0; iter < 100; ++iter) {
+        cdouble F_current = computeF(variables["t"].real());
+        if (std::abs(F_current) < tolerance) break;
+        
+        // Adjust key parameters slightly
+        variables["k_LENR"] *= cdouble(0.99, 0.0);
+        variables["DPM_momentum"] *= cdouble(1.01, 0.0);
+    }
+}
+
+void Abell2256UQFFModule::calibrateToObservations(const std::map<std::string, cdouble>& observations) {
+    // Update variables based on observational data
+    for (const auto& obs : observations) {
+        if (variables.find(obs.first) != variables.end()) {
+            variables[obs.first] = obs.second;
+        }
+    }
+}
+
+void Abell2256UQFFModule::optimizeForMetric(const std::string& metric) {
+    // Optimize parameters for specific metrics
+    if (metric == "standard_abell2256") {
+        variables["M"] = {1.23e45, 0.0};  // M500 = 6.2e14 M_sun
+        variables["r"] = {3.93e22, 0.0};  // ~1.3 Mpc
+        variables["L_X"] = {3.7e37, 0.0};
+        variables["B0"] = {1e-9, 0.0};
+    } else if (metric == "merger_peak") {
+        // Enhanced merger activity state
+        variables["velocity_dispersion"] = {2500e3, 0.0};  // 2500 km/s
+        variables["L_X"] *= cdouble(2.0, 0.0);
+        variables["B0"] *= cdouble(1.5, 0.0);
+    } else if (metric == "radio_bright") {
+        // Active radio halo/relic emission
+        variables["B0"] *= cdouble(3.0, 0.0);
+        variables["k_DE"] *= cdouble(10.0, 0.0);
+        variables["L_X"] *= cdouble(1.5, 0.0);
+    } else if (metric == "post_merger") {
+        // Relaxed post-merger state
+        variables["velocity_dispersion"] = {1200e3, 0.0};  // 1200 km/s
+        variables["B0"] *= cdouble(0.7, 0.0);
+        variables["L_X"] *= cdouble(0.8, 0.0);
+    } else if (metric == "cool_core") {
+        // Enhanced cool core state
+        variables["rho_gas"] *= cdouble(2.0, 0.0);
+        variables["L_X"] *= cdouble(1.3, 0.0);
+        double T_ICM = 6e7;  // Cooler core temperature
+    }
+}
+
+// Parameter Exploration
+std::vector<std::map<std::string, cdouble>> Abell2256UQFFModule::generateVariations(int count, double variation_range) {
+    std::vector<std::map<std::string, cdouble>> variations;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(1.0 - variation_range, 1.0 + variation_range);
+    
+    for (int i = 0; i < count; ++i) {
+        std::map<std::string, cdouble> variant = variables;
+        for (auto& pair : variant) {
+            double scale = dis(gen);
+            pair.second = pair.second * cdouble(scale, 1.0);
+        }
+        variations.push_back(variant);
+    }
+    return variations;
+}
+
+// Adaptive Evolution
+void Abell2256UQFFModule::mutateParameters(double mutation_rate) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(1.0 - mutation_rate, 1.0 + mutation_rate);
+    
+    for (auto& pair : variables) {
+        double scale = dis(gen);
+        pair.second = pair.second * cdouble(scale, 1.0);
+    }
+}
+
+void Abell2256UQFFModule::evolveSystem(int generations, std::function<double(const Abell2256UQFFModule&)> fitness) {
+    double best_fitness = fitness(*this);
+    std::map<std::string, cdouble> best_state = variables;
+    
+    for (int gen = 0; gen < generations; ++gen) {
+        mutateParameters(0.05);
+        double current_fitness = fitness(*this);
+        
+        if (current_fitness > best_fitness) {
+            best_fitness = current_fitness;
+            best_state = variables;
+        } else {
+            variables = best_state;
+        }
+    }
+}
+
+// State Management
+void Abell2256UQFFModule::saveState(const std::string& state_name) {
+    saved_states_abell2256::states[state_name] = variables;
+}
+
+void Abell2256UQFFModule::restoreState(const std::string& state_name) {
+    if (saved_states_abell2256::states.find(state_name) != saved_states_abell2256::states.end()) {
+        variables = saved_states_abell2256::states[state_name];
+    }
+}
+
+std::vector<std::string> Abell2256UQFFModule::listSavedStates() const {
+    std::vector<std::string> names;
+    for (const auto& pair : saved_states_abell2256::states) {
+        names.push_back(pair.first);
+    }
+    return names;
+}
+
+std::string Abell2256UQFFModule::exportState() const {
+    std::ostringstream oss;
+    for (const auto& pair : variables) {
+        oss << pair.first << "=" << pair.second.real() << "+i*" << pair.second.imag() << ";";
+    }
+    return oss.str();
+}
+
+// System Analysis
+std::map<std::string, double> Abell2256UQFFModule::sensitivityAnalysis(const std::string& output_var, double delta) {
+    std::map<std::string, double> sensitivities;
+    cdouble baseline = computeF(variables["t"].real());
+    
+    for (auto& pair : variables) {
+        cdouble original = pair.second;
+        pair.second = original * cdouble(1.0 + delta, 1.0);
+        cdouble perturbed = computeF(variables["t"].real());
+        
+        double sensitivity = std::abs(perturbed - baseline) / std::abs(baseline);
+        sensitivities[pair.first] = sensitivity;
+        
+        pair.second = original;
+    }
+    return sensitivities;
+}
+
+std::string Abell2256UQFFModule::generateReport() const {
+    std::ostringstream report;
+    report << "=== Abell 2256 Galaxy Cluster UQFF System Report ===\n";
+    report << "System: " << getSystemName() << "\n";
+    report << "Total Variables: " << variables.size() << "\n";
+    report << "Key Parameters:\n";
+    report << "  M (M500) = " << std::scientific << variables.at("M").real() << " kg (";
+    report << (variables.at("M").real() / 1.989e30 / 1e14) << " ×10^14 M_sun)\n";
+    report << "  r (Virial Radius) = " << variables.at("r").real() << " m (";
+    report << (variables.at("r").real() / 3.086e22) << " Mpc)\n";
+    report << "  L_X (X-ray Luminosity) = " << variables.at("L_X").real() << " W\n";
+    report << "  B0 (ICM Magnetic Field) = " << variables.at("B0").real() << " T (";
+    report << (variables.at("B0").real() * 1e9) << " nG)\n";
+    report << "  rho_gas (ICM Gas Density) = " << variables.at("rho_gas").real() << " kg/m^3\n";
+    report << "  t (Merger Age) = " << variables.at("t").real() << " s (";
+    report << (variables.at("t").real() / 3.156e7 / 1e9) << " Gyr)\n";
+    report << "Cluster Type: Major-minor merger with radio halo/relics\n";
+    report << "Redshift: z = 0.058, Distance ~250 Mpc\n";
+    report << "Radio Spectral Index: α ≈ -1.56\n";
+    report << "Velocity Dispersion: ~1700 km/s\n";
+    
+    return report.str();
+}
+
+bool Abell2256UQFFModule::validateConsistency() const {
+    // Check physical constraints for Abell 2256 galaxy cluster
+    double M_val = variables.at("M").real();
+    double r_val = variables.at("r").real();
+    double L_X_val = variables.at("L_X").real();
+    double B_val = variables.at("B0").real();
+    double rho_val = variables.at("rho_gas").real();
+    
+    bool valid = true;
+    if (M_val < 1e44 || M_val > 1e46) valid = false;  // 5×10^13 - 5×10^15 M_sun
+    if (r_val < 1e21 || r_val > 1e24) valid = false;  // 0.03 - 30 Mpc cluster scale
+    if (L_X_val < 1e35 || L_X_val > 1e39) valid = false;  // X-ray luminosity range
+    if (B_val < 1e-11 || B_val > 1e-7) valid = false;  // 0.01 - 1000 nG
+    if (rho_val < 1e-26 || rho_val > 1e-22) valid = false;  // ICM density range
+    
+    return valid;
+}
+
+void Abell2256UQFFModule::autoCorrectAnomalies() {
+    // Clamp parameters to physically reasonable ranges
+    double M_val = variables["M"].real();
+    double r_val = variables["r"].real();
+    double L_X_val = variables["L_X"].real();
+    double B_val = variables["B0"].real();
+    double rho_val = variables["rho_gas"].real();
+    
+    if (M_val < 1e44) variables["M"] = {1e44, 0.0};
+    if (M_val > 1e46) variables["M"] = {1e46, 0.0};
+    if (r_val < 1e21) variables["r"] = {1e21, 0.0};
+    if (r_val > 1e24) variables["r"] = {1e24, 0.0};
+    if (L_X_val < 1e35) variables["L_X"] = {1e35, 0.0};
+    if (L_X_val > 1e39) variables["L_X"] = {1e39, 0.0};
+    if (B_val < 1e-11) variables["B0"] = {1e-11, 0.0};
+    if (B_val > 1e-7) variables["B0"] = {1e-7, 0.0};
+    if (rho_val < 1e-26) variables["rho_gas"] = {1e-26, 0.0};
+    if (rho_val > 1e-22) variables["rho_gas"] = {1e-22, 0.0};
+}
+
 // Example usage in base program 'abell_sim.cpp' (snippet for integration)
+/*
+=============================================================================
+COMPREHENSIVE DEMONSTRATION: Abell 2256 Galaxy Cluster Dynamic UQFF Module Enhancement
+=============================================================================
+
+#include "source153.cpp"  // or link against compiled module
+
+int main() {
+    std::cout << "=== Abell 2256 Galaxy Cluster UQFF Dynamic Enhancement Test ===" << std::endl;
+    
+    // Initialize module with default parameters
+    Abell2256UQFFModule abell;
+    
+    // === Test 1: Variable Management ===
+    std::cout << "\n--- Test 1: Variable Management ---" << std::endl;
+    abell.createVariable("test_merger_param", {1e40, 5e35});
+    abell.cloneVariable("M", "M_backup");
+    std::vector<std::string> vars = abell.listVariables();
+    std::cout << "Total variables: " << vars.size() << std::endl;
+    std::cout << "System Name: " << abell.getSystemName() << std::endl;
+    
+    // === Test 2: Batch Operations ===
+    std::cout << "\n--- Test 2: Batch Operations ---" << std::endl;
+    std::vector<std::string> force_params = {"k_LENR", "k_act", "k_DE"};
+    abell.scaleVariableGroup(force_params, {1.5, 0.0});
+    std::cout << "Scaled force parameters by 1.5x" << std::endl;
+    
+    // === Test 3: Self-Expansion (Cluster Scale) ===
+    std::cout << "\n--- Test 3: Cluster Scale Expansion ---" << std::endl;
+    abell.saveState("before_cluster_expansion");
+    abell.expandClusterScale(1.3, 1.2);  // 30% more mass, 20% larger radius
+    std::cout << "Expanded cluster scale: M×1.3, r×1.2" << std::endl;
+    std::cout << "New M = " << abell.variables["M"].real() << " kg" << std::endl;
+    std::cout << "New r = " << abell.variables["r"].real() << " m" << std::endl;
+    abell.restoreState("before_cluster_expansion");
+    
+    // === Test 4: Self-Expansion (Force Scale) ===
+    std::cout << "\n--- Test 4: Force Scale Expansion ---" << std::endl;
+    abell.expandForceScale(2.0, 1.5);  // Double DPM, increase LENR by 50%
+    std::cout << "Expanded force coupling: DPM×2.0, LENR×1.5" << std::endl;
+    
+    // === Test 5: Self-Expansion (ICM Scale) ===
+    std::cout << "\n--- Test 5: ICM Scale Expansion ---" << std::endl;
+    abell.saveState("before_icm_expansion");
+    abell.expandICMScale(1.5, 1.8);  // 50% more gas, 80% stronger magnetic field
+    std::cout << "Expanded ICM scale: gas×1.5, B×1.8" << std::endl;
+    std::cout << "New rho_gas = " << abell.variables["rho_gas"].real() << " kg/m^3" << std::endl;
+    std::cout << "New B0 = " << abell.variables["B0"].real() << " T" << std::endl;
+    abell.restoreState("before_icm_expansion");
+    
+    // === Test 6: Parameter Space Expansion ===
+    std::cout << "\n--- Test 6: Parameter Space Expansion ---" << std::endl;
+    abell.expandParameterSpace(1.25);
+    std::cout << "Expanded exploration parameters by 25%" << std::endl;
+    
+    // === Test 7: Auto-Refinement ===
+    std::cout << "\n--- Test 7: Auto-Refinement ---" << std::endl;
+    abell.autoRefineParameters(1e200);
+    std::cout << "Auto-refined parameters to minimize force residual" << std::endl;
+    
+    // === Test 8: Calibration to Observations ===
+    std::cout << "\n--- Test 8: Calibration to Observations ---" << std::endl;
+    std::map<std::string, cdouble> observations = {
+        {"M", {1.23e45, 0.0}},
+        {"L_X", {3.7e37, 0.0}},
+        {"B0", {1.2e-9, 0.0}}
+    };
+    abell.calibrateToObservations(observations);
+    std::cout << "Calibrated to observational data" << std::endl;
+    
+    // === Test 9: Optimization for Metrics ===
+    std::cout << "\n--- Test 9: Optimization for Standard Abell2256 ---" << std::endl;
+    abell.saveState("before_optimization");
+    abell.optimizeForMetric("standard_abell2256");
+    std::cout << "Optimized for standard Abell 2256 cluster state" << std::endl;
+    
+    std::cout << "\n--- Test 10: Optimization for Merger Peak ---" << std::endl;
+    abell.optimizeForMetric("merger_peak");
+    std::cout << "Optimized for enhanced merger activity" << std::endl;
+    std::cout << "L_X = " << abell.variables["L_X"].real() << " W" << std::endl;
+    
+    std::cout << "\n--- Test 11: Optimization for Radio Bright State ---" << std::endl;
+    abell.optimizeForMetric("radio_bright");
+    std::cout << "Optimized for active radio halo/relic emission" << std::endl;
+    std::cout << "B0 = " << abell.variables["B0"].real() << " T" << std::endl;
+    
+    abell.restoreState("before_optimization");
+    
+    // === Test 12: Parameter Variations ===
+    std::cout << "\n--- Test 12: Parameter Variations ---" << std::endl;
+    auto variations = abell.generateVariations(5, 0.1);
+    std::cout << "Generated " << variations.size() << " parameter variations (±10%)" << std::endl;
+    
+    // === Test 13: Mutation ===
+    std::cout << "\n--- Test 13: Parameter Mutation ---" << std::endl;
+    abell.saveState("before_mutation");
+    abell.mutateParameters(0.05);
+    std::cout << "Applied 5% mutation to all parameters" << std::endl;
+    abell.restoreState("before_mutation");
+    
+    // === Test 14: Evolutionary Optimization ===
+    std::cout << "\n--- Test 14: Evolutionary Optimization ---" << std::endl;
+    auto fitness = [](const Abell2256UQFFModule& m) -> double {
+        double F_mag = std::abs(m.computeF(m.variables.at("t").real()));
+        return 1.0 / (1.0 + F_mag / 1e210);  // Minimize force magnitude
+    };
+    abell.evolveSystem(10, fitness);
+    std::cout << "Evolved system over 10 generations" << std::endl;
+    
+    // === Test 15: State Management ===
+    std::cout << "\n--- Test 15: State Management ---" << std::endl;
+    abell.saveState("final_abell2256_state");
+    std::vector<std::string> states = abell.listSavedStates();
+    std::cout << "Saved states: " << states.size() << std::endl;
+    for (const auto& state : states) {
+        std::cout << "  - " << state << std::endl;
+    }
+    
+    // === Test 16: State Export ===
+    std::cout << "\n--- Test 16: State Export ---" << std::endl;
+    std::string exported = abell.exportState();
+    std::cout << "Exported state (first 200 chars): " << exported.substr(0, 200) << "..." << std::endl;
+    
+    // === Test 17: Sensitivity Analysis ===
+    std::cout << "\n--- Test 17: Sensitivity Analysis ---" << std::endl;
+    auto sensitivities = abell.sensitivityAnalysis("F", 0.01);
+    std::cout << "Top 5 sensitive parameters:" << std::endl;
+    std::vector<std::pair<std::string, double>> sorted_sens(sensitivities.begin(), sensitivities.end());
+    std::sort(sorted_sens.begin(), sorted_sens.end(), 
+              [](const auto& a, const auto& b) { return a.second > b.second; });
+    for (int i = 0; i < std::min(5, (int)sorted_sens.size()); ++i) {
+        std::cout << "  " << sorted_sens[i].first << ": " << sorted_sens[i].second << std::endl;
+    }
+    
+    // === Test 18: System Report ===
+    std::cout << "\n--- Test 18: System Report ---" << std::endl;
+    std::string report = abell.generateReport();
+    std::cout << report << std::endl;
+    
+    // === Test 19: Consistency Validation ===
+    std::cout << "\n--- Test 19: Consistency Validation ---" << std::endl;
+    bool is_valid = abell.validateConsistency();
+    std::cout << "System consistency: " << (is_valid ? "VALID" : "INVALID") << std::endl;
+    
+    // === Test 20: Anomaly Correction ===
+    std::cout << "\n--- Test 20: Anomaly Auto-Correction ---" << std::endl;
+    abell.variables["M"] = {1e40, 0.0};  // Unphysical low mass
+    std::cout << "Injected anomaly: M = " << abell.variables["M"].real() << " kg" << std::endl;
+    abell.autoCorrectAnomalies();
+    std::cout << "Auto-corrected M = " << abell.variables["M"].real() << " kg" << std::endl;
+    
+    // === Final Force Computation ===
+    std::cout << "\n=== Final Force Computation ===" << std::endl;
+    double t_test = 6.31e15;  // 0.2 Gyr
+    cdouble F_final = abell.computeF(t_test);
+    std::cout << "F_U(t=" << t_test << " s) = " << std::scientific << std::setprecision(10)
+              << F_final.real() << " + i " << F_final.imag() << " N" << std::endl;
+    std::cout << "|F_U| = " << std::abs(F_final) << " N" << std::endl;
+    
+    std::cout << "\n=== All 20 Tests Completed Successfully ===" << std::endl;
+    std::cout << "Abell 2256 UQFF module now supports:" << std::endl;
+    std::cout << "  ✓ Variable management (create, remove, clone, list)" << std::endl;
+    std::cout << "  ✓ Batch operations (transform, scale groups)" << std::endl;
+    std::cout << "  ✓ Self-expansion (cluster scale, force scale, ICM scale)" << std::endl;
+    std::cout << "  ✓ Self-refinement (auto-refine, calibrate, optimize)" << std::endl;
+    std::cout << "  ✓ Parameter exploration (variations, sensitivity)" << std::endl;
+    std::cout << "  ✓ Adaptive evolution (mutation, fitness-based evolution)" << std::endl;
+    std::cout << "  ✓ State management (save, restore, export)" << std::endl;
+    std::cout << "  ✓ System analysis (report, validation, anomaly correction)" << std::endl;
+    
+    return 0;
+}
+
+=============================================================================
+*/
 // #include "Abell2256UQFFModule.h"
 // #include <complex>
 // int main() {

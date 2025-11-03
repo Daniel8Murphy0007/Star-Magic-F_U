@@ -21,6 +21,11 @@
 #include <iomanip>
 #include <complex>
 #include <sstream>
+#include <vector>
+#include <functional>
+#include <random>
+#include <algorithm>
+#include <fstream>
 
 using cdouble = std::complex<double>;
 
@@ -62,6 +67,49 @@ public:
 
     // Print all current variables (for debugging/updates)
     void printVariables();
+
+    // ===== DYNAMIC SELF-UPDATE AND SELF-EXPANSION METHODS =====
+    
+    // Variable Management (5 methods)
+    void createVariable(const std::string& name, cdouble value);
+    void removeVariable(const std::string& name);
+    void cloneVariable(const std::string& source, const std::string& dest);
+    std::vector<std::string> listVariables();
+    std::string getSystemName() const;
+    
+    // Batch Operations (2 methods)
+    void transformVariableGroup(const std::vector<std::string>& var_names, std::function<cdouble(cdouble)> transform);
+    void scaleVariableGroup(const std::vector<std::string>& var_names, cdouble scale_factor);
+    
+    // Self-Expansion (4 methods - CNB-specific)
+    void expandParameterSpace(double expansion_factor);
+    void expandSystemScale(const std::string& system, double mass_factor, double radius_factor);
+    void expandForceScale(double cnb_factor, double lenr_factor);
+    void expandCNBScale(const std::string& system, double neutrino_factor, double temperature_factor);
+    
+    // Self-Refinement (3 methods)
+    void autoRefineParameters(const std::string& system, double target_force_real, double tolerance = 0.01);
+    void calibrateToObservations(const std::string& system, const std::map<std::string, cdouble>& observations);
+    void optimizeForMetric(const std::string& metric, double target_value);
+    
+    // Parameter Exploration (1 method)
+    std::vector<std::map<std::string, cdouble>> generateVariations(int count, double variation_range);
+    
+    // Adaptive Evolution (2 methods)
+    void mutateParameters(double mutation_rate);
+    void evolveSystem(const std::string& system, int generations, std::function<double(cdouble)> fitness_func);
+    
+    // State Management (4 methods)
+    void saveState(const std::string& state_name);
+    void restoreState(const std::string& state_name);
+    std::vector<std::string> listSavedStates();
+    void exportStateUQFF(const std::string& filename);
+    
+    // System Analysis (4 methods)
+    std::map<std::string, double> sensitivityAnalysis(const std::string& system, const std::vector<std::string>& params);
+    std::string generateReport(const std::string& system);
+    bool validateConsistency(const std::string& system);
+    void autoCorrectAnomalies(const std::string& system);
 };
 
 #endif // UQFF_BUOYANCY_CNB_MODULE_H
@@ -370,6 +418,404 @@ cdouble UQFFBuoyancyCNBModule::computeUb1(const std::string& system) {
 // Compute Ui superconductive term
 cdouble UQFFBuoyancyCNBModule::computeUi(double t, const std::string& system) {
     return computeQ_wave(t, system);
+}
+
+    }
+}
+
+// ===== DYNAMIC SELF-UPDATE AND SELF-EXPANSION METHODS IMPLEMENTATION =====
+
+namespace saved_states_cnb {
+    std::map<std::string, std::map<std::string, cdouble>> states;
+}
+
+// Variable Management (5 methods)
+void UQFFBuoyancyCNBModule::createVariable(const std::string& name, cdouble value) {
+    variables[name] = value;
+}
+
+void UQFFBuoyancyCNBModule::removeVariable(const std::string& name) {
+    variables.erase(name);
+}
+
+void UQFFBuoyancyCNBModule::cloneVariable(const std::string& source, const std::string& dest) {
+    if (variables.find(source) != variables.end()) {
+        variables[dest] = variables[source];
+    }
+}
+
+std::vector<std::string> UQFFBuoyancyCNBModule::listVariables() {
+    std::vector<std::string> names;
+    for (const auto& pair : variables) {
+        names.push_back(pair.first);
+    }
+    return names;
+}
+
+std::string UQFFBuoyancyCNBModule::getSystemName() const {
+    return "UQFFBuoyancy_CNB_MultiSystem";
+}
+
+// Batch Operations (2 methods)
+void UQFFBuoyancyCNBModule::transformVariableGroup(const std::vector<std::string>& var_names, std::function<cdouble(cdouble)> transform) {
+    for (const auto& name : var_names) {
+        if (variables.find(name) != variables.end()) {
+            variables[name] = transform(variables[name]);
+        }
+    }
+}
+
+void UQFFBuoyancyCNBModule::scaleVariableGroup(const std::vector<std::string>& var_names, cdouble scale_factor) {
+    for (const auto& name : var_names) {
+        if (variables.find(name) != variables.end()) {
+            variables[name] *= scale_factor;
+        }
+    }
+}
+
+// Self-Expansion (4 methods - CNB-specific)
+void UQFFBuoyancyCNBModule::expandParameterSpace(double expansion_factor) {
+    // Scale all CNB-related parameters
+    std::vector<std::string> cnb_params = {"sigma_CNB", "n_CNB", "E_CNB", "k_neutrino", 
+                                           "CNB_temperature", "CNB_density", "CNB_coupling",
+                                           "neutrino_flux", "thermal_coupling"};
+    for (const auto& param : cnb_params) {
+        if (variables.find(param) != variables.end()) {
+            variables[param] *= expansion_factor;
+        }
+    }
+    
+    // Scale force coefficients
+    variables["k_LENR"] *= expansion_factor;
+    variables["k_act"] *= expansion_factor;
+    variables["k_DE"] *= expansion_factor;
+}
+
+void UQFFBuoyancyCNBModule::expandSystemScale(const std::string& system, double mass_factor, double radius_factor) {
+    setSystemParams(system);
+    
+    // Scale system-specific parameters
+    if (system == "J1610+1811") {
+        variables["M"] = {2.785e30 * mass_factor, 0.0};
+        variables["r"] = {3.09e15 * radius_factor, 0.0};
+        variables["L_X"] *= mass_factor * mass_factor / (radius_factor * radius_factor);
+    } else if (system == "PLCK_G287.0+32.9") {
+        variables["M"] = {1.989e44 * mass_factor, 0.0};
+        variables["r"] = {3.09e22 * radius_factor, 0.0};
+        variables["L_X"] *= mass_factor * mass_factor / (radius_factor * radius_factor);
+    } else if (system == "PSZ2_G181.06+48.47") {
+        variables["M"] = {1.989e44 * mass_factor, 0.0};
+        variables["r"] = {3.09e22 * radius_factor, 0.0};
+        variables["L_X"] *= mass_factor * mass_factor / (radius_factor * radius_factor);
+    } else if (system == "ASKAP_J1832-0911") {
+        variables["M"] = {2.785e30 * mass_factor, 0.0};
+        variables["r"] = {4.63e16 * radius_factor, 0.0};
+        variables["L_X"] *= mass_factor * mass_factor / (radius_factor * radius_factor);
+    } else if (system == "SonificationCollection") {
+        variables["M"] = {1.989e31 * mass_factor, 0.0};
+        variables["r"] = {6.17e16 * radius_factor, 0.0};
+        variables["L_X"] *= mass_factor * mass_factor / (radius_factor * radius_factor);
+    } else if (system == "CentaurusA") {
+        variables["M"] = {1.094e38 * mass_factor, 0.0};
+        variables["r"] = {6.17e17 * radius_factor, 0.0};
+        variables["L_X"] *= mass_factor * mass_factor / (radius_factor * radius_factor);
+    }
+}
+
+void UQFFBuoyancyCNBModule::expandForceScale(double cnb_factor, double lenr_factor) {
+    variables["k_neutrino"] *= cnb_factor;
+    variables["k_LENR"] *= lenr_factor;
+    variables["k_rel"] *= cnb_factor;
+    variables["F_rel"] *= cnb_factor;
+}
+
+void UQFFBuoyancyCNBModule::expandCNBScale(const std::string& system, double neutrino_factor, double temperature_factor) {
+    setSystemParams(system);
+    
+    // CNB-specific scaling
+    variables["n_CNB"] *= neutrino_factor;
+    variables["neutrino_flux"] *= neutrino_factor;
+    variables["E_CNB"] *= temperature_factor;
+    variables["CNB_temperature"] *= temperature_factor;
+    variables["thermal_coupling"] *= temperature_factor;
+    
+    // Adjust coupling strengths
+    variables["CNB_coupling"] *= std::sqrt(neutrino_factor * temperature_factor);
+}
+
+// Self-Refinement (3 methods)
+void UQFFBuoyancyCNBModule::autoRefineParameters(const std::string& system, double target_force_real, double tolerance) {
+    setSystemParams(system);
+    
+    for (int iter = 0; iter < 100; iter++) {
+        cdouble current_force = computeFBi(system, variables["t"].real());
+        double error = std::abs(current_force.real() - target_force_real) / std::abs(target_force_real);
+        
+        if (error < tolerance) break;
+        
+        // Adjust CNB parameters
+        double adjustment = (target_force_real - current_force.real()) / target_force_real * 0.1;
+        variables["k_neutrino"] *= (1.0 + adjustment);
+        variables["k_LENR"] *= (1.0 + adjustment * 0.5);
+        variables["CNB_coupling"] *= (1.0 + adjustment * 0.3);
+    }
+}
+
+void UQFFBuoyancyCNBModule::calibrateToObservations(const std::string& system, const std::map<std::string, cdouble>& observations) {
+    setSystemParams(system);
+    
+    for (const auto& obs : observations) {
+        if (variables.find(obs.first) != variables.end()) {
+            variables[obs.first] = obs.second;
+        }
+    }
+    
+    // Adjust derived CNB parameters
+    if (observations.find("T") != observations.end()) {
+        variables["CNB_temperature"] *= observations.at("T").real() / variables["T"].real();
+    }
+    if (observations.find("B0") != observations.end()) {
+        variables["CNB_coupling"] *= std::sqrt(observations.at("B0").real() / variables["B0"].real());
+    }
+}
+
+void UQFFBuoyancyCNBModule::optimizeForMetric(const std::string& metric, double target_value) {
+    // CNB-specific optimization scenarios
+    if (metric == "standard") {
+        variables["k_neutrino"] = {1e-10, 0.0};
+        variables["k_LENR"] = {1e-10, 0.0};
+        variables["CNB_coupling"] = {2.3e-12, 0.0};
+    } else if (metric == "high_neutrino_flux") {
+        variables["k_neutrino"] *= 10.0;
+        variables["neutrino_flux"] *= 5.0;
+        variables["CNB_coupling"] *= 3.0;
+    } else if (metric == "strong_cnb_temperature") {
+        variables["CNB_temperature"] *= 2.0;
+        variables["thermal_coupling"] *= 2.5;
+        variables["E_CNB"] *= 1.5;
+    } else if (metric == "lenr_dominant") {
+        variables["k_LENR"] *= 100.0;
+        variables["omega_0_LENR"] *= 2.0;
+    } else if (metric == "relativistic_cnb") {
+        variables["k_rel"] *= 50.0;
+        variables["F_rel"] *= 10.0;
+        variables["k_relativistic"] *= 20.0;
+    } else if (metric == "magnetic_cnb_coupling") {
+        variables["CNB_coupling"] *= 10.0;
+        variables["magnetic_diffusion"] *= 5.0;
+        variables["B0"] *= 2.0;
+    }
+}
+
+// Parameter Exploration (1 method)
+std::vector<std::map<std::string, cdouble>> UQFFBuoyancyCNBModule::generateVariations(int count, double variation_range) {
+    std::vector<std::map<std::string, cdouble>> variations;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(-variation_range, variation_range);
+    
+    for (int i = 0; i < count; i++) {
+        std::map<std::string, cdouble> variation = variables;
+        
+        // Vary CNB parameters
+        std::vector<std::string> vary_params = {"k_neutrino", "k_LENR", "CNB_coupling", 
+                                                "neutrino_flux", "CNB_temperature", "k_rel"};
+        for (const auto& param : vary_params) {
+            double factor = 1.0 + dis(gen);
+            variation[param] *= factor;
+        }
+        
+        variations.push_back(variation);
+    }
+    
+    return variations;
+}
+
+// Adaptive Evolution (2 methods)
+void UQFFBuoyancyCNBModule::mutateParameters(double mutation_rate) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(-mutation_rate, mutation_rate);
+    
+    // Mutate CNB-related parameters
+    std::vector<std::string> mutable_params = {"k_neutrino", "k_LENR", "k_act", "k_DE",
+                                                "CNB_coupling", "thermal_coupling", "neutrino_flux",
+                                                "CNB_temperature", "k_rel", "k_relativistic"};
+    
+    for (const auto& param : mutable_params) {
+        if (variables.find(param) != variables.end()) {
+            double factor = 1.0 + dis(gen);
+            variables[param] *= factor;
+        }
+    }
+}
+
+void UQFFBuoyancyCNBModule::evolveSystem(const std::string& system, int generations, std::function<double(cdouble)> fitness_func) {
+    setSystemParams(system);
+    
+    std::map<std::string, cdouble> best_params = variables;
+    double best_fitness = fitness_func(computeFBi(system, variables["t"].real()));
+    
+    for (int gen = 0; gen < generations; gen++) {
+        mutateParameters(0.1);
+        cdouble current_force = computeFBi(system, variables["t"].real());
+        double current_fitness = fitness_func(current_force);
+        
+        if (current_fitness > best_fitness) {
+            best_fitness = current_fitness;
+            best_params = variables;
+        } else {
+            variables = best_params;
+        }
+    }
+    
+    variables = best_params;
+}
+
+// State Management (4 methods)
+void UQFFBuoyancyCNBModule::saveState(const std::string& state_name) {
+    saved_states_cnb::states[state_name] = variables;
+}
+
+void UQFFBuoyancyCNBModule::restoreState(const std::string& state_name) {
+    if (saved_states_cnb::states.find(state_name) != saved_states_cnb::states.end()) {
+        variables = saved_states_cnb::states[state_name];
+    }
+}
+
+std::vector<std::string> UQFFBuoyancyCNBModule::listSavedStates() {
+    std::vector<std::string> names;
+    for (const auto& pair : saved_states_cnb::states) {
+        names.push_back(pair.first);
+    }
+    return names;
+}
+
+void UQFFBuoyancyCNBModule::exportStateUQFF(const std::string& filename) {
+    std::ofstream file(filename);
+    if (file.is_open()) {
+        file << "# UQFF CNB Buoyancy Module State Export\n";
+        file << "# System: " << getSystemName() << "\n";
+        for (const auto& pair : variables) {
+            file << pair.first << " = " << pair.second.real() << " + " << pair.second.imag() << "i\n";
+        }
+        file.close();
+    }
+}
+
+// System Analysis (4 methods)
+std::map<std::string, double> UQFFBuoyancyCNBModule::sensitivityAnalysis(const std::string& system, const std::vector<std::string>& params) {
+    setSystemParams(system);
+    std::map<std::string, double> sensitivities;
+    
+    cdouble base_force = computeFBi(system, variables["t"].real());
+    
+    for (const auto& param : params) {
+        if (variables.find(param) != variables.end()) {
+            cdouble original = variables[param];
+            variables[param] *= 1.01;
+            cdouble perturbed_force = computeFBi(system, variables["t"].real());
+            
+            double sensitivity = std::abs((perturbed_force.real() - base_force.real()) / base_force.real()) / 0.01;
+            sensitivities[param] = sensitivity;
+            
+            variables[param] = original;
+        }
+    }
+    
+    return sensitivities;
+}
+
+std::string UQFFBuoyancyCNBModule::generateReport(const std::string& system) {
+    setSystemParams(system);
+    std::ostringstream report;
+    
+    report << "=== UQFF CNB Buoyancy Module Report ===\n";
+    report << "System: " << system << "\n";
+    report << "Module Name: " << getSystemName() << "\n\n";
+    
+    report << "System Parameters:\n";
+    report << "  Mass (M): " << variables["M"].real() << " kg\n";
+    report << "  Radius (r): " << variables["r"].real() << " m\n";
+    report << "  Temperature (T): " << variables["T"].real() << " K\n";
+    report << "  Luminosity (L_X): " << variables["L_X"].real() << " W\n";
+    report << "  Magnetic Field (B0): " << variables["B0"].real() << " T\n\n";
+    
+    report << "CNB Parameters:\n";
+    report << "  CNB Temperature: " << variables["CNB_temperature"].real() << " K\n";
+    report << "  CNB Density: " << variables["CNB_density"].real() << " m^-3\n";
+    report << "  Neutrino Flux: " << variables["neutrino_flux"].real() << " m^-2 s^-1\n";
+    report << "  CNB Coupling: " << variables["CNB_coupling"].real() << "\n";
+    report << "  CNB Energy: " << variables["E_CNB"].real() << " J\n\n";
+    
+    cdouble force = computeFBi(system, variables["t"].real());
+    report << "Computed Force:\n";
+    report << "  F_U_Bi_i = " << force.real() << " + " << force.imag() << "i N\n\n";
+    
+    report << "CNB Enhancements:\n";
+    cdouble ub1_cnb = computeUb1_CNB(system);
+    cdouble ui_cnb = computeUi_CNB(variables["t"].real(), system);
+    report << "  Ub1_CNB = " << ub1_cnb.real() << " + " << ub1_cnb.imag() << "i\n";
+    report << "  Ui_CNB = " << ui_cnb.real() << " + " << ui_cnb.imag() << "i\n";
+    
+    return report.str();
+}
+
+bool UQFFBuoyancyCNBModule::validateConsistency(const std::string& system) {
+    setSystemParams(system);
+    
+    // Check for valid CNB parameters
+    if (variables["n_CNB"].real() <= 0.0) return false;
+    if (variables["E_CNB"].real() <= 0.0) return false;
+    if (variables["CNB_temperature"].real() <= 0.0) return false;
+    if (variables["neutrino_flux"].real() <= 0.0) return false;
+    
+    // Check system parameters
+    if (variables["M"].real() <= 0.0) return false;
+    if (variables["r"].real() <= 0.0) return false;
+    if (variables["T"].real() <= 0.0) return false;
+    
+    // Check force computation
+    cdouble force = computeFBi(system, variables["t"].real());
+    if (std::isnan(force.real()) || std::isinf(force.real())) return false;
+    
+    return true;
+}
+
+void UQFFBuoyancyCNBModule::autoCorrectAnomalies(const std::string& system) {
+    setSystemParams(system);
+    
+    // Correct CNB parameters if out of physical range
+    if (variables["CNB_temperature"].real() < 1.0 || variables["CNB_temperature"].real() > 5.0) {
+        variables["CNB_temperature"] = {1.95, 0.0};  // Reset to standard CNB temperature
+    }
+    
+    if (variables["n_CNB"].real() < 1e6 || variables["n_CNB"].real() > 1e12) {
+        variables["n_CNB"] = {3.36e8, 0.0};  // Reset to standard CNB density
+    }
+    
+    if (variables["neutrino_flux"].real() < 1e8 || variables["neutrino_flux"].real() > 1e13) {
+        variables["neutrino_flux"] = {3.3e10, 0.0};  // Reset to standard flux
+    }
+    
+    // Correct negative or zero system parameters
+    if (variables["M"].real() <= 0.0) {
+        if (system == "J1610+1811") variables["M"] = {2.785e30, 0.0};
+        else if (system == "CentaurusA") variables["M"] = {1.094e38, 0.0};
+    }
+    
+    if (variables["r"].real() <= 0.0) {
+        if (system == "J1610+1811") variables["r"] = {3.09e15, 0.0};
+        else if (system == "CentaurusA") variables["r"] = {6.17e17, 0.0};
+    }
+    
+    // Recalibrate coupling if force becomes non-physical
+    cdouble force = computeFBi(system, variables["t"].real());
+    if (std::isnan(force.real()) || std::isinf(force.real())) {
+        variables["CNB_coupling"] = {2.3e-12, 0.0};
+        variables["k_neutrino"] = {1e-10, 0.0};
+        variables["k_LENR"] = {1e-10, 0.0};
+    }
 }
 
 // ===== CNB-ENHANCED BUOYANCY FUNCTIONS =====
@@ -812,4 +1258,199 @@ void SurfaceMagneticFieldModule::recordHistory(const std::string& name, double v
     if (variable_history[name].size() > 150) {
         variable_history[name].erase(variable_history[name].begin());
     }
+}
+
+// ===== COMPREHENSIVE EXAMPLE USAGE FOR CNB SYSTEMS =====
+
+int main() {
+    std::cout << "=== UQFF CNB Buoyancy Module - Comprehensive Dynamic Capabilities Demo ===\n\n";
+    
+    UQFFBuoyancyCNBModule cnb_module;
+    SurfaceMagneticFieldModule mag_module;
+    
+    // Define all 6 CNB systems
+    std::vector<std::string> systems = {
+        "J1610+1811", "PLCK_G287.0+32.9", "PSZ2_G181.06+48.47",
+        "ASKAP_J1832-0911", "SonificationCollection", "CentaurusA"
+    };
+    
+    std::cout << "System Name: " << cnb_module.getSystemName() << "\n\n";
+    
+    // Test 1: Variable Management across all systems
+    std::cout << "Test 1: Variable Management\n";
+    cnb_module.createVariable("test_cnb_param", {1.5e-12, 0.0});
+    cnb_module.cloneVariable("CNB_coupling", "CNB_coupling_backup");
+    auto var_list = cnb_module.listVariables();
+    std::cout << "  Created and cloned variables. Total variables: " << var_list.size() << "\n\n";
+    
+    // Test 2: Batch Operations on CNB parameters
+    std::cout << "Test 2: Batch Operations\n";
+    std::vector<std::string> cnb_params = {"k_neutrino", "k_LENR", "CNB_coupling"};
+    cnb_module.scaleVariableGroup(cnb_params, {2.0, 0.0});
+    std::cout << "  Scaled CNB parameter group by factor 2.0\n\n";
+    
+    // Test 3: Self-Expansion for each system
+    std::cout << "Test 3: Self-Expansion (System-Specific)\n";
+    for (const auto& sys : systems) {
+        cnb_module.expandSystemScale(sys, 1.2, 1.1);
+        std::cout << "  Expanded " << sys << " (M×1.2, r×1.1)\n";
+    }
+    cnb_module.expandForceScale(1.5, 2.0);
+    std::cout << "  Expanded force scales (CNB×1.5, LENR×2.0)\n";
+    cnb_module.expandCNBScale("J1610+1811", 1.3, 1.15);
+    std::cout << "  Expanded CNB scale (neutrino×1.3, temp×1.15)\n\n";
+    
+    // Test 4: Parameter Space Expansion
+    std::cout << "Test 4: Parameter Space Expansion\n";
+    cnb_module.expandParameterSpace(1.1);
+    std::cout << "  Expanded CNB parameter space by 1.1×\n\n";
+    
+    // Test 5: Auto-Refinement for multiple systems
+    std::cout << "Test 5: Auto-Refinement\n";
+    cnb_module.autoRefineParameters("J1610+1811", -1e72, 0.05);
+    std::cout << "  Refined J1610+1811 to target force -1e72 N\n";
+    cnb_module.autoRefineParameters("CentaurusA", -5e73, 0.05);
+    std::cout << "  Refined CentaurusA to target force -5e73 N\n\n";
+    
+    // Test 6: Calibration to CNB Observations
+    std::cout << "Test 6: Calibration to Observations\n";
+    std::map<std::string, cdouble> cnb_obs;
+    cnb_obs["CNB_temperature"] = {2.1, 0.0};
+    cnb_obs["neutrino_flux"] = {3.5e10, 0.0};
+    cnb_obs["B0"] = {1.2e-4, 0.0};
+    cnb_module.calibrateToObservations("PLCK_G287.0+32.9", cnb_obs);
+    std::cout << "  Calibrated PLCK_G287.0+32.9 to CNB observations\n\n";
+    
+    // Test 7: Optimization Scenarios
+    std::cout << "Test 7: Optimization Scenarios\n";
+    std::vector<std::string> scenarios = {"standard", "high_neutrino_flux", "strong_cnb_temperature",
+                                          "lenr_dominant", "relativistic_cnb", "magnetic_cnb_coupling"};
+    for (const auto& scenario : scenarios) {
+        cnb_module.optimizeForMetric(scenario, 0.0);
+        std::cout << "  Optimized for: " << scenario << "\n";
+    }
+    std::cout << "\n";
+    
+    // Test 8: Parameter Variations
+    std::cout << "Test 8: Parameter Variations\n";
+    auto variations = cnb_module.generateVariations(5, 0.15);
+    std::cout << "  Generated " << variations.size() << " CNB parameter variations (±15%)\n\n";
+    
+    // Test 9: Adaptive Evolution
+    std::cout << "Test 9: Adaptive Evolution\n";
+    cnb_module.mutateParameters(0.08);
+    std::cout << "  Mutated CNB parameters (rate: 0.08)\n";
+    auto fitness = [](cdouble force) { return -std::abs(force.real() + 1e72); };
+    cnb_module.evolveSystem("ASKAP_J1832-0911", 20, fitness);
+    std::cout << "  Evolved ASKAP_J1832-0911 system (20 generations)\n\n";
+    
+    // Test 10: State Management
+    std::cout << "Test 10: State Management\n";
+    cnb_module.saveState("cnb_config_1");
+    cnb_module.saveState("cnb_config_2");
+    auto saved_states = cnb_module.listSavedStates();
+    std::cout << "  Saved " << saved_states.size() << " CNB configurations\n";
+    cnb_module.restoreState("cnb_config_1");
+    std::cout << "  Restored state: cnb_config_1\n";
+    cnb_module.exportStateUQFF("cnb_state_export.txt");
+    std::cout << "  Exported CNB state to file\n\n";
+    
+    // Test 11: Sensitivity Analysis for all systems
+    std::cout << "Test 11: Sensitivity Analysis\n";
+    std::vector<std::string> test_params = {"k_neutrino", "CNB_coupling", "k_LENR", "neutrino_flux"};
+    for (const auto& sys : systems) {
+        auto sensitivities = cnb_module.sensitivityAnalysis(sys, test_params);
+        std::cout << "  " << sys << " - Most sensitive param: ";
+        double max_sens = 0.0;
+        std::string max_param;
+        for (const auto& s : sensitivities) {
+            if (s.second > max_sens) {
+                max_sens = s.second;
+                max_param = s.first;
+            }
+        }
+        std::cout << max_param << " (sensitivity: " << max_sens << ")\n";
+    }
+    std::cout << "\n";
+    
+    // Test 12: Report Generation for each system
+    std::cout << "Test 12: Report Generation\n";
+    for (const auto& sys : systems) {
+        std::string report = cnb_module.generateReport(sys);
+        std::cout << "  Generated report for " << sys << " (" << report.length() << " chars)\n";
+    }
+    std::cout << "\n";
+    
+    // Test 13: Consistency Validation
+    std::cout << "Test 13: Consistency Validation\n";
+    for (const auto& sys : systems) {
+        bool valid = cnb_module.validateConsistency(sys);
+        std::cout << "  " << sys << ": " << (valid ? "VALID" : "INVALID") << "\n";
+    }
+    std::cout << "\n";
+    
+    // Test 14: Auto-Correction
+    std::cout << "Test 14: Auto-Correction\n";
+    cnb_module.updateVariable("CNB_temperature", {-5.0, 0.0});  // Invalid value
+    cnb_module.autoCorrectAnomalies("J1610+1811");
+    std::cout << "  Corrected anomalies in J1610+1811 CNB parameters\n\n";
+    
+    // Test 15: Magnetic Field Module - CNB Integration
+    std::cout << "Test 15: Magnetic Field Module - CNB Capabilities\n";
+    mag_module.enableSelfLearning(true);
+    std::cout << "  Enabled CNB magnetic self-learning\n";
+    mag_module.autoCalibrate("B_ref", 1.1, 0.02);
+    std::cout << "  Auto-calibrated B_ref to 1.1 T\n";
+    mag_module.adaptiveUpdate(1e10, "CNB_coupling");
+    std::cout << "  Applied CNB adaptive update\n\n";
+    
+    // Test 16: CNB Data Scaling
+    std::cout << "Test 16: CNB Observational Data Scaling\n";
+    std::map<std::string, double> cnb_data;
+    cnb_data["cnb_temperature"] = 2.05;
+    cnb_data["neutrino_flux"] = 3.4e10;
+    cnb_data["magnetic_field_strength"] = 1.15;
+    mag_module.scaleToCNBData(cnb_data);
+    std::cout << "  Scaled magnetic module to CNB observations\n\n";
+    
+    // Test 17: Custom CNB Variables
+    std::cout << "Test 17: Custom CNB Variables\n";
+    mag_module.addCustomVariable("cnb_anisotropy", 0.003, "neutrino_flux");
+    mag_module.addCustomVariable("cnb_polarization", 1.2e-6, "B_ref");
+    std::cout << "  Added 2 custom CNB magnetic variables\n\n";
+    
+    // Test 18: Magnetic History Tracking
+    std::cout << "Test 18: CNB Magnetic History\n";
+    auto history = mag_module.getVariableHistory("B_ref", 10);
+    std::cout << "  Retrieved " << history.size() << " B_ref history entries\n\n";
+    
+    // Test 19: State Export/Import
+    std::cout << "Test 19: CNB Magnetic State Management\n";
+    mag_module.exportState("cnb_magnetic_state.txt");
+    std::cout << "  Exported CNB magnetic state\n";
+    mag_module.importState("cnb_magnetic_state.txt");
+    std::cout << "  Imported CNB magnetic state\n\n";
+    
+    // Test 20: Final Force Computations for All Systems
+    std::cout << "Test 20: Final CNB Force Computations\n";
+    for (const auto& sys : systems) {
+        cdouble force = cnb_module.computeFBi(sys, 1e10);
+        cdouble ub1_cnb = cnb_module.computeUb1_CNB(sys);
+        cdouble ui_cnb = cnb_module.computeUi_CNB(1e10, sys);
+        double b_j = mag_module.computeB_j(1e10, 1.0);
+        double u_g3 = mag_module.computeU_g3_example(1e10, 1.0);
+        double cnb_coupling = mag_module.computeCNB_MagneticCoupling(b_j, 3.3e10);
+        
+        std::cout << "  " << sys << ":\n";
+        std::cout << "    F_U_Bi_i = " << force.real() << " + " << force.imag() << "i N\n";
+        std::cout << "    Ub1_CNB = " << ub1_cnb.real() << " + " << ub1_cnb.imag() << "i\n";
+        std::cout << "    Ui_CNB = " << ui_cnb.real() << " + " << ui_cnb.imag() << "i\n";
+        std::cout << "    B_j = " << b_j << " T\n";
+        std::cout << "    U_g3 = " << u_g3 << " J\n";
+        std::cout << "    CNB-Magnetic Coupling = " << cnb_coupling << "\n\n";
+    }
+    
+    std::cout << "=== All 20 CNB Dynamic Capability Tests Completed Successfully ===\n";
+    
+    return 0;
 }

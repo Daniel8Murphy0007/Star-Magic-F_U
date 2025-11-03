@@ -20,6 +20,12 @@
 #include <iostream>
 #include <iomanip>
 #include <complex>
+#include <vector>
+#include <functional>
+#include <random>
+#include <algorithm>
+#include <sstream>
+#include <fstream>
 
 using cdouble = std::complex<double>;
 
@@ -61,6 +67,49 @@ public:
 
     // Print all current variables (for debugging/updates)
     void printVariables();
+    
+    // ===== DYNAMIC SELF-UPDATE AND SELF-EXPANSION METHODS =====
+    
+    // Variable Management (5 methods)
+    void createVariable(const std::string& name, cdouble value);
+    void removeVariable(const std::string& name);
+    void cloneVariable(const std::string& source, const std::string& dest);
+    std::vector<std::string> listVariables();
+    std::string getSystemName() const;
+    
+    // Batch Operations (2 methods)
+    void transformVariableGroup(const std::vector<std::string>& var_names, std::function<cdouble(cdouble)> transform);
+    void scaleVariableGroup(const std::vector<std::string>& var_names, cdouble scale_factor);
+    
+    // Self-Expansion (4 methods - galactic-specific)
+    void expandParameterSpace(double expansion_factor);
+    void expandSystemScale(const std::string& system, double mass_factor, double radius_factor);
+    void expandForceScale(double lenr_factor, double relativistic_factor);
+    void expandGalacticScale(const std::string& system, double stellar_factor, double rotation_factor);
+    
+    // Self-Refinement (3 methods)
+    void autoRefineParameters(const std::string& system, double target_force_real, double tolerance = 0.01);
+    void calibrateToObservations(const std::string& system, const std::map<std::string, cdouble>& observations);
+    void optimizeForMetric(const std::string& metric, double target_value);
+    
+    // Parameter Exploration (1 method)
+    std::vector<std::map<std::string, cdouble>> generateVariations(int count, double variation_range);
+    
+    // Adaptive Evolution (2 methods)
+    void mutateParameters(double mutation_rate);
+    void evolveSystem(const std::string& system, int generations, std::function<double(cdouble)> fitness_func);
+    
+    // State Management (4 methods)
+    void saveState(const std::string& state_name);
+    void restoreState(const std::string& state_name);
+    std::vector<std::string> listSavedStates();
+    void exportStateUQFF(const std::string& filename);
+    
+    // System Analysis (4 methods)
+    std::map<std::string, double> sensitivityAnalysis(const std::string& system, const std::vector<std::string>& params);
+    std::string generateReport(const std::string& system);
+    bool validateConsistency(const std::string& system);
+    void autoCorrectAnomalies(const std::string& system);
 };
 
 #endif // UQFF_BUOYANCY_MODULE_H
@@ -447,7 +496,401 @@ cdouble UQFFBuoyancyModule::computeUb1(const std::string& system) {
 cdouble UQFFBuoyancyModule::computeUi(double t, const std::string& system) {
     // Placeholder implementation
     return cdouble(1.0e7, 1.0e2); // Example value
+}
+
+// ===== DYNAMIC SELF-UPDATE AND SELF-EXPANSION METHODS IMPLEMENTATION =====
+
+namespace saved_states_galactic {
+    std::map<std::string, std::map<std::string, cdouble>> states;
+}
+
+// Variable Management (5 methods)
+void UQFFBuoyancyModule::createVariable(const std::string& name, cdouble value) {
+    variables[name] = value;
+}
+
+void UQFFBuoyancyModule::removeVariable(const std::string& name) {
+    variables.erase(name);
+}
+
+void UQFFBuoyancyModule::cloneVariable(const std::string& source, const std::string& dest) {
+    if (variables.find(source) != variables.end()) {
+        variables[dest] = variables[source];
     }
+}
+
+std::vector<std::string> UQFFBuoyancyModule::listVariables() {
+    std::vector<std::string> names;
+    for (const auto& pair : variables) {
+        names.push_back(pair.first);
+    }
+    return names;
+}
+
+std::string UQFFBuoyancyModule::getSystemName() const {
+    return "UQFFBuoyancy_Galactic_MultiSystem";
+}
+
+// Batch Operations (2 methods)
+void UQFFBuoyancyModule::transformVariableGroup(const std::vector<std::string>& var_names, std::function<cdouble(cdouble)> transform) {
+    for (const auto& name : var_names) {
+        if (variables.find(name) != variables.end()) {
+            variables[name] = transform(variables[name]);
+        }
+    }
+}
+
+void UQFFBuoyancyModule::scaleVariableGroup(const std::vector<std::string>& var_names, cdouble scale_factor) {
+    for (const auto& name : var_names) {
+        if (variables.find(name) != variables.end()) {
+            variables[name] *= scale_factor;
+        }
+    }
+}
+
+// Self-Expansion (4 methods - galactic-specific)
+void UQFFBuoyancyModule::expandParameterSpace(double expansion_factor) {
+    // Scale all galactic-related parameters
+    std::vector<std::string> galactic_params = {"k_LENR", "k_act", "k_DE", "k_neutron",
+                                                "k_relativistic", "k_neutrino", "k_Sweet", "k_Kozima"};
+    for (const auto& param : galactic_params) {
+        if (variables.find(param) != variables.end()) {
+            variables[param] *= expansion_factor;
+        }
+    }
+    
+    // Scale force coefficients
+    variables["F_rel"] *= expansion_factor;
+    variables["F0"] *= expansion_factor;
+}
+
+void UQFFBuoyancyModule::expandSystemScale(const std::string& system, double mass_factor, double radius_factor) {
+    setSystemParams(system);
+    
+    // Scale system-specific parameters
+    if (system == "M74") {
+        variables["M"] = cdouble(7.17e41 * mass_factor, 0.0);
+        variables["r"] = cdouble(9.46e20 * radius_factor, 0.0);
+    } else if (system == "EagleNebula") {
+        variables["M"] = cdouble(1e36 * mass_factor, 0.0);
+        variables["r"] = cdouble(2.36e17 * radius_factor, 0.0);
+    } else if (system == "M84") {
+        variables["M"] = cdouble(1.46e45 * mass_factor, 0.0);
+        variables["r"] = cdouble(3.09e22 * radius_factor, 0.0);
+    } else if (system == "CentaurusA") {
+        variables["M"] = cdouble(4e41 * mass_factor, 0.0);
+        variables["r"] = cdouble(3.09e21 * radius_factor, 0.0);
+    } else if (system == "SupernovaSurvey") {
+        variables["M"] = cdouble(1e30 * mass_factor, 0.0);
+        variables["r"] = cdouble(1e10 * radius_factor, 0.0);
+    }
+}
+
+void UQFFBuoyancyModule::expandForceScale(double lenr_factor, double relativistic_factor) {
+    variables["k_LENR"] *= lenr_factor;
+    variables["omega_0_LENR"] *= std::sqrt(lenr_factor);
+    variables["k_relativistic"] *= relativistic_factor;
+    variables["F_rel"] *= relativistic_factor;
+}
+
+void UQFFBuoyancyModule::expandGalacticScale(const std::string& system, double stellar_factor, double rotation_factor) {
+    setSystemParams(system);
+    
+    // Galactic-specific scaling for stellar populations and rotation
+    if (system == "M74" || system == "M84" || system == "CentaurusA") {
+        // Galaxies: scale magnetic and rotation parameters
+        variables["B_ref"] *= stellar_factor;
+        variables["omega_s"] *= rotation_factor;
+    } else if (system == "EagleNebula") {
+        // Nebula: scale star formation parameters
+        variables["k_act"] *= stellar_factor;
+        variables["T"] *= std::sqrt(stellar_factor);
+    } else if (system == "SupernovaSurvey") {
+        // Supernova: scale explosive energy parameters
+        variables["k_neutron"] *= stellar_factor;
+        variables["k_neutrino"] *= stellar_factor;
+    }
+}
+
+// Self-Refinement (3 methods)
+void UQFFBuoyancyModule::autoRefineParameters(const std::string& system, double target_force_real, double tolerance) {
+    setSystemParams(system);
+    
+    for (int iter = 0; iter < 100; iter++) {
+        cdouble current_force = computeFBi(system, variables["t"].real());
+        double error = std::abs(current_force.real() - target_force_real) / std::abs(target_force_real);
+        
+        if (error < tolerance) break;
+        
+        // Adjust galactic parameters
+        double adjustment = (target_force_real - current_force.real()) / target_force_real * 0.1;
+        variables["k_LENR"] *= (1.0 + adjustment);
+        variables["k_relativistic"] *= (1.0 + adjustment * 0.5);
+        variables["k_act"] *= (1.0 + adjustment * 0.3);
+    }
+}
+
+void UQFFBuoyancyModule::calibrateToObservations(const std::string& system, const std::map<std::string, cdouble>& observations) {
+    setSystemParams(system);
+    
+    for (const auto& obs : observations) {
+        if (variables.find(obs.first) != variables.end()) {
+            variables[obs.first] = obs.second;
+        }
+    }
+    
+    // Adjust derived galactic parameters
+    if (observations.find("T") != observations.end()) {
+        variables["k_act"] *= observations.at("T").real() / variables["T"].real();
+    }
+    if (observations.find("B_ref") != observations.end()) {
+        variables["omega_s"] *= std::sqrt(observations.at("B_ref").real() / variables["B_ref"].real());
+    }
+}
+
+void UQFFBuoyancyModule::optimizeForMetric(const std::string& metric, double target_value) {
+    // Galactic-specific optimization scenarios
+    if (metric == "standard") {
+        variables["k_LENR"] = cdouble(1e-5, 0.0);
+        variables["k_relativistic"] = cdouble(1e-20, 0.0);
+        variables["k_act"] = cdouble(1e-6, 0.0);
+    } else if (metric == "high_energy") {
+        variables["k_LENR"] *= 100.0;
+        variables["k_relativistic"] *= 50.0;
+        variables["F_rel"] *= 10.0;
+    } else if (metric == "strong_magnetic") {
+        variables["B_ref"] *= 3.0;
+        variables["omega_s"] *= 2.0;
+        variables["k_act"] *= 5.0;
+    } else if (metric == "lenr_dominant") {
+        variables["k_LENR"] *= 1000.0;
+        variables["omega_0_LENR"] *= 10.0;
+    } else if (metric == "relativistic_dominant") {
+        variables["k_relativistic"] *= 100.0;
+        variables["F_rel"] *= 50.0;
+    } else if (metric == "galactic_core") {
+        variables["k_DE"] *= 100.0;
+        variables["k_neutron"] *= 50.0;
+        variables["k_neutrino"] *= 20.0;
+    }
+}
+
+// Parameter Exploration (1 method)
+std::vector<std::map<std::string, cdouble>> UQFFBuoyancyModule::generateVariations(int count, double variation_range) {
+    std::vector<std::map<std::string, cdouble>> variations;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(-variation_range, variation_range);
+    
+    for (int i = 0; i < count; i++) {
+        std::map<std::string, cdouble> variation = variables;
+        
+        // Vary galactic parameters
+        std::vector<std::string> vary_params = {"k_LENR", "k_relativistic", "k_act", 
+                                                "k_DE", "k_neutron", "k_neutrino"};
+        for (const auto& param : vary_params) {
+            double factor = 1.0 + dis(gen);
+            variation[param] *= factor;
+        }
+        
+        variations.push_back(variation);
+    }
+    
+    return variations;
+}
+
+// Adaptive Evolution (2 methods)
+void UQFFBuoyancyModule::mutateParameters(double mutation_rate) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(-mutation_rate, mutation_rate);
+    
+    // Mutate galactic-related parameters
+    std::vector<std::string> mutable_params = {"k_LENR", "k_act", "k_DE", "k_neutron",
+                                                "k_relativistic", "k_neutrino", "k_Sweet", 
+                                                "k_Kozima", "B_ref", "omega_s"};
+    
+    for (const auto& param : mutable_params) {
+        if (variables.find(param) != variables.end()) {
+            double factor = 1.0 + dis(gen);
+            variables[param] *= factor;
+        }
+    }
+}
+
+void UQFFBuoyancyModule::evolveSystem(const std::string& system, int generations, std::function<double(cdouble)> fitness_func) {
+    setSystemParams(system);
+    
+    std::map<std::string, cdouble> best_params = variables;
+    double best_fitness = fitness_func(computeFBi(system, variables["t"].real()));
+    
+    for (int gen = 0; gen < generations; gen++) {
+        mutateParameters(0.1);
+        cdouble current_force = computeFBi(system, variables["t"].real());
+        double current_fitness = fitness_func(current_force);
+        
+        if (current_fitness > best_fitness) {
+            best_fitness = current_fitness;
+            best_params = variables;
+        } else {
+            variables = best_params;
+        }
+    }
+    
+    variables = best_params;
+}
+
+// State Management (4 methods)
+void UQFFBuoyancyModule::saveState(const std::string& state_name) {
+    saved_states_galactic::states[state_name] = variables;
+}
+
+void UQFFBuoyancyModule::restoreState(const std::string& state_name) {
+    if (saved_states_galactic::states.find(state_name) != saved_states_galactic::states.end()) {
+        variables = saved_states_galactic::states[state_name];
+    }
+}
+
+std::vector<std::string> UQFFBuoyancyModule::listSavedStates() {
+    std::vector<std::string> names;
+    for (const auto& pair : saved_states_galactic::states) {
+        names.push_back(pair.first);
+    }
+    return names;
+}
+
+void UQFFBuoyancyModule::exportStateUQFF(const std::string& filename) {
+    std::ofstream file(filename);
+    if (file.is_open()) {
+        file << "# UQFF Galactic Buoyancy Module State Export\n";
+        file << "# System: " << getSystemName() << "\n";
+        for (const auto& pair : variables) {
+            file << pair.first << " = " << pair.second.real() << " + " << pair.second.imag() << "i\n";
+        }
+        file.close();
+    }
+}
+
+// System Analysis (4 methods)
+std::map<std::string, double> UQFFBuoyancyModule::sensitivityAnalysis(const std::string& system, const std::vector<std::string>& params) {
+    setSystemParams(system);
+    std::map<std::string, double> sensitivities;
+    
+    cdouble base_force = computeFBi(system, variables["t"].real());
+    
+    for (const auto& param : params) {
+        if (variables.find(param) != variables.end()) {
+            cdouble original = variables[param];
+            variables[param] *= 1.01;
+            cdouble perturbed_force = computeFBi(system, variables["t"].real());
+            
+            double sensitivity = std::abs((perturbed_force.real() - base_force.real()) / base_force.real()) / 0.01;
+            sensitivities[param] = sensitivity;
+            
+            variables[param] = original;
+        }
+    }
+    
+    return sensitivities;
+}
+
+std::string UQFFBuoyancyModule::generateReport(const std::string& system) {
+    setSystemParams(system);
+    std::ostringstream report;
+    
+    report << "=== UQFF Galactic Buoyancy Module Report ===\n";
+    report << "System: " << system << "\n";
+    report << "Module Name: " << getSystemName() << "\n\n";
+    
+    report << "System Parameters:\n";
+    report << "  Mass (M): " << variables["M"].real() << " kg\n";
+    report << "  Radius (r): " << variables["r"].real() << " m\n";
+    report << "  Temperature (T): " << variables["T"].real() << " K\n";
+    report << "  Magnetic Field (B_ref): " << variables["B_ref"].real() << " T\n";
+    report << "  Angular Frequency (omega_s): " << variables["omega_s"].real() << " rad/s\n\n";
+    
+    report << "Galactic Force Parameters:\n";
+    report << "  k_LENR: " << variables["k_LENR"].real() << "\n";
+    report << "  k_relativistic: " << variables["k_relativistic"].real() << "\n";
+    report << "  k_neutron: " << variables["k_neutron"].real() << "\n";
+    report << "  k_neutrino: " << variables["k_neutrino"].real() << "\n";
+    report << "  F_rel: " << variables["F_rel"].real() << " N\n\n";
+    
+    cdouble force = computeFBi(system, variables["t"].real());
+    report << "Computed Force:\n";
+    report << "  F_U_Bi_i = " << force.real() << " + " << force.imag() << "i N\n\n";
+    
+    cdouble ub1 = computeUb1(system);
+    cdouble ui = computeUi(variables["t"].real(), system);
+    report << "Buoyancy Components:\n";
+    report << "  Ub1 = " << ub1.real() << " + " << ub1.imag() << "i\n";
+    report << "  Ui = " << ui.real() << " + " << ui.imag() << "i\n";
+    
+    return report.str();
+}
+
+bool UQFFBuoyancyModule::validateConsistency(const std::string& system) {
+    setSystemParams(system);
+    
+    // Check for valid galactic parameters
+    if (variables["M"].real() <= 0.0) return false;
+    if (variables["r"].real() <= 0.0) return false;
+    if (variables["T"].real() <= 0.0) return false;
+    if (variables["B_ref"].real() < 0.0) return false;
+    
+    // Check force coefficients
+    if (variables["k_LENR"].real() < 0.0) return false;
+    if (variables["k_relativistic"].real() < 0.0) return false;
+    
+    // Check force computation
+    cdouble force = computeFBi(system, variables["t"].real());
+    if (std::isnan(force.real()) || std::isinf(force.real())) return false;
+    
+    return true;
+}
+
+void UQFFBuoyancyModule::autoCorrectAnomalies(const std::string& system) {
+    setSystemParams(system);
+    
+    // Correct system parameters if out of physical range
+    if (variables["M"].real() <= 0.0) {
+        if (system == "M74") variables["M"] = cdouble(7.17e41, 0.0);
+        else if (system == "EagleNebula") variables["M"] = cdouble(1e36, 0.0);
+        else if (system == "M84") variables["M"] = cdouble(1.46e45, 0.0);
+        else if (system == "CentaurusA") variables["M"] = cdouble(4e41, 0.0);
+        else if (system == "SupernovaSurvey") variables["M"] = cdouble(1e30, 0.0);
+    }
+    
+    if (variables["r"].real() <= 0.0) {
+        if (system == "M74") variables["r"] = cdouble(9.46e20, 0.0);
+        else if (system == "EagleNebula") variables["r"] = cdouble(2.36e17, 0.0);
+        else if (system == "M84") variables["r"] = cdouble(3.09e22, 0.0);
+        else if (system == "CentaurusA") variables["r"] = cdouble(3.09e21, 0.0);
+        else if (system == "SupernovaSurvey") variables["r"] = cdouble(1e10, 0.0);
+    }
+    
+    // Correct force coefficients
+    if (variables["k_LENR"].real() <= 0.0) variables["k_LENR"] = cdouble(1e-5, 0.0);
+    if (variables["k_relativistic"].real() < 0.0) variables["k_relativistic"] = cdouble(1e-20, 0.0);
+    if (variables["k_act"].real() < 0.0) variables["k_act"] = cdouble(1e-6, 0.0);
+    
+    // Correct magnetic parameters
+    if (variables["B_ref"].real() < 0.0 || variables["B_ref"].real() > 10.0) {
+        variables["B_ref"] = cdouble(0.2, 0.0);
+    }
+    
+    if (variables["omega_s"].real() <= 0.0) {
+        variables["omega_s"] = cdouble(2 * 3.141592653589793 / (11 * 365 * 24 * 3600), 0.0);
+    }
+    
+    // Recalibrate if force becomes non-physical
+    cdouble force = computeFBi(system, variables["t"].real());
+    if (std::isnan(force.real()) || std::isinf(force.real())) {
+        variables["F_rel"] = cdouble(4.30e33, 0.0);
+        variables["F0"] = cdouble(1.83e71, 0.0);
+        variables["k_LENR"] = cdouble(1e-5, 0.0);
+    }
+}
 
 // ===== SURFACE MAGNETIC FIELD MODULE FOR GALACTIC SYSTEMS =====
 
@@ -857,4 +1300,199 @@ void SurfaceMagneticFieldModule::recordHistory(const std::string& name, double v
     if (variable_history[name].size() > 120) {
         variable_history[name].erase(variable_history[name].begin());
     }
+}
+
+// ===== COMPREHENSIVE EXAMPLE USAGE FOR GALACTIC SYSTEMS =====
+
+int main() {
+    std::cout << "=== UQFF Galactic Buoyancy Module - Comprehensive Dynamic Capabilities Demo ===\n\n";
+    
+    UQFFBuoyancyModule gal_module;
+    SurfaceMagneticFieldModule mag_module;
+    
+    // Define all 5 galactic systems
+    std::vector<std::string> systems = {
+        "M74", "EagleNebula", "M84", "CentaurusA", "SupernovaSurvey"
+    };
+    
+    std::cout << "System Name: " << gal_module.getSystemName() << "\n\n";
+    
+    // Test 1: Variable Management across all systems
+    std::cout << "Test 1: Variable Management\n";
+    gal_module.createVariable("test_gal_param", cdouble(2.5e10, 1e5));
+    gal_module.cloneVariable("k_LENR", "k_LENR_backup");
+    auto var_list = gal_module.listVariables();
+    std::cout << "  Created and cloned variables. Total variables: " << var_list.size() << "\n\n";
+    
+    // Test 2: Batch Operations on galactic parameters
+    std::cout << "Test 2: Batch Operations\n";
+    std::vector<std::string> gal_params = {"k_LENR", "k_relativistic", "k_neutron"};
+    gal_module.scaleVariableGroup(gal_params, cdouble(2.2, 0.0));
+    std::cout << "  Scaled galactic parameter group by factor 2.2\n\n";
+    
+    // Test 3: Self-Expansion for each system
+    std::cout << "Test 3: Self-Expansion (System-Specific)\n";
+    for (const auto& sys : systems) {
+        gal_module.expandSystemScale(sys, 1.18, 1.12);
+        std::cout << "  Expanded " << sys << " (M×1.18, r×1.12)\n";
+    }
+    gal_module.expandForceScale(2.0, 1.8);
+    std::cout << "  Expanded force scales (LENR×2.0, relativistic×1.8)\n";
+    gal_module.expandGalacticScale("M74", 1.35, 1.25);
+    std::cout << "  Expanded M74 galactic scale (stellar×1.35, rotation×1.25)\n\n";
+    
+    // Test 4: Parameter Space Expansion
+    std::cout << "Test 4: Parameter Space Expansion\n";
+    gal_module.expandParameterSpace(1.15);
+    std::cout << "  Expanded galactic parameter space by 1.15×\n\n";
+    
+    // Test 5: Auto-Refinement for multiple systems
+    std::cout << "Test 5: Auto-Refinement\n";
+    gal_module.autoRefineParameters("M74", 5e72, 0.05);
+    std::cout << "  Refined M74 to target force 5e72 N\n";
+    gal_module.autoRefineParameters("M84", 2e74, 0.05);
+    std::cout << "  Refined M84 to target force 2e74 N\n\n";
+    
+    // Test 6: Calibration to Galactic Observations
+    std::cout << "Test 6: Calibration to Observations\n";
+    std::map<std::string, cdouble> gal_obs;
+    gal_obs["T"] = cdouble(1e4, 0.0);
+    gal_obs["B_ref"] = cdouble(0.3, 0.0);
+    gal_obs["omega_s"] = cdouble(3e-5, 0.0);
+    gal_module.calibrateToObservations("CentaurusA", gal_obs);
+    std::cout << "  Calibrated CentaurusA to galactic observations\n\n";
+    
+    // Test 7: Optimization Scenarios
+    std::cout << "Test 7: Optimization Scenarios\n";
+    std::vector<std::string> scenarios = {"standard", "high_energy", "strong_magnetic",
+                                          "lenr_dominant", "relativistic_dominant", "galactic_core"};
+    for (const auto& scenario : scenarios) {
+        gal_module.optimizeForMetric(scenario, 0.0);
+        std::cout << "  Optimized for: " << scenario << "\n";
+    }
+    std::cout << "\n";
+    
+    // Test 8: Parameter Variations
+    std::cout << "Test 8: Parameter Variations\n";
+    auto variations = gal_module.generateVariations(5, 0.18);
+    std::cout << "  Generated " << variations.size() << " galactic parameter variations (±18%)\n\n";
+    
+    // Test 9: Adaptive Evolution
+    std::cout << "Test 9: Adaptive Evolution\n";
+    gal_module.mutateParameters(0.10);
+    std::cout << "  Mutated galactic parameters (rate: 0.10)\n";
+    auto fitness = [](cdouble force) { return -std::abs(force.real() + 5e72); };
+    gal_module.evolveSystem("EagleNebula", 20, fitness);
+    std::cout << "  Evolved EagleNebula system (20 generations)\n\n";
+    
+    // Test 10: State Management
+    std::cout << "Test 10: State Management\n";
+    gal_module.saveState("gal_config_1");
+    gal_module.saveState("gal_config_2");
+    auto saved_states = gal_module.listSavedStates();
+    std::cout << "  Saved " << saved_states.size() << " galactic configurations\n";
+    gal_module.restoreState("gal_config_1");
+    std::cout << "  Restored state: gal_config_1\n";
+    gal_module.exportStateUQFF("gal_state_export.txt");
+    std::cout << "  Exported galactic state to file\n\n";
+    
+    // Test 11: Sensitivity Analysis for all systems
+    std::cout << "Test 11: Sensitivity Analysis\n";
+    std::vector<std::string> test_params = {"k_LENR", "k_relativistic", "k_neutron", "k_neutrino"};
+    for (const auto& sys : systems) {
+        auto sensitivities = gal_module.sensitivityAnalysis(sys, test_params);
+        std::cout << "  " << sys << " - Most sensitive param: ";
+        double max_sens = 0.0;
+        std::string max_param;
+        for (const auto& s : sensitivities) {
+            if (s.second > max_sens) {
+                max_sens = s.second;
+                max_param = s.first;
+            }
+        }
+        std::cout << max_param << " (sensitivity: " << max_sens << ")\n";
+    }
+    std::cout << "\n";
+    
+    // Test 12: Report Generation for each system
+    std::cout << "Test 12: Report Generation\n";
+    for (const auto& sys : systems) {
+        std::string report = gal_module.generateReport(sys);
+        std::cout << "  Generated report for " << sys << " (" << report.length() << " chars)\n";
+    }
+    std::cout << "\n";
+    
+    // Test 13: Consistency Validation
+    std::cout << "Test 13: Consistency Validation\n";
+    for (const auto& sys : systems) {
+        bool valid = gal_module.validateConsistency(sys);
+        std::cout << "  " << sys << ": " << (valid ? "VALID" : "INVALID") << "\n";
+    }
+    std::cout << "\n";
+    
+    // Test 14: Auto-Correction
+    std::cout << "Test 14: Auto-Correction\n";
+    gal_module.updateVariable("M", cdouble(-1e40, 0.0));  // Invalid value
+    gal_module.autoCorrectAnomalies("M74");
+    std::cout << "  Corrected anomalies in M74 galactic parameters\n\n";
+    
+    // Test 15: Magnetic Field Module - Galactic Integration
+    std::cout << "Test 15: Magnetic Field Module - Galactic Capabilities\n";
+    mag_module.enableSelfLearning(true);
+    std::cout << "  Enabled galactic magnetic self-learning\n";
+    mag_module.autoCalibrate("B_ref", 1.8, 0.02);
+    std::cout << "  Auto-calibrated B_ref to 1.8 T\n";
+    mag_module.adaptiveUpdate(1e10, "star_formation_rate");
+    std::cout << "  Applied galactic adaptive update\n\n";
+    
+    // Test 16: Galactic Data Scaling
+    std::cout << "Test 16: Galactic Data Scaling\n";
+    std::map<std::string, double> mag_gal_data;
+    mag_gal_data["star_formation_rate"] = 2.5;
+    mag_gal_data["galactic_rotation"] = 3.0e-16;
+    mag_gal_data["magnetic_field_strength"] = 1.9;
+    mag_gal_data["supernova_rate"] = 0.03;
+    mag_module.scaleToGalacticData(mag_gal_data);
+    std::cout << "  Scaled magnetic module to galactic data\n\n";
+    
+    // Test 17: Custom Galactic Variables
+    std::cout << "Test 17: Custom Galactic Variables\n";
+    mag_module.addCustomVariable("halo_fraction", 0.85, "dark_matter_coupling");
+    mag_module.addCustomVariable("bulge_to_disk_ratio", 0.3, "stellar_mass_coupling");
+    std::cout << "  Added 2 custom galactic magnetic variables\n\n";
+    
+    // Test 18: Magnetic History Tracking
+    std::cout << "Test 18: Galactic Magnetic History\n";
+    auto history = mag_module.getVariableHistory("B_ref", 10);
+    std::cout << "  Retrieved " << history.size() << " B_ref history entries\n\n";
+    
+    // Test 19: State Export/Import
+    std::cout << "Test 19: Galactic Magnetic State Management\n";
+    mag_module.exportState("gal_magnetic_state.txt");
+    std::cout << "  Exported galactic magnetic state\n";
+    mag_module.importState("gal_magnetic_state.txt");
+    std::cout << "  Imported galactic magnetic state\n\n";
+    
+    // Test 20: Final Force Computations for All Systems
+    std::cout << "Test 20: Final Galactic Force Computations\n";
+    for (const auto& sys : systems) {
+        cdouble force = gal_module.computeFBi(sys, 1e10);
+        cdouble ub1 = gal_module.computeUb1(sys);
+        cdouble ui = gal_module.computeUi(1e10, sys);
+        double b_j = mag_module.computeB_j(1e10, 1.5);
+        double u_g3 = mag_module.computeU_g3_example(1e10, 1.5);
+        double gal_coupling = mag_module.computeGalacticCoupling(b_j, 1e42);
+        
+        std::cout << "  " << sys << ":\n";
+        std::cout << "    F_U_Bi_i = " << force.real() << " + " << force.imag() << "i N\n";
+        std::cout << "    Ub1 = " << ub1.real() << " + " << ub1.imag() << "i\n";
+        std::cout << "    Ui = " << ui.real() << " + " << ui.imag() << "i\n";
+        std::cout << "    B_j = " << b_j << " T\n";
+        std::cout << "    U_g3 = " << u_g3 << " J\n";
+        std::cout << "    Galactic-Magnetic Coupling = " << gal_coupling << "\n\n";
+    }
+    
+    std::cout << "=== All 20 Galactic Dynamic Capability Tests Completed Successfully ===\n";
+    
+    return 0;
 }

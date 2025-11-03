@@ -19,6 +19,11 @@
 #include <iostream>
 #include <iomanip>
 #include <complex>
+#include <vector>
+#include <functional>
+#include <random>
+#include <algorithm>
+#include <sstream>
 
 using cdouble = std::complex<double>;
 
@@ -59,6 +64,49 @@ public:
 
     // Print all current variables (for debugging/updates)
     void printVariables();
+
+    // ====== Dynamic Self-Update & Self-Expansion Methods ======
+    
+    // Variable Management
+    void createVariable(const std::string& name, cdouble value);
+    void removeVariable(const std::string& name);
+    void cloneVariable(const std::string& source, const std::string& dest);
+    std::vector<std::string> listVariables() const;
+    std::string getSystemName() const;
+    
+    // Batch Operations
+    void transformVariableGroup(const std::vector<std::string>& names, std::function<cdouble(cdouble)> transform);
+    void scaleVariableGroup(const std::vector<std::string>& names, cdouble scale_factor);
+    
+    // Self-Expansion (Domain-Specific)
+    void expandParameterSpace(double expansion_factor);
+    void expandPulsarScale(double mass_factor, double radius_factor);
+    void expandForceScale(double dpm_factor, double lenr_factor);
+    void expandPWNScale(double jet_factor, double nebula_factor);
+    
+    // Self-Refinement
+    void autoRefineParameters(double tolerance);
+    void calibrateToObservations(const std::map<std::string, cdouble>& observations);
+    void optimizeForMetric(const std::string& metric);
+    
+    // Parameter Exploration
+    std::vector<std::map<std::string, cdouble>> generateVariations(int count, double variation_range);
+    
+    // Adaptive Evolution
+    void mutateParameters(double mutation_rate);
+    void evolveSystem(int generations, std::function<double(const VelaPulsarUQFFModule&)> fitness);
+    
+    // State Management
+    void saveState(const std::string& state_name);
+    void restoreState(const std::string& state_name);
+    std::vector<std::string> listSavedStates() const;
+    std::string exportState() const;
+    
+    // System Analysis
+    std::map<std::string, double> sensitivityAnalysis(const std::string& output_var, double delta);
+    std::string generateReport() const;
+    bool validateConsistency() const;
+    void autoCorrectAnomalies();
 };
 
 #endif // VELA_PULSAR_UQFF_MODULE_H
@@ -308,7 +356,473 @@ void VelaPulsarUQFFModule::printVariables() {
     }
 }
 
+// ====== Dynamic Self-Update & Self-Expansion Method Implementations ======
+
+namespace saved_states_vela {
+    std::map<std::string, std::map<std::string, cdouble>> states;
+}
+
+// Variable Management
+void VelaPulsarUQFFModule::createVariable(const std::string& name, cdouble value) {
+    variables[name] = value;
+}
+
+void VelaPulsarUQFFModule::removeVariable(const std::string& name) {
+    variables.erase(name);
+}
+
+void VelaPulsarUQFFModule::cloneVariable(const std::string& source, const std::string& dest) {
+    if (variables.find(source) != variables.end()) {
+        variables[dest] = variables[source];
+    }
+}
+
+std::vector<std::string> VelaPulsarUQFFModule::listVariables() const {
+    std::vector<std::string> names;
+    for (const auto& pair : variables) {
+        names.push_back(pair.first);
+    }
+    return names;
+}
+
+std::string VelaPulsarUQFFModule::getSystemName() const {
+    return "VelaPulsar_PSR_J0835_UQFF";
+}
+
+// Batch Operations
+void VelaPulsarUQFFModule::transformVariableGroup(const std::vector<std::string>& names, 
+                                                   std::function<cdouble(cdouble)> transform) {
+    for (const auto& name : names) {
+        if (variables.find(name) != variables.end()) {
+            variables[name] = transform(variables[name]);
+        }
+    }
+}
+
+void VelaPulsarUQFFModule::scaleVariableGroup(const std::vector<std::string>& names, cdouble scale_factor) {
+    transformVariableGroup(names, [scale_factor](cdouble v) { return v * scale_factor; });
+}
+
+// Self-Expansion (Domain-Specific for Vela Pulsar)
+void VelaPulsarUQFFModule::expandParameterSpace(double expansion_factor) {
+    // Scale key exploration parameters
+    std::vector<std::string> explore_params = {"k_LENR", "k_act", "k_DE", "k_neutron", "k_rel"};
+    scaleVariableGroup(explore_params, {expansion_factor, 0.0});
+}
+
+void VelaPulsarUQFFModule::expandPulsarScale(double mass_factor, double radius_factor) {
+    // Expand pulsar scale: neutron star mass and PWN radius
+    variables["M"] *= cdouble(mass_factor, 0.0);
+    variables["r"] *= cdouble(radius_factor, 0.0);
+    
+    // Adjust dependent parameters: magnetic field scales with mass/radius
+    // B ~ M/r^3 for dipole field
+    if (variables.find("B0") != variables.end()) {
+        variables["B0"] *= cdouble(mass_factor / (radius_factor * radius_factor * radius_factor), 0.0);
+    }
+    // Luminosity scales with B^2 and rotation
+    if (variables.find("L_X") != variables.end()) {
+        variables["L_X"] *= cdouble(mass_factor * mass_factor / (radius_factor * radius_factor * radius_factor * radius_factor * radius_factor * radius_factor), 0.0);
+    }
+}
+
+void VelaPulsarUQFFModule::expandForceScale(double dpm_factor, double lenr_factor) {
+    // Expand force coupling terms
+    variables["DPM_momentum"] *= cdouble(dpm_factor, 0.0);
+    variables["DPM_gravity"] *= cdouble(dpm_factor, 0.0);
+    variables["DPM_stability"] *= cdouble(dpm_factor, 0.0);
+    variables["k_LENR"] *= cdouble(lenr_factor, 0.0);
+}
+
+void VelaPulsarUQFFModule::expandPWNScale(double jet_factor, double nebula_factor) {
+    // Expand pulsar wind nebula (PWN) features: jet velocity and nebula extent
+    if (variables.find("V") != variables.end()) {
+        variables["V"] *= cdouble(jet_factor, 0.0);
+    }
+    // Nebula expansion affects gas density
+    if (variables.find("rho_gas") != variables.end()) {
+        variables["rho_gas"] *= cdouble(1.0 / (nebula_factor * nebula_factor * nebula_factor), 0.0);
+    }
+    // X-ray luminosity scales with PWN activity
+    if (variables.find("L_X") != variables.end()) {
+        variables["L_X"] *= cdouble(jet_factor * nebula_factor, 0.0);
+    }
+}
+
+// Self-Refinement
+void VelaPulsarUQFFModule::autoRefineParameters(double tolerance) {
+    // Iteratively adjust parameters to minimize force residual
+    for (int iter = 0; iter < 100; ++iter) {
+        cdouble F_current = computeF(variables["t"].real());
+        if (std::abs(F_current) < tolerance) break;
+        
+        // Adjust key parameters slightly
+        variables["k_LENR"] *= cdouble(0.99, 0.0);
+        variables["DPM_momentum"] *= cdouble(1.01, 0.0);
+    }
+}
+
+void VelaPulsarUQFFModule::calibrateToObservations(const std::map<std::string, cdouble>& observations) {
+    // Update variables based on observational data
+    for (const auto& obs : observations) {
+        if (variables.find(obs.first) != variables.end()) {
+            variables[obs.first] = obs.second;
+        }
+    }
+}
+
+void VelaPulsarUQFFModule::optimizeForMetric(const std::string& metric) {
+    // Optimize parameters for specific metrics
+    if (metric == "standard_vela") {
+        variables["M"] = {2.8e30, 0.0};  // 1.4 M_sun
+        variables["r"] = {1.7e17, 0.0};  // ~6 pc PWN radius
+        variables["L_X"] = {1e27, 0.0};
+        variables["B0"] = {3e-8, 0.0};
+    } else if (metric == "gamma_bright") {
+        // Enhanced gamma-ray emission state
+        variables["L_X"] *= cdouble(5.0, 0.0);
+        variables["k_DE"] *= cdouble(10.0, 0.0);
+    } else if (metric == "jet_active") {
+        // Active PWN jet phase
+        variables["V"] *= cdouble(3.0, 0.0);  // 1500 km/s
+        variables["L_X"] *= cdouble(2.0, 0.0);
+    } else if (metric == "young_pulsar") {
+        // Younger age with higher spin-down
+        variables["B0"] *= cdouble(2.0, 0.0);
+        variables["L_X"] *= cdouble(4.0, 0.0);
+        variables["t"] *= cdouble(0.5, 0.0);
+    } else if (metric == "old_spindown") {
+        // Older, more spun-down state
+        variables["B0"] *= cdouble(0.5, 0.0);
+        variables["L_X"] *= cdouble(0.3, 0.0);
+        variables["t"] *= cdouble(2.0, 0.0);
+    }
+}
+
+// Parameter Exploration
+std::vector<std::map<std::string, cdouble>> VelaPulsarUQFFModule::generateVariations(int count, double variation_range) {
+    std::vector<std::map<std::string, cdouble>> variations;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(1.0 - variation_range, 1.0 + variation_range);
+    
+    for (int i = 0; i < count; ++i) {
+        std::map<std::string, cdouble> variant = variables;
+        for (auto& pair : variant) {
+            double scale = dis(gen);
+            pair.second = pair.second * cdouble(scale, 1.0);
+        }
+        variations.push_back(variant);
+    }
+    return variations;
+}
+
+// Adaptive Evolution
+void VelaPulsarUQFFModule::mutateParameters(double mutation_rate) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(1.0 - mutation_rate, 1.0 + mutation_rate);
+    
+    for (auto& pair : variables) {
+        double scale = dis(gen);
+        pair.second = pair.second * cdouble(scale, 1.0);
+    }
+}
+
+void VelaPulsarUQFFModule::evolveSystem(int generations, std::function<double(const VelaPulsarUQFFModule&)> fitness) {
+    double best_fitness = fitness(*this);
+    std::map<std::string, cdouble> best_state = variables;
+    
+    for (int gen = 0; gen < generations; ++gen) {
+        mutateParameters(0.05);
+        double current_fitness = fitness(*this);
+        
+        if (current_fitness > best_fitness) {
+            best_fitness = current_fitness;
+            best_state = variables;
+        } else {
+            variables = best_state;
+        }
+    }
+}
+
+// State Management
+void VelaPulsarUQFFModule::saveState(const std::string& state_name) {
+    saved_states_vela::states[state_name] = variables;
+}
+
+void VelaPulsarUQFFModule::restoreState(const std::string& state_name) {
+    if (saved_states_vela::states.find(state_name) != saved_states_vela::states.end()) {
+        variables = saved_states_vela::states[state_name];
+    }
+}
+
+std::vector<std::string> VelaPulsarUQFFModule::listSavedStates() const {
+    std::vector<std::string> names;
+    for (const auto& pair : saved_states_vela::states) {
+        names.push_back(pair.first);
+    }
+    return names;
+}
+
+std::string VelaPulsarUQFFModule::exportState() const {
+    std::ostringstream oss;
+    for (const auto& pair : variables) {
+        oss << pair.first << "=" << pair.second.real() << "+i*" << pair.second.imag() << ";";
+    }
+    return oss.str();
+}
+
+// System Analysis
+std::map<std::string, double> VelaPulsarUQFFModule::sensitivityAnalysis(const std::string& output_var, double delta) {
+    std::map<std::string, double> sensitivities;
+    cdouble baseline = computeF(variables["t"].real());
+    
+    for (auto& pair : variables) {
+        cdouble original = pair.second;
+        pair.second = original * cdouble(1.0 + delta, 1.0);
+        cdouble perturbed = computeF(variables["t"].real());
+        
+        double sensitivity = std::abs(perturbed - baseline) / std::abs(baseline);
+        sensitivities[pair.first] = sensitivity;
+        
+        pair.second = original;
+    }
+    return sensitivities;
+}
+
+std::string VelaPulsarUQFFModule::generateReport() const {
+    std::ostringstream report;
+    report << "=== Vela Pulsar (PSR J0835-4510) UQFF System Report ===\n";
+    report << "System: " << getSystemName() << "\n";
+    report << "Total Variables: " << variables.size() << "\n";
+    report << "Key Parameters:\n";
+    report << "  M (Neutron Star Mass) = " << std::scientific << variables.at("M").real() << " kg (";
+    report << (variables.at("M").real() / 1.989e30) << " M_sun)\n";
+    report << "  r (PWN Radius) = " << variables.at("r").real() << " m (";
+    report << (variables.at("r").real() / 3.086e16) << " pc)\n";
+    report << "  L_X (X-ray Luminosity) = " << variables.at("L_X").real() << " W\n";
+    report << "  B0 (Surface Magnetic Field) = " << variables.at("B0").real() << " T (";
+    report << (variables.at("B0").real() * 1e4) << " G)\n";
+    report << "  t (Age) = " << variables.at("t").real() << " s (";
+    report << (variables.at("t").real() / 3.156e7) << " yr)\n";
+    report << "  V (Expansion Velocity) = " << variables.at("V").real() << " m/s (";
+    report << (variables.at("V").real() / 1000.0) << " km/s)\n";
+    report << "Pulsar Type: Young rotation-powered pulsar in SNR\n";
+    report << "Period: ~89 ms, Spin-down: ~1.25e-13 s/s\n";
+    report << "Distance: ~287 pc (Vela Supernova Remnant)\n";
+    
+    return report.str();
+}
+
+bool VelaPulsarUQFFModule::validateConsistency() const {
+    // Check physical constraints for Vela Pulsar
+    double M_val = variables.at("M").real();
+    double r_val = variables.at("r").real();
+    double L_X_val = variables.at("L_X").real();
+    double B_val = variables.at("B0").real();
+    
+    bool valid = true;
+    if (M_val < 1e30 || M_val > 5e30) valid = false;  // 0.5-2.5 M_sun for NS
+    if (r_val < 1e15 || r_val > 1e19) valid = false;  // 0.1 pc - 100 pc PWN scale
+    if (L_X_val < 1e25 || L_X_val > 1e31) valid = false;  // X-ray luminosity range
+    if (B_val < 1e-10 || B_val > 1e-6) valid = false;  // Magnetic field range
+    
+    return valid;
+}
+
+void VelaPulsarUQFFModule::autoCorrectAnomalies() {
+    // Clamp parameters to physically reasonable ranges
+    double M_val = variables["M"].real();
+    double r_val = variables["r"].real();
+    double L_X_val = variables["L_X"].real();
+    double B_val = variables["B0"].real();
+    
+    if (M_val < 1e30) variables["M"] = {1e30, 0.0};
+    if (M_val > 5e30) variables["M"] = {5e30, 0.0};
+    if (r_val < 1e15) variables["r"] = {1e15, 0.0};
+    if (r_val > 1e19) variables["r"] = {1e19, 0.0};
+    if (L_X_val < 1e25) variables["L_X"] = {1e25, 0.0};
+    if (L_X_val > 1e31) variables["L_X"] = {1e31, 0.0};
+    if (B_val < 1e-10) variables["B0"] = {1e-10, 0.0};
+    if (B_val > 1e-6) variables["B0"] = {1e-6, 0.0};
+}
+
 // Example usage in base program 'vela_sim.cpp' (snippet for integration)
+/*
+=============================================================================
+COMPREHENSIVE DEMONSTRATION: Vela Pulsar Dynamic UQFF Module Enhancement
+=============================================================================
+
+#include "source152.cpp"  // or link against compiled module
+
+int main() {
+    std::cout << "=== Vela Pulsar (PSR J0835-4510) UQFF Dynamic Enhancement Test ===" << std::endl;
+    
+    // Initialize module with default parameters
+    VelaPulsarUQFFModule vela;
+    
+    // === Test 1: Variable Management ===
+    std::cout << "\n--- Test 1: Variable Management ---" << std::endl;
+    vela.createVariable("test_param", {1e20, 5e15});
+    vela.cloneVariable("M", "M_backup");
+    std::vector<std::string> vars = vela.listVariables();
+    std::cout << "Total variables: " << vars.size() << std::endl;
+    std::cout << "System Name: " << vela.getSystemName() << std::endl;
+    
+    // === Test 2: Batch Operations ===
+    std::cout << "\n--- Test 2: Batch Operations ---" << std::endl;
+    std::vector<std::string> force_params = {"k_LENR", "k_act", "k_DE"};
+    vela.scaleVariableGroup(force_params, {1.5, 0.0});
+    std::cout << "Scaled force parameters by 1.5x" << std::endl;
+    
+    // === Test 3: Self-Expansion (Pulsar Scale) ===
+    std::cout << "\n--- Test 3: Pulsar Scale Expansion ---" << std::endl;
+    vela.saveState("before_pulsar_expansion");
+    vela.expandPulsarScale(1.2, 1.5);  // 20% more mass, 50% larger PWN
+    std::cout << "Expanded pulsar scale: M×1.2, r×1.5" << std::endl;
+    std::cout << "New M = " << vela.variables["M"].real() << " kg" << std::endl;
+    std::cout << "New r = " << vela.variables["r"].real() << " m" << std::endl;
+    vela.restoreState("before_pulsar_expansion");
+    
+    // === Test 4: Self-Expansion (Force Scale) ===
+    std::cout << "\n--- Test 4: Force Scale Expansion ---" << std::endl;
+    vela.expandForceScale(2.0, 1.5);  // Double DPM, increase LENR by 50%
+    std::cout << "Expanded force coupling: DPM×2.0, LENR×1.5" << std::endl;
+    
+    // === Test 5: Self-Expansion (PWN Scale) ===
+    std::cout << "\n--- Test 5: PWN Scale Expansion ---" << std::endl;
+    vela.saveState("before_pwn_expansion");
+    vela.expandPWNScale(1.8, 1.3);  // 80% faster jets, 30% larger nebula
+    std::cout << "Expanded PWN scale: jet velocity×1.8, nebula×1.3" << std::endl;
+    std::cout << "New V = " << vela.variables["V"].real() << " m/s" << std::endl;
+    vela.restoreState("before_pwn_expansion");
+    
+    // === Test 6: Parameter Space Expansion ===
+    std::cout << "\n--- Test 6: Parameter Space Expansion ---" << std::endl;
+    vela.expandParameterSpace(1.25);
+    std::cout << "Expanded exploration parameters by 25%" << std::endl;
+    
+    // === Test 7: Auto-Refinement ===
+    std::cout << "\n--- Test 7: Auto-Refinement ---" << std::endl;
+    vela.autoRefineParameters(1e100);
+    std::cout << "Auto-refined parameters to minimize force residual" << std::endl;
+    
+    // === Test 8: Calibration to Observations ===
+    std::cout << "\n--- Test 8: Calibration to Observations ---" << std::endl;
+    std::map<std::string, cdouble> observations = {
+        {"M", {2.8e30, 0.0}},
+        {"L_X", {1.2e27, 0.0}},
+        {"B0", {3.5e-8, 0.0}}
+    };
+    vela.calibrateToObservations(observations);
+    std::cout << "Calibrated to observational data" << std::endl;
+    
+    // === Test 9: Optimization for Metrics ===
+    std::cout << "\n--- Test 9: Optimization for Standard Vela ---" << std::endl;
+    vela.saveState("before_optimization");
+    vela.optimizeForMetric("standard_vela");
+    std::cout << "Optimized for standard Vela pulsar state" << std::endl;
+    
+    std::cout << "\n--- Test 10: Optimization for Gamma-Bright State ---" << std::endl;
+    vela.optimizeForMetric("gamma_bright");
+    std::cout << "Optimized for enhanced gamma-ray emission" << std::endl;
+    std::cout << "L_X = " << vela.variables["L_X"].real() << " W" << std::endl;
+    
+    std::cout << "\n--- Test 11: Optimization for Active Jet State ---" << std::endl;
+    vela.optimizeForMetric("jet_active");
+    std::cout << "Optimized for active PWN jet phase" << std::endl;
+    std::cout << "V = " << vela.variables["V"].real() << " m/s" << std::endl;
+    
+    vela.restoreState("before_optimization");
+    
+    // === Test 12: Parameter Variations ===
+    std::cout << "\n--- Test 12: Parameter Variations ---" << std::endl;
+    auto variations = vela.generateVariations(5, 0.1);
+    std::cout << "Generated " << variations.size() << " parameter variations (±10%)" << std::endl;
+    
+    // === Test 13: Mutation ===
+    std::cout << "\n--- Test 13: Parameter Mutation ---" << std::endl;
+    vela.saveState("before_mutation");
+    vela.mutateParameters(0.05);
+    std::cout << "Applied 5% mutation to all parameters" << std::endl;
+    vela.restoreState("before_mutation");
+    
+    // === Test 14: Evolutionary Optimization ===
+    std::cout << "\n--- Test 14: Evolutionary Optimization ---" << std::endl;
+    auto fitness = [](const VelaPulsarUQFFModule& m) -> double {
+        double F_mag = std::abs(m.computeF(m.variables.at("t").real()));
+        return 1.0 / (1.0 + F_mag / 1e200);  // Minimize force magnitude
+    };
+    vela.evolveSystem(10, fitness);
+    std::cout << "Evolved system over 10 generations" << std::endl;
+    
+    // === Test 15: State Management ===
+    std::cout << "\n--- Test 15: State Management ---" << std::endl;
+    vela.saveState("final_vela_state");
+    std::vector<std::string> states = vela.listSavedStates();
+    std::cout << "Saved states: " << states.size() << std::endl;
+    for (const auto& state : states) {
+        std::cout << "  - " << state << std::endl;
+    }
+    
+    // === Test 16: State Export ===
+    std::cout << "\n--- Test 16: State Export ---" << std::endl;
+    std::string exported = vela.exportState();
+    std::cout << "Exported state (first 200 chars): " << exported.substr(0, 200) << "..." << std::endl;
+    
+    // === Test 17: Sensitivity Analysis ===
+    std::cout << "\n--- Test 17: Sensitivity Analysis ---" << std::endl;
+    auto sensitivities = vela.sensitivityAnalysis("F", 0.01);
+    std::cout << "Top 5 sensitive parameters:" << std::endl;
+    std::vector<std::pair<std::string, double>> sorted_sens(sensitivities.begin(), sensitivities.end());
+    std::sort(sorted_sens.begin(), sorted_sens.end(), 
+              [](const auto& a, const auto& b) { return a.second > b.second; });
+    for (int i = 0; i < std::min(5, (int)sorted_sens.size()); ++i) {
+        std::cout << "  " << sorted_sens[i].first << ": " << sorted_sens[i].second << std::endl;
+    }
+    
+    // === Test 18: System Report ===
+    std::cout << "\n--- Test 18: System Report ---" << std::endl;
+    std::string report = vela.generateReport();
+    std::cout << report << std::endl;
+    
+    // === Test 19: Consistency Validation ===
+    std::cout << "\n--- Test 19: Consistency Validation ---" << std::endl;
+    bool is_valid = vela.validateConsistency();
+    std::cout << "System consistency: " << (is_valid ? "VALID" : "INVALID") << std::endl;
+    
+    // === Test 20: Anomaly Correction ===
+    std::cout << "\n--- Test 20: Anomaly Auto-Correction ---" << std::endl;
+    vela.variables["M"] = {1e25, 0.0};  // Unphysical low mass
+    std::cout << "Injected anomaly: M = " << vela.variables["M"].real() << " kg" << std::endl;
+    vela.autoCorrectAnomalies();
+    std::cout << "Auto-corrected M = " << vela.variables["M"].real() << " kg" << std::endl;
+    
+    // === Final Force Computation ===
+    std::cout << "\n=== Final Force Computation ===" << std::endl;
+    double t_test = 3.47e11;  // 11,000 years
+    cdouble F_final = vela.computeF(t_test);
+    std::cout << "F_U(t=" << t_test << " s) = " << std::scientific << std::setprecision(10)
+              << F_final.real() << " + i " << F_final.imag() << " N" << std::endl;
+    std::cout << "|F_U| = " << std::abs(F_final) << " N" << std::endl;
+    
+    std::cout << "\n=== All 20 Tests Completed Successfully ===" << std::endl;
+    std::cout << "Vela Pulsar UQFF module now supports:" << std::endl;
+    std::cout << "  ✓ Variable management (create, remove, clone, list)" << std::endl;
+    std::cout << "  ✓ Batch operations (transform, scale groups)" << std::endl;
+    std::cout << "  ✓ Self-expansion (pulsar scale, force scale, PWN scale)" << std::endl;
+    std::cout << "  ✓ Self-refinement (auto-refine, calibrate, optimize)" << std::endl;
+    std::cout << "  ✓ Parameter exploration (variations, sensitivity)" << std::endl;
+    std::cout << "  ✓ Adaptive evolution (mutation, fitness-based evolution)" << std::endl;
+    std::cout << "  ✓ State management (save, restore, export)" << std::endl;
+    std::cout << "  ✓ System analysis (report, validation, anomaly correction)" << std::endl;
+    
+    return 0;
+}
+
+=============================================================================
+*/
 // #include "VelaPulsarUQFFModule.h"
 // #include <complex>
 // int main() {
