@@ -9,12 +9,17 @@ class NGC346UQFFModule {
         this.num_protostars = params.numProtostars || 1000;
         this.formation_efficiency = params.formationEfficiency || 0.1;
         this.entanglement_factor = params.entanglementFactor || 1e-10;
+        
+        // Physical parameters for protostar formation
+        this.temperature = params.temperature || 273; // K (cold molecular cloud assumption)
+        this.density = params.density || 1e-21; // kg/m³ (typical molecular cloud density)
     }
 
     // Compute protostar formation dynamics
     computeProtostarFormation(t) {
-        const jeans_length = Math.sqrt((15 * 273) / (4 * Math.PI * this.G * 1e-21)); // Using T=273K, rho=1e-21
-        const collapse_time = Math.sqrt(3 * Math.PI / (32 * this.G * 1e-21));
+        // Jeans length: characteristic scale for gravitational collapse
+        const jeans_length = Math.sqrt((15 * this.temperature) / (4 * Math.PI * this.G * this.density));
+        const collapse_time = Math.sqrt(3 * Math.PI / (32 * this.G * this.density));
         const stars_formed = this.num_protostars * this.formation_efficiency * (1 - Math.exp(-t / collapse_time));
         
         return {

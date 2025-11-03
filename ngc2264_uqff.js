@@ -12,8 +12,16 @@ class NGC2264UQFFModule {
 
     // Compute star formation dynamics
     computeStarFormation(t) {
-        const jeans_mass = Math.pow(this.temperature / this.M_nebula, 1.5);
-        const collapse_time = Math.sqrt((3 * Math.PI) / (32 * this.G * this.M_nebula / Math.pow(this.r_nebula, 3)));
+        // Jeans mass formula: M_J = (5*k*T/(G*μ*m_H))^(3/2) * (3/(4*π*ρ))^(1/2)
+        // Simplified approximation for nebular conditions
+        const rho_nebula = this.M_nebula / ((4/3) * Math.PI * Math.pow(this.r_nebula, 3));
+        const k_B = 1.38e-23; // Boltzmann constant
+        const m_H = 1.67e-27; // Hydrogen mass
+        const mu = 2.8; // Mean molecular weight
+        const jeans_mass = Math.pow((5 * k_B * this.temperature) / (this.G * mu * m_H), 1.5) * 
+                          Math.sqrt(3 / (4 * Math.PI * rho_nebula));
+        
+        const collapse_time = Math.sqrt((3 * Math.PI) / (32 * this.G * rho_nebula));
         return {
             jeansMass: jeans_mass,
             collapseTime: collapse_time,

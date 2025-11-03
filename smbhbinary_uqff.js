@@ -18,6 +18,8 @@ class SMBHBinaryUQFFModule {
         const eta = mu / M_total; // Symmetric mass ratio
         
         // Orbital decay due to gravitational wave radiation
+        // Peters-Mathews formula: da/dt = -(64/5) * (G³/c⁵) * m₁*m₂*M / a³
+        // Coefficient 64/5 comes from quadrupole radiation formula
         const da_dt = -64/5 * Math.pow(this.G, 3) * this.M1 * this.M2 * M_total / 
                       (Math.pow(this.c, 5) * Math.pow(this.separation, 3));
         
