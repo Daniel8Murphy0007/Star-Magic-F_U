@@ -19,6 +19,11 @@
 #include <iostream>
 #include <iomanip>
 #include <complex>
+#include <vector>
+#include <functional>
+#include <random>
+#include <algorithm>
+#include <sstream>
 
 using cdouble = std::complex<double>;
 
@@ -59,6 +64,49 @@ public:
 
     // Print all current variables (for debugging/updates)
     void printVariables();
+
+    // ========== ENHANCED: 25 Dynamic Self-Update and Self-Expansion Methods ==========
+    
+    // 1. Variable Management (5 methods)
+    void createVariable(const std::string& name, cdouble value);
+    void removeVariable(const std::string& name);
+    void cloneVariable(const std::string& source, const std::string& destination);
+    std::vector<std::string> listVariables() const;
+    std::string getSystemName() const;
+    
+    // 2. Batch Operations (2 methods)
+    void transformVariableGroup(const std::vector<std::string>& names, std::function<cdouble(cdouble)> func);
+    void scaleVariableGroup(const std::vector<std::string>& names, cdouble scale_factor);
+    
+    // 3. Self-Expansion (4 methods: 1 global + 3 domain-specific for M87 Jet)
+    void expandParameterSpace(double global_scale);
+    void expandJetScale(double mass_factor, double length_factor);
+    void expandForceScale(double dpm_factor, double lenr_factor);
+    void expandRelativisticScale(double velocity_factor, double luminosity_factor);
+    
+    // 4. Self-Refinement (3 methods)
+    void autoRefineParameters(const std::string& target_metric);
+    void calibrateToObservations(const std::map<std::string, cdouble>& observed_values);
+    void optimizeForMetric(const std::string& metric_name);
+    
+    // 5. Parameter Exploration (1 method)
+    std::vector<std::map<std::string, cdouble>> generateVariations(int count, double variation_percent);
+    
+    // 6. Adaptive Evolution (2 methods)
+    void mutateParameters(double mutation_rate);
+    void evolveSystem(int generations, std::function<double(const M87JetUQFFModule&)> fitness_func);
+    
+    // 7. State Management (4 methods)
+    void saveState(const std::string& state_name);
+    void restoreState(const std::string& state_name);
+    std::vector<std::string> listSavedStates() const;
+    std::string exportState() const;
+    
+    // 8. System Analysis (4 methods)
+    std::map<std::string, double> sensitivityAnalysis(const std::vector<std::string>& param_names, double delta_percent);
+    std::string generateReport() const;
+    bool validateConsistency() const;
+    void autoCorrectAnomalies();
 };
 
 #endif // M87_JET_UQFF_MODULE_H
@@ -308,7 +356,521 @@ void M87JetUQFFModule::printVariables() {
     }
 }
 
+// ========== ENHANCED: Implementation of 25 Dynamic Methods ==========
+
+const double pi_val = 3.141592653589793;
+
+// Namespace for saved states
+namespace saved_states_m87 {
+    std::map<std::string, std::map<std::string, cdouble>> states;
+}
+
+// 1. Variable Management
+
+void M87JetUQFFModule::createVariable(const std::string& name, cdouble value) {
+    variables[name] = value;
+}
+
+void M87JetUQFFModule::removeVariable(const std::string& name) {
+    variables.erase(name);
+}
+
+void M87JetUQFFModule::cloneVariable(const std::string& source, const std::string& destination) {
+    if (variables.find(source) != variables.end()) {
+        variables[destination] = variables[source];
+    }
+}
+
+std::vector<std::string> M87JetUQFFModule::listVariables() const {
+    std::vector<std::string> names;
+    for (const auto& pair : variables) {
+        names.push_back(pair.first);
+    }
+    return names;
+}
+
+std::string M87JetUQFFModule::getSystemName() const {
+    return "M87_Jet_Relativistic_UQFF";
+}
+
+// 2. Batch Operations
+
+void M87JetUQFFModule::transformVariableGroup(const std::vector<std::string>& names, std::function<cdouble(cdouble)> func) {
+    for (const auto& name : names) {
+        if (variables.find(name) != variables.end()) {
+            variables[name] = func(variables[name]);
+        }
+    }
+}
+
+void M87JetUQFFModule::scaleVariableGroup(const std::vector<std::string>& names, cdouble scale_factor) {
+    transformVariableGroup(names, [scale_factor](cdouble val) { return val * scale_factor; });
+}
+
+// 3. Self-Expansion (Domain-Specific for M87 Jet)
+
+void M87JetUQFFModule::expandParameterSpace(double global_scale) {
+    for (auto& pair : variables) {
+        pair.second *= global_scale;
+    }
+}
+
+void M87JetUQFFModule::expandJetScale(double mass_factor, double length_factor) {
+    // Scale jet mass and length, adjust gas density accordingly
+    variables["M"] *= mass_factor;
+    variables["r"] *= length_factor;
+    variables["rho_gas"] *= mass_factor / pow(length_factor, 3);
+    
+    // Adjust luminosity with mass (jet power ~ M)
+    variables["L_X"] *= mass_factor;
+}
+
+void M87JetUQFFModule::expandForceScale(double dpm_factor, double lenr_factor) {
+    // Scale DPM components
+    variables["DPM_momentum"] *= dpm_factor;
+    variables["DPM_gravity"] *= dpm_factor;
+    variables["DPM_stability"] *= dpm_factor;
+    
+    // Scale LENR coupling
+    variables["k_LENR"] *= lenr_factor;
+}
+
+void M87JetUQFFModule::expandRelativisticScale(double velocity_factor, double luminosity_factor) {
+    // Scale jet velocity (relativistic)
+    variables["V"] *= velocity_factor;
+    
+    // Scale X-ray luminosity
+    variables["L_X"] *= luminosity_factor;
+    
+    // Scale directed energy coupling (jet power)
+    variables["k_DE"] *= luminosity_factor;
+    
+    // Scale relativistic coupling
+    variables["k_rel"] *= velocity_factor * velocity_factor;
+    
+    // Scale magnetic field (proportional to sqrt of luminosity)
+    variables["B0"] *= sqrt(luminosity_factor);
+}
+
+// 4. Self-Refinement
+
+void M87JetUQFFModule::autoRefineParameters(const std::string& target_metric) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> mass_dist(1e39, 1e41);
+    std::uniform_real_distribution<> length_dist(1e19, 1e20);
+    std::uniform_real_distribution<> dpm_dist(0.01, 10.0);
+    std::uniform_real_distribution<> lenr_dist(1e-12, 1e-8);
+    
+    variables["M"] = cdouble(mass_dist(gen), 0.0);
+    variables["r"] = cdouble(length_dist(gen), 0.0);
+    variables["DPM_momentum"] = cdouble(dpm_dist(gen), variables["DPM_momentum"].imag());
+    variables["k_LENR"] = cdouble(lenr_dist(gen), 0.0);
+}
+
+void M87JetUQFFModule::calibrateToObservations(const std::map<std::string, cdouble>& observed_values) {
+    for (const auto& obs : observed_values) {
+        if (variables.find(obs.first) != variables.end()) {
+            variables[obs.first] = obs.second;
+        }
+    }
+}
+
+void M87JetUQFFModule::optimizeForMetric(const std::string& metric_name) {
+    if (metric_name == "standard_m87") {
+        variables["M"] = {1.29e40, 0.0};
+        variables["r"] = {4.63e19, 0.0};
+        variables["L_X"] = {1e34, 0.0};
+        variables["B0"] = {1e-5, 0.0};
+    } else if (metric_name == "superluminal_knots") {
+        variables["V"] = {2.4e8, 0.0};  // 0.8c apparent
+        variables["L_X"] = {5e34, 0.0};  // Enhanced emission
+        variables["k_rel"] = {5e-10, 0.0};  // Strong relativistic effects
+    } else if (metric_name == "eht_horizon") {
+        variables["M"] = {1.29e40, 0.0};  // 6.5e9 M_sun
+        variables["r"] = {1e16, 0.0};  // Event horizon scale
+        variables["B0"] = {1e-3, 0.0};  // Strong B-field near horizon
+    } else if (metric_name == "quiet_state") {
+        variables["L_X"] = {5e33, 0.0};  // Lower luminosity
+        variables["V"] = {5e7, 0.0};  // Slower jet
+        variables["k_act"] = {1e-7, 0.0};  // Reduced activity
+    } else if (metric_name == "flare_state") {
+        variables["L_X"] = {1e35, 0.0};  // 10x brighter
+        variables["k_act"] = {1e-5, 0.0};  // Enhanced activation
+        variables["k_DE"] = {1e-29, 0.0};  // Strong directed energy
+    }
+}
+
+// 5. Parameter Exploration
+
+std::vector<std::map<std::string, cdouble>> M87JetUQFFModule::generateVariations(int count, double variation_percent) {
+    std::vector<std::map<std::string, cdouble>> variations;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dist(-variation_percent / 100.0, variation_percent / 100.0);
+    
+    for (int i = 0; i < count; ++i) {
+        std::map<std::string, cdouble> variant = variables;
+        for (auto& pair : variant) {
+            double delta_real = dist(gen);
+            double delta_imag = dist(gen);
+            cdouble delta(pair.second.real() * delta_real, pair.second.imag() * delta_imag);
+            pair.second += delta;
+        }
+        variations.push_back(variant);
+    }
+    return variations;
+}
+
+// 6. Adaptive Evolution
+
+void M87JetUQFFModule::mutateParameters(double mutation_rate) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dist(-mutation_rate, mutation_rate);
+    
+    for (auto& pair : variables) {
+        double delta_real = dist(gen);
+        double delta_imag = dist(gen);
+        cdouble delta(pair.second.real() * delta_real, pair.second.imag() * delta_imag);
+        pair.second += delta;
+    }
+}
+
+void M87JetUQFFModule::evolveSystem(int generations, std::function<double(const M87JetUQFFModule&)> fitness_func) {
+    double best_fitness = fitness_func(*this);
+    std::map<std::string, cdouble> best_state = variables;
+    
+    for (int gen = 0; gen < generations; ++gen) {
+        mutateParameters(0.05);
+        double current_fitness = fitness_func(*this);
+        
+        if (current_fitness > best_fitness) {
+            best_fitness = current_fitness;
+            best_state = variables;
+        } else {
+            variables = best_state;
+        }
+    }
+}
+
+// 7. State Management
+
+void M87JetUQFFModule::saveState(const std::string& state_name) {
+    saved_states_m87::states[state_name] = variables;
+}
+
+void M87JetUQFFModule::restoreState(const std::string& state_name) {
+    if (saved_states_m87::states.find(state_name) != saved_states_m87::states.end()) {
+        variables = saved_states_m87::states[state_name];
+    }
+}
+
+std::vector<std::string> M87JetUQFFModule::listSavedStates() const {
+    std::vector<std::string> names;
+    for (const auto& pair : saved_states_m87::states) {
+        names.push_back(pair.first);
+    }
+    return names;
+}
+
+std::string M87JetUQFFModule::exportState() const {
+    std::ostringstream oss;
+    oss << "System: " << getSystemName() << "\n";
+    for (const auto& pair : variables) {
+        oss << pair.first << " = " << std::scientific << std::setprecision(10)
+            << pair.second.real() << " + i*" << pair.second.imag() << "\n";
+    }
+    return oss.str();
+}
+
+// 8. System Analysis
+
+std::map<std::string, double> M87JetUQFFModule::sensitivityAnalysis(const std::vector<std::string>& param_names, double delta_percent) {
+    std::map<std::string, double> sensitivities;
+    double t_test = 3.156e14;
+    cdouble baseline = computeF(t_test);
+    
+    for (const auto& param : param_names) {
+        if (variables.find(param) != variables.end()) {
+            cdouble original = variables[param];
+            cdouble delta = original * (delta_percent / 100.0);
+            
+            variables[param] = original + delta;
+            cdouble perturbed = computeF(t_test);
+            variables[param] = original;
+            
+            double sensitivity = std::abs(perturbed - baseline) / std::abs(baseline);
+            sensitivities[param] = sensitivity;
+        }
+    }
+    return sensitivities;
+}
+
+std::string M87JetUQFFModule::generateReport() const {
+    std::ostringstream report;
+    report << "========== M87 Jet Relativistic UQFF Module Report ==========\n";
+    report << "System: " << getSystemName() << "\n\n";
+    
+    report << "Key Parameters:\n";
+    report << "  Mass (M): " << std::scientific << variables.at("M").real() << " + i*" << variables.at("M").imag() << " kg\n";
+    report << "  Jet Length (r): " << variables.at("r").real() << " + i*" << variables.at("r").imag() << " m\n";
+    report << "  X-ray Luminosity (L_X): " << variables.at("L_X").real() << " + i*" << variables.at("L_X").imag() << " W\n";
+    report << "  Magnetic Field (B0): " << variables.at("B0").real() << " + i*" << variables.at("B0").imag() << " T\n";
+    report << "  Jet Velocity (V): " << variables.at("V").real() << " + i*" << variables.at("V").imag() << " m/s\n";
+    report << "  Time (t): " << variables.at("t").real() << " + i*" << variables.at("t").imag() << " s\n";
+    
+    report << "\nForce Components (at current t):\n";
+    double t_current = variables.at("t").real();
+    cdouble F_total = const_cast<M87JetUQFFModule*>(this)->computeF(t_current);
+    cdouble F_compressed = const_cast<M87JetUQFFModule*>(this)->computeCompressed(t_current);
+    cdouble DPM_res = const_cast<M87JetUQFFModule*>(this)->computeResonant();
+    cdouble Ub1 = const_cast<M87JetUQFFModule*>(this)->computeBuoyancy();
+    cdouble Ui = const_cast<M87JetUQFFModule*>(this)->computeSuperconductive(t_current);
+    double g_comp = const_cast<M87JetUQFFModule*>(this)->computeCompressedG(t_current);
+    cdouble Q_wave = const_cast<M87JetUQFFModule*>(this)->computeQ_wave(t_current);
+    
+    report << "  F_total: " << F_total.real() << " + i*" << F_total.imag() << " N\n";
+    report << "  F_compressed (integrand): " << F_compressed.real() << " + i*" << F_compressed.imag() << " N\n";
+    report << "  DPM_resonance: " << DPM_res.real() << " + i*" << DPM_res.imag() << "\n";
+    report << "  Buoyancy (Ub1): " << Ub1.real() << " + i*" << Ub1.imag() << " N\n";
+    report << "  Superconductive (Ui): " << Ui.real() << " + i*" << Ui.imag() << " J/m^3\n";
+    report << "  Compressed g(r,t): " << g_comp << " J/m^3\n";
+    report << "  Q_wave: " << Q_wave.real() << " + i*" << Q_wave.imag() << " J/m^3\n";
+    
+    report << "\nTotal Variables: " << variables.size() << "\n";
+    report << "========================================\n";
+    
+    return report.str();
+}
+
+bool M87JetUQFFModule::validateConsistency() const {
+    double M_val = variables.at("M").real();
+    double r_val = variables.at("r").real();
+    double L_X_val = variables.at("L_X").real();
+    double V_val = variables.at("V").real();
+    double c_val = variables.at("c").real();
+    
+    // Jet mass range check (6.5e9 M_sun ~ 1.29e40 kg)
+    if (M_val < 1e39 || M_val > 1e41) return false;
+    
+    // Jet length check (kpc scale)
+    if (r_val < 1e16 || r_val > 1e21) return false;
+    
+    // Luminosity check (AGN jet)
+    if (L_X_val < 1e33 || L_X_val > 1e36) return false;
+    
+    // Velocity check (relativistic but sub-c)
+    if (V_val < 0 || V_val >= c_val) return false;
+    
+    return true;
+}
+
+void M87JetUQFFModule::autoCorrectAnomalies() {
+    double M_val = variables["M"].real();
+    double r_val = variables["r"].real();
+    double L_X_val = variables["L_X"].real();
+    double V_val = variables["V"].real();
+    double c_val = variables["c"].real();
+    
+    // Correct mass to jet range
+    if (M_val < 1e39) variables["M"] = {1e39, variables["M"].imag()};
+    if (M_val > 1e41) variables["M"] = {1e41, variables["M"].imag()};
+    
+    // Correct length
+    if (r_val < 1e16) variables["r"] = {1e16, variables["r"].imag()};
+    if (r_val > 1e21) variables["r"] = {1e21, variables["r"].imag()};
+    
+    // Correct luminosity
+    if (L_X_val < 1e33) variables["L_X"] = {1e33, variables["L_X"].imag()};
+    if (L_X_val > 1e36) variables["L_X"] = {1e36, variables["L_X"].imag()};
+    
+    // Correct velocity (must be sub-c)
+    if (V_val < 0) variables["V"] = {0, variables["V"].imag()};
+    if (V_val >= c_val) variables["V"] = {0.99 * c_val, variables["V"].imag()};
+}
+
 // Example usage in base program 'm87_sim.cpp' (snippet for integration)
+/*
+========== COMPREHENSIVE USAGE EXAMPLE: M87 Jet Relativistic UQFF ==========
+
+#include "source145.cpp"
+#include <iostream>
+#include <iomanip>
+
+int main() {
+    std::cout << "========== M87 Jet Relativistic UQFF Enhancement Demo ==========\n\n";
+    
+    // Initialize standard M87 Jet module
+    M87JetUQFFModule m87;
+    
+    std::cout << "=== INITIAL STATE ===\n";
+    std::cout << m87.generateReport() << "\n\n";
+    
+    // Test 1: Variable Management
+    std::cout << "=== TEST 1: Variable Management ===\n";
+    m87.createVariable("test_jet_power", {1e40, 5e39});
+    std::cout << "Created variable: test_jet_power\n";
+    
+    m87.cloneVariable("M", "M_backup");
+    std::cout << "Cloned M to M_backup\n";
+    
+    auto var_list = m87.listVariables();
+    std::cout << "Total variables: " << var_list.size() << "\n";
+    std::cout << "System name: " << m87.getSystemName() << "\n\n";
+    
+    // Test 2: Domain-Specific Expansion
+    std::cout << "=== TEST 2: Domain-Specific Expansion ===\n";
+    
+    // Save initial state
+    m87.saveState("initial");
+    
+    // Expand jet scale (more massive, longer)
+    std::cout << "Expanding jet scale (1.5x mass, 2x length)...\n";
+    m87.expandJetScale(1.5, 2.0);
+    
+    // Expand relativistic scale (faster, brighter)
+    std::cout << "Expanding relativistic scale (1.2x velocity, 3x luminosity)...\n";
+    m87.expandRelativisticScale(1.2, 3.0);
+    
+    // Expand force scale (stronger DPM, enhanced LENR)
+    std::cout << "Expanding force scale (1.5x DPM, 2x LENR)...\n";
+    m87.expandForceScale(1.5, 2.0);
+    
+    std::cout << m87.generateReport() << "\n\n";
+    
+    // Test 3: Optimization for Different Scenarios
+    std::cout << "=== TEST 3: Optimization for M87 Jet Scenarios ===\n";
+    
+    m87.restoreState("initial");
+    
+    std::cout << "Scenario 1: Superluminal Knots\n";
+    m87.optimizeForMetric("superluminal_knots");
+    cdouble F_knots = m87.computeF(3.156e14);
+    std::cout << "  F_U (knots): " << F_knots.real() << " + i*" << F_knots.imag() << " N\n";
+    
+    m87.restoreState("initial");
+    std::cout << "Scenario 2: EHT Event Horizon\n";
+    m87.optimizeForMetric("eht_horizon");
+    cdouble F_horizon = m87.computeF(3.156e14);
+    std::cout << "  F_U (horizon): " << F_horizon.real() << " + i*" << F_horizon.imag() << " N\n";
+    
+    m87.restoreState("initial");
+    std::cout << "Scenario 3: Quiet State\n";
+    m87.optimizeForMetric("quiet_state");
+    cdouble F_quiet = m87.computeF(3.156e14);
+    std::cout << "  F_U (quiet): " << F_quiet.real() << " + i*" << F_quiet.imag() << " N\n";
+    
+    m87.restoreState("initial");
+    std::cout << "Scenario 4: Flare State\n";
+    m87.optimizeForMetric("flare_state");
+    cdouble F_flare = m87.computeF(3.156e14);
+    std::cout << "  F_U (flare): " << F_flare.real() << " + i*" << F_flare.imag() << " N\n\n";
+    
+    // Test 4: Sensitivity Analysis
+    std::cout << "=== TEST 4: Sensitivity Analysis ===\n";
+    m87.restoreState("initial");
+    
+    std::vector<std::string> params_to_test = {"M", "r", "L_X", "B0", "V", "k_rel"};
+    auto sensitivities = m87.sensitivityAnalysis(params_to_test, 5.0);
+    
+    std::cout << "Parameter sensitivities (5% perturbation):\n";
+    for (const auto& sens : sensitivities) {
+        std::cout << "  " << std::setw(15) << sens.first << ": " 
+                  << std::scientific << std::setprecision(6) << sens.second << "\n";
+    }
+    std::cout << "\n";
+    
+    // Test 5: Parameter Exploration
+    std::cout << "=== TEST 5: Parameter Exploration ===\n";
+    auto variations = m87.generateVariations(5, 10.0);
+    std::cout << "Generated " << variations.size() << " variations (10% variation):\n";
+    
+    for (size_t i = 0; i < variations.size(); ++i) {
+        double M_var = variations[i]["M"].real();
+        double V_var = variations[i]["V"].real();
+        std::cout << "  Variation " << i+1 << ": M = " << std::scientific << M_var 
+                  << " kg, V = " << V_var << " m/s\n";
+    }
+    std::cout << "\n";
+    
+    // Test 6: Adaptive Evolution
+    std::cout << "=== TEST 6: Adaptive Evolution ===\n";
+    m87.restoreState("initial");
+    
+    // Define fitness function (maximize force magnitude)
+    auto fitness = [](const M87JetUQFFModule& mod) -> double {
+        cdouble F = const_cast<M87JetUQFFModule&>(mod).computeF(3.156e14);
+        return std::abs(F);
+    };
+    
+    cdouble F_before_evolution = m87.computeF(3.156e14);
+    std::cout << "Before evolution: |F_U| = " << std::scientific << std::abs(F_before_evolution) << " N\n";
+    
+    m87.evolveSystem(50, fitness);
+    cdouble F_after_evolution = m87.computeF(3.156e14);
+    std::cout << "After 50 generations: |F_U| = " << std::abs(F_after_evolution) << " N\n";
+    std::cout << "Improvement: " << std::setprecision(2) << std::fixed 
+              << (std::abs(F_after_evolution) / std::abs(F_before_evolution) - 1.0) * 100.0 << "%\n\n";
+    
+    // Test 7: State Management
+    std::cout << "=== TEST 7: State Management ===\n";
+    m87.saveState("evolved");
+    m87.saveState("test_state");
+    
+    auto saved_states = m87.listSavedStates();
+    std::cout << "Saved states (" << saved_states.size() << "):\n";
+    for (const auto& name : saved_states) {
+        std::cout << "  - " << name << "\n";
+    }
+    
+    std::cout << "\nExporting initial state:\n";
+    m87.restoreState("initial");
+    std::cout << m87.exportState() << "\n";
+    
+    // Test 8: Validation and Auto-Correction
+    std::cout << "=== TEST 8: Validation and Auto-Correction ===\n";
+    m87.restoreState("initial");
+    
+    bool is_valid = m87.validateConsistency();
+    std::cout << "Initial state valid: " << (is_valid ? "YES" : "NO") << "\n";
+    
+    // Introduce anomalies
+    m87.createVariable("M", {1e42, 0.0});  // Too large
+    m87.createVariable("V", {4e8, 0.0});  // Superluminal (> c)
+    
+    std::cout << "After introducing anomalies: valid = " << (m87.validateConsistency() ? "YES" : "NO") << "\n";
+    
+    m87.autoCorrectAnomalies();
+    std::cout << "After auto-correction: valid = " << (m87.validateConsistency() ? "YES" : "NO") << "\n\n";
+    
+    // Test 9: Batch Operations
+    std::cout << "=== TEST 9: Batch Operations ===\n";
+    m87.restoreState("initial");
+    
+    std::vector<std::string> force_params = {"DPM_momentum", "DPM_gravity", "DPM_stability"};
+    std::cout << "Scaling DPM force parameters by 2.5...\n";
+    m87.scaleVariableGroup(force_params, {2.5, 0.0});
+    
+    auto transform_func = [](cdouble val) -> cdouble {
+        return cdouble(std::abs(val), val.imag() * 1.1);
+    };
+    std::vector<std::string> all_params = {"M", "r", "L_X"};
+    m87.transformVariableGroup(all_params, transform_func);
+    std::cout << "Applied custom transformation to M, r, L_X\n\n";
+    
+    // Test 10: Final Report
+    std::cout << "=== FINAL COMPREHENSIVE REPORT ===\n";
+    m87.restoreState("initial");
+    std::cout << m87.generateReport() << "\n";
+    
+    std::cout << "========== Demo Complete ==========\n";
+    
+    return 0;
+}
+
+========== END COMPREHENSIVE EXAMPLE ==========
+*/
 // #include "M87JetUQFFModule.h"
 // #include <complex>
 // int main() {
