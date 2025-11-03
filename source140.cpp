@@ -19,6 +19,11 @@
 #include <iostream>
 #include <iomanip>
 #include <complex>
+#include <vector>
+#include <functional>
+#include <random>
+#include <algorithm>
+#include <sstream>
 
 using cdouble = std::complex<double>;
 
@@ -59,6 +64,49 @@ public:
 
     // Print all current variables (for debugging/updates)
     void printVariables();
+
+    // ========== ENHANCED: 25 Dynamic Self-Update/Self-Expansion Methods ==========
+    
+    // 1. Variable Management (5 methods)
+    void createVariable(const std::string& name, cdouble value);
+    void removeVariable(const std::string& name);
+    void cloneVariable(const std::string& source, const std::string& destination);
+    std::vector<std::string> listVariables() const;
+    std::string getSystemName() const;
+    
+    // 2. Batch Operations (2 methods)
+    void transformVariableGroup(const std::vector<std::string>& names, std::function<cdouble(cdouble)> func);
+    void scaleVariableGroup(const std::vector<std::string>& names, cdouble scale_factor);
+    
+    // 3. Self-Expansion (4 methods: 1 global + 3 domain-specific for IC 2163 Interacting Galaxy)
+    void expandParameterSpace(double global_scale);
+    void expandGalaxyScale(double mass_factor, double radius_factor);
+    void expandForceScale(double dpm_factor, double lenr_factor);
+    void expandInteractionScale(double tidal_factor, double outflow_factor);
+    
+    // 4. Self-Refinement (3 methods)
+    void autoRefineParameters(const std::string& target_metric);
+    void calibrateToObservations(const std::map<std::string, cdouble>& observed_values);
+    void optimizeForMetric(const std::string& metric_name);
+    
+    // 5. Parameter Exploration (1 method)
+    std::vector<std::map<std::string, cdouble>> generateVariations(int count, double variation_percent);
+    
+    // 6. Adaptive Evolution (2 methods)
+    void mutateParameters(double mutation_rate);
+    void evolveSystem(int generations, std::function<double(const IC2163UQFFModule&)> fitness_func);
+    
+    // 7. State Management (4 methods)
+    void saveState(const std::string& state_name);
+    void restoreState(const std::string& state_name);
+    std::vector<std::string> listSavedStates() const;
+    std::string exportState() const;
+    
+    // 8. System Analysis (4 methods)
+    std::map<std::string, double> sensitivityAnalysis(const std::vector<std::string>& param_names, double delta_percent);
+    std::string generateReport() const;
+    bool validateConsistency() const;
+    void autoCorrectAnomalies();
 };
 
 #endif // IC2163_UQFF_MODULE_H
