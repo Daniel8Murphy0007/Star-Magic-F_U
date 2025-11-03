@@ -416,13 +416,28 @@ void J1610UQFFModule::expandParameterSpace(double global_scale) {
 }
 
 void J1610UQFFModule::expandQuasarScale(double mass_factor, double radius_factor) {
+    // Physical constants for Eddington luminosity (SI units)
+    constexpr double G = 6.67430e-11;         // m^3 kg^-1 s^-2
+    constexpr double c = 2.99792458e8;        // m/s
+    constexpr double m_p = 1.6726219e-27;     // kg
+    constexpr double sigma_T = 6.6524587158e-29; // m^2
+    constexpr double pi = 3.141592653589793;
+
     // Scale quasar mass and radius, adjust gas density accordingly
     variables["M"] *= mass_factor;
     variables["r"] *= radius_factor;
     variables["rho_gas"] *= mass_factor / pow(radius_factor, 3);
-    
-    // Adjust luminosity with mass scaling (L ~ M^2 for accretion)
-    variables["L_X"] *= pow(mass_factor, 2);
+
+    // Adjust luminosity with mass scaling (L ~ M^2 for accretion), but cap at Eddington limit
+    cdouble new_LX = variables["L_X"] * pow(mass_factor, 2);
+    double M_real = std::abs(variables["M"]); // Use magnitude in case of complex
+    double L_Edd = (4.0 * pi * G * M_real * m_p * c) / sigma_T;
+    // If L_X is complex, cap its magnitude and preserve direction
+    if (std::abs(new_LX) > L_Edd) {
+        variables["L_X"] = (new_LX / std::abs(new_LX)) * L_Edd;
+    } else {
+        variables["L_X"] = new_LX;
+    }
 }
 
 void J1610UQFFModule::expandForceScale(double dpm_factor, double lenr_factor) {
