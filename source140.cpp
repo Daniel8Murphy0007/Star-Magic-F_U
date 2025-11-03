@@ -438,7 +438,7 @@ void IC2163UQFFModule::expandForceScale(double dpm_factor, double lenr_factor) {
 void IC2163UQFFModule::expandInteractionScale(double tidal_factor, double outflow_factor) {
     // Scale tidal interaction strength (affects activation and DE coupling)
     variables["k_act"] *= tidal_factor;
-    variables["omega_act"] *= sqrt(tidal_factor);  // Frequency scales with sqrt(force)
+    variables["omega_act"] *= sqrt(tidal_factor);  // Frequency typically scales as sqrt(M/r^3) (orbital/epicyclic frequency), not directly with force
     
     // Scale outflow properties (directed energy and particle velocity)
     variables["k_DE"] *= outflow_factor;
