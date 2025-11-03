@@ -1,3 +1,4 @@
+// ES6 module syntax (compatible with package.json "type": "module")
 import http from 'http';
 const PORT = 3000;
 
@@ -204,7 +205,7 @@ function generateHTML() {
         <div class="status">Status: OPERATIONAL | Framework: Unified Quantum Field Force</div>
         
         <div class="system-counter">
-            System ${currentSystemIndex + 1} of ${SYSTEMS.length} | Total: 79+ Astronomical Objects
+            System ${currentSystemIndex + 1} of ${SYSTEMS.length} | Project Total: 79+ Astronomical Objects in UQFF
         </div>
         
         <div class="system-info">
