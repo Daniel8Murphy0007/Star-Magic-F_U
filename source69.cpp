@@ -1,6 +1,6 @@
-// UQFFCompressionModule.h
+﻿// UQFFCompressionModule.h
 // Modular C++ implementation of the Compressed Universal Quantum Field Superconductive Framework (UQFF) for Multi-System Astrophysical Evolution.
-// This module implements the streamlined UQFF equation from Compression Cycle 2, adaptable for systems like Magnetar SGR 1745-2900, Sagittarius A*, Tapestry of Blazing Starbirth, Westerlund 2, Pillars of Creation, Rings of Relativity, NGC 2525, NGC 3603, Bubble Nebula, Antennae Galaxies, Horsehead Nebula, NGC 1275, Hubble Ultra Deep Field, NGC 1792, and the Student�s Guide to the Universe.
+// This module implements the streamlined UQFF equation from Compression Cycle 2, adaptable for systems like Magnetar SGR 1745-2900, Sagittarius A*, Tapestry of Blazing Starbirth, Westerlund 2, Pillars of Creation, Rings of Relativity, NGC 2525, NGC 3603, Bubble Nebula, Antennae Galaxies, Horsehead Nebula, NGC 1275, Hubble Ultra Deep Field, NGC 1792, and the Studentï¿½s Guide to the Universe.
 // Usage: #include "UQFFCompressionModule.h" in base program; UQFFCompressionModule mod; mod.computeG(t); mod.updateVariable("M", value); mod.setSystem("Magnetar"); for system-specific params.
 // Variables in std::map for dynamic ops; supports F_env(t) modular additions for winds, erosion, lensing, etc.
 // Approximations: psi_total integral normalized to 1.0; H(t,z) with Omega_m=0.3, Omega_Lambda=0.7; F_env sums sub-terms; Ug3' = G M_ext / r_ext^2.
@@ -17,8 +17,111 @@
 #include <iomanip>
 #include <complex>
 
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
 class UQFFCompressionModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     std::string current_system;  // e.g., "Magnetar", "SagittariusA", "Pillars"
     double computeHtz(double z_val);
@@ -30,6 +133,15 @@ private:
     double computeDMTerm();
     double computeUgSum();
     double computeMsfFactor(double t);  // For M(t)
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize general defaults; setSystem() for specifics
@@ -61,6 +173,12 @@ public:
 
 // Constructor: General defaults for multi-system use
 UQFFCompressionModule::UQFFCompressionModule() : current_system("General") {
+        enableDynamicTerms = true;
+        enableLogging = false;
+        learningRate = 0.001;
+        metadata["enhanced"] = "true";
+        metadata["version"] = "2.0-Enhanced";
+
     // Universal constants
     variables["G"] = 6.6743e-11;                    // m^3 kg^-1 s^-2
     variables["c"] = 3e8;                           // m/s
@@ -301,9 +419,9 @@ std::string UQFFCompressionModule::getEquationText() {
            "(M_visible + M_DM) * (??/? + 3 G M / r^3)\n"
            "Where: H(t, z) = H0 * sqrt(?m (1+z)^3 + ??); M(t) = M * (1 + M_sf(t)); M_sf(t) = (SFR * t_yr) / M0;\n"
            "F_env(t) = ? F_i(t) [winds, erosion, lensing, mag, decay, coll, evo, merge, sf, SN, rad, BH];\n"
-           "Ug3' = G M_ext / r_ext^2; psi_total = q(v � B) + 2A cos(kx) cos(?t) + (2?/13.8) A Re[exp(i(kx - ?t))];\n"
+           "Ug3' = G M_ext / r_ext^2; psi_total = q(v ï¿½ B) + 2A cos(kx) cos(?t) + (2?/13.8) A Re[exp(i(kx - ?t))];\n"
            "Compression Advancements: Unified expansion, modular env effects, consolidated waves/gravity terms for 19+ systems.\n"
-           "Adaptations: setSystem('Magnetar') for SGR 1745-2900; etc. Solutions: g ~1e-10 to 1e-12 m/s� typical.";
+           "Adaptations: setSystem('Magnetar') for SGR 1745-2900; etc. Solutions: g ~1e-10 to 1e-12 m/sï¿½ typical.";
 }
 
 // Print variables
@@ -321,14 +439,14 @@ void UQFFCompressionModule::printVariables() {
 //     mod.setSystem("Pillars");
 //     double t = 1e6 * 3.156e7;  // 1 Myr
 //     double g = mod.computeG(t);
-//     std::cout << "g_UQFF = " << g << " m/s�\n";
+//     std::cout << "g_UQFF = " << g << " m/sï¿½\n";
 //     std::cout << mod.getEquationText() << std::endl;
 //     mod.updateVariable("F_erode", 0.05);
 //     mod.printVariables();
 //     return 0;
 // }
 // Compile: g++ -o uqff_comp base.cpp UQFFCompressionModule.cpp -lm
-// Sample Output: g_UQFF ? 1e-11 m/s� (env/fluid dominant for nebulae).
+// Sample Output: g_UQFF ? 1e-11 m/sï¿½ (env/fluid dominant for nebulae).
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
 UQFFCompressionModule Evaluation(Encoded)

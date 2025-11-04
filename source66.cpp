@@ -1,11 +1,11 @@
-// RedDwarfUQFFModule.h
+﻿// RedDwarfUQFFModule.h
 // Modular C++ implementation of UQFF for Red Dwarf Compression_C (43.c): LENR (eq1-4), Collider Higgs, NGC 346, Gas Nebula, Pi Calcs (series sums).
 // Computes W_mag (eq4), Um (eq5), UH (eq6), Ug3 (eq7), E (eq8), ? (eq9), ?n (eq10), S(s) Basel (eq15), Buoyancy series (eq20), etc.
 // Plug into base (e.g., 'red_dwarf_uqff_sim.cpp') via #include "RedDwarfUQFFModule.h".
 // Usage: RedDwarfUQFFModule mod; mod.setSystem(SystemType::LENR); double eta = mod.computeNeutronRate(); mod.computePiSeries(2);
 // Variables in std::map; dynamic for ?_vac, k_calib, etc. Supports numerical solutions for eqs 4-10,15,20.
 // Approximations: Calibrated k_?=2.75e8, ?_H=1.0; non-local e^{-[SSq]^{n26} e^{-(?+t)}}; Pi to ~15 digits (mpmath/sympy via tool if needed, but hardcoded).
-// Defaults: Metallic hydride (E=2e11 V/m, ?=1e13 cm^{-2}/s); Higgs m_H=125 GeV; Pi S(2)=?�/6 ?1.64493.
+// Defaults: Metallic hydride (E=2e11 V/m, ?=1e13 cm^{-2}/s); Higgs m_H=125 GeV; Pi S(2)=?ï¿½/6 ?1.64493.
 // Associated: getEquationText() for full eqs; getSolutions() for step-by-step numerics/matches.
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 09, 2025.
 
@@ -20,18 +20,130 @@
 #include <complex>
 #include <vector>
 
-enum class SystemType {
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+enum #include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
+class SystemType {
     LENR_CELL, EXPLODING_WIRE, SOLAR_CORONA, COLLIDER_HIGGS, NGC346, PI_CALCS, GENERIC
     // Extensible: Gas Nebula, Pseudo-Monopole
 };
 
 class RedDwarfUQFFModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     SystemType current_system;
     double computeNonLocalExp(double t, int n26);
     double computePiSeries(int s, int terms);  // Basel sum approx
     double computeBuoyancySeries(double x, int terms_odd);
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Defaults for LENR metallic hydride
@@ -175,7 +287,7 @@ double RedDwarfUQFFModule::computePiSeries(int s, int terms) {
     for (int n = 1; n <= terms; ++n) {
         sum += 1.0 / std::pow(n, s);
     }
-    if (s == 2) return sum;  // Approx ?�/6
+    if (s == 2) return sum;  // Approx ?ï¿½/6
     return sum;
 }
 
@@ -288,14 +400,14 @@ double RedDwarfUQFFModule::computeUQFF(double t) {
 std::string RedDwarfUQFFModule::getEquationText() {
     return "UQFF Red Dwarf C (43.c): W_mag ?15 GeV B_kG R_km (v/c) (eq4)\n"
            "Um(t) ? (1.885e-7 / 3.38e23) * 5e-5 * E_react(t) * factor * exp_cos / non_local (eq5)\n"
-           "UH(t,n)=?_H ?_vac,[UA�:SCm](n,t) ?_H(t) e^{-[SSq]^{26} e^{-(?+t)}} (1+f_quasi) (eq6)\n"
+           "UH(t,n)=?_H ?_vac,[UAï¿½:SCm](n,t) ?_H(t) e^{-[SSq]^{26} e^{-(?+t)}} (1+f_quasi) (eq6)\n"
            "Ug3(t,r,?,n)=k3 ? B_j cos(?_s t ?) P_core E_react(t) (eq7)\n"
            "E = Um / ?_vac,[UA] / 1.885e-7 V/m (eq8)\n"
            "?(t) = k_? e^{-non_local} Um / ?_vac,[UA] cm^{-2}/s (eq9)\n"
            "?n = (2?)^{n}/6 (eq10)\n"
-           "S(s)=? 1/n^s ; S(2)=?�/6 ?1.64493 (eq15)\n"
+           "S(s)=? 1/n^s ; S(2)=?ï¿½/6 ?1.64493 (eq15)\n"
            "Buoyancy sum_{n odd} 1 / x^{(?+1)^n} ? -0.8887 (eq20)\n"
-           "Q=(M_n - M_p - m_e)c� ?0.78 MeV (eq2)\n"
+           "Q=(M_n - M_p - m_e)cï¿½ ?0.78 MeV (eq2)\n"
            "Higgs: m_H ?125 ? GeV; BR_WW?0.215\n"
            "UQFF solves LENR/Higgs/Pi with 100% acc post-calib; Non-local needs def.";
 }
@@ -318,8 +430,8 @@ std::string RedDwarfUQFFModule::getSolutions(double t) {
 
     std::stringstream ss;
     ss << std::scientific << "UQFF Solutions t=" << t << " s (" << static_cast<int>(current_system) << "):\n";
-    ss << "W_mag = " << w_mag << " eV\nUm = " << um << " J/m�\nUH = " << uh << " J/m�\n";
-    ss << "Ug3 = " << ug3 << " J/m�\nE = " << E << " V/m\n? = " << eta << " cm^{-2}/s\n";
+    ss << "W_mag = " << w_mag << " eV\nUm = " << um << " J/mï¿½\nUH = " << uh << " J/mï¿½\n";
+    ss << "Ug3 = " << ug3 << " J/mï¿½\nE = " << E << " V/m\n? = " << eta << " cm^{-2}/s\n";
     ss << "?n(1) = " << delta_n << "\nS(2) = " << S2 << "\nBuoyancy Sum = " << buoy_sum << "\n";
     ss << "Q = " << Q << " MeV\nm_H = " << m_H << " GeV\nBR_WW = " << br_ww << "\n";
     ss << "UQFF Total = " << uqff_total << "\nSM/UQFF Match: 100% (calib); e.g., E=2e11 V/m, ?=1e13.\n"
@@ -345,7 +457,7 @@ void RedDwarfUQFFModule::printVariables() {
 //     return 0;
 // }
 // Compile: g++ -o red_dwarf_uqff_sim red_dwarf_uqff_sim.cpp RedDwarfUQFFModule.cpp -lm
-// Sample: Um ~9.05e47 J/m� (adj); S(2)?1.64493; Acc 100%; Pi series converges Basel.
+// Sample: Um ~9.05e47 J/mï¿½ (adj); S(2)?1.64493; Acc 100%; Pi series converges Basel.
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 09, 2025.
 
 // Evaluation of RedDwarfUQFFModule (UQFF for 43.c Compression)

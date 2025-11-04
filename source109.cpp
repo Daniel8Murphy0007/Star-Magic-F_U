@@ -1,4 +1,4 @@
-// QuasiLongitudinalModule.h
+﻿// QuasiLongitudinalModule.h
 // Modular C++ implementation of the Quasi-Longitudinal Wave Factor (f_quasi) in the Universal Quantum Field Superconductive Framework (UQFF).
 // This module computes f_quasi=0.01 (unitless) and its scaling (1 + f_quasi) in Universal Magnetism U_m term.
 // Pluggable: #include "QuasiLongitudinalModule.h"
@@ -16,12 +16,124 @@
 #include <iostream>
 #include <iomanip>
 
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
 class QuasiLongitudinalModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     double computeQuasiFactor();
     double computeUmBase(int j, double t);
     double computeUmContribution(int j, double t);
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize with framework defaults
@@ -55,9 +167,15 @@ public:
 
 // Constructor: Set framework defaults
 QuasiLongitudinalModule::QuasiLongitudinalModule() {
+        enableDynamicTerms = true;
+        enableLogging = false;
+        learningRate = 0.001;
+        metadata["enhanced"] = "true";
+        metadata["version"] = "2.0-Enhanced";
+
     // Universal constants
     variables["f_quasi"] = 0.01;                    // Unitless fraction
-    variables["mu_j"] = 3.38e23;                    // T�m^3 (j=1)
+    variables["mu_j"] = 3.38e23;                    // Tï¿½m^3 (j=1)
     variables["r_j"] = 1.496e13;                    // m
     variables["gamma"] = 5e-5 / 86400.0;            // s^-1 (0.00005 day^-1)
     variables["t_n"] = 0.0;                         // s
@@ -145,7 +263,7 @@ std::string QuasiLongitudinalModule::getEquationText() {
     return "U_m = ?_j [ (?_j / r_j) (1 - e^{-? t cos(? t_n)}) ?_hat_j ] P_SCm E_react (1 + 10^13 f_Heaviside) (1 + f_quasi)\n"
            "Where f_quasi = 0.01 (unitless quasi-longitudinal wave factor);\n"
            "Quasi factor = 1 + 0.01 = 1.01 (1% increase).\n"
-           "Example j=1, t=0: U_m contrib ?2.28e65 J/m� (with); ?2.26e65 J/m� (without; -1%).\n"
+           "Example j=1, t=0: U_m contrib ?2.28e65 J/mï¿½ (with); ?2.26e65 J/mï¿½ (without; -1%).\n"
            "Role: Minor scaling for quasi-longitudinal waves in magnetic strings; subtle [SCm]/[UA] wave effects.\n"
            "UQFF: Enhances wave propagation in jets/nebulae; small but cumulative in dynamics.";
 }
@@ -164,8 +282,8 @@ void QuasiLongitudinalModule::printUmComparison(int j, double t) {
     double um_without = computeUmWithNoQuasi(j, t);
     double percent_increase = ((um_with - um_without) / um_without) * 100.0;
     std::cout << "U_m Comparison for j=" << j << " at t=" << t << " s:\n";
-    std::cout << "With quasi: " << std::scientific << um_with << " J/m�\n";
-    std::cout << "Without quasi: " << um_without << " J/m�\n";
+    std::cout << "With quasi: " << std::scientific << um_with << " J/mï¿½\n";
+    std::cout << "Without quasi: " << um_without << " J/mï¿½\n";
     std::cout << "Increase: +" << std::fixed << std::setprecision(1) << percent_increase << "%\n";
 }
 
@@ -182,7 +300,7 @@ void QuasiLongitudinalModule::printUmComparison(int j, double t) {
 //     return 0;
 // }
 // Compile: g++ -o quasi_test quasi_test.cpp QuasiLongitudinalModule.cpp -lm
-// Sample: Factor=1.01; U_m with=2.28e65 J/m� (+1% vs without).
+// Sample: Factor=1.01; U_m with=2.28e65 J/mï¿½ (+1% vs without).
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
 QuasiLongitudinalModule Evaluation

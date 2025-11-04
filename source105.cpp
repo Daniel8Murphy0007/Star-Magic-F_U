@@ -1,4 +1,4 @@
-// GalacticBlackHoleModule.h
+﻿// GalacticBlackHoleModule.h
 // Modular C++ implementation of the Mass of the Galactic Black Hole (M_bh) in the Universal Quantum Field Superconductive Framework (UQFF).
 // This module computes M_bh=8.15e36 kg ?4.1e6 M_sun; scales M_bh / d_g in Universal Buoyancy U_bi and Ug4.
 // Pluggable: #include "GalacticBlackHoleModule.h"
@@ -16,13 +16,125 @@
 #include <iostream>
 #include <iomanip>
 
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
 class GalacticBlackHoleModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     double computeM_bhInMsun();
     double computeMbhOverDg();
     double computeU_b1();
     double computeU_g4();
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize with framework defaults
@@ -54,6 +166,12 @@ public:
 
 // Constructor: Set framework defaults
 GalacticBlackHoleModule::GalacticBlackHoleModule() {
+        enableDynamicTerms = true;
+        enableLogging = false;
+        learningRate = 0.001;
+        metadata["enhanced"] = "true";
+        metadata["version"] = "2.0-Enhanced";
+
     // Universal constants
     variables["M_sun"] = 1.989e30;                  // kg
     variables["M_bh"] = 8.15e36;                    // kg (Sgr A*)
@@ -145,7 +263,7 @@ std::string GalacticBlackHoleModule::getEquationText() {
            "U_g4 = k_4 (?_vac,[SCm] M_bh / d_g) e^{-? t} cos(? t_n) (1 + f_feedback)\n"
            "Where M_bh = 8.15e36 kg ?4.1e6 M_sun (Sgr A*).\n"
            "M_bh / d_g ?3.20e16 kg/m;\n"
-           "Example U_b1 ? -1.94e27 J/m�; U_g4 ?2.50e-20 J/m� (t_n=0).\n"
+           "Example U_b1 ? -1.94e27 J/mï¿½; U_g4 ?2.50e-20 J/mï¿½ (t_n=0).\n"
            "Role: Scales SMBH gravity in buoyancy/Ug4; drives galactic dynamics/mergers.\n"
            "UQFF: Central mass for star formation/nebulae; resolves parsec problem.";
 }
@@ -165,14 +283,14 @@ void GalacticBlackHoleModule::printVariables() {
 //     double m_sun = mod.computeM_bhInMsun();
 //     std::cout << "M_bh ? " << m_sun << " M_sun\n";
 //     double u_b1 = mod.computeU_b1();
-//     std::cout << "U_b1 = " << u_b1 << " J/m�\n";
+//     std::cout << "U_b1 = " << u_b1 << " J/mï¿½\n";
 //     std::cout << mod.getEquationText() << std::endl;
 //     mod.updateVariable("M_bh", 9e36);
 //     mod.printVariables();
 //     return 0;
 // }
 // Compile: g++ -o bh_mass_test bh_mass_test.cpp GalacticBlackHoleModule.cpp -lm
-// Sample: M_bh ?4.1e6 M_sun; U_b1 ? -1.94e27 J/m�; scales SMBH influence.
+// Sample: M_bh ?4.1e6 M_sun; U_b1 ? -1.94e27 J/mï¿½; scales SMBH influence.
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
 GalacticBlackHoleModule Evaluation

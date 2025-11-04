@@ -1,4 +1,4 @@
-// SolarWindBuoyancyModule.h
+﻿// SolarWindBuoyancyModule.h
 // Modular C++ implementation of the Buoyancy Modulation by Solar Wind Density (?_sw) in the Universal Quantum Field Superconductive Framework (UQFF).
 // This module computes the modulation factor (1 + ?_sw * ?_vac,sw) in the Universal Buoyancy term U_bi, with ?_sw=0.001 (unitless).
 // Pluggable: #include "SolarWindBuoyancyModule.h"
@@ -16,11 +16,123 @@
 #include <iostream>
 #include <iomanip>
 
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
 class SolarWindBuoyancyModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     double computeModulationFactor();
     double computeU_b1();  // Example U_b1 integration
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize with framework defaults
@@ -50,6 +162,12 @@ public:
 
 // Constructor: Set framework defaults
 SolarWindBuoyancyModule::SolarWindBuoyancyModule() {
+        enableDynamicTerms = true;
+        enableLogging = false;
+        learningRate = 0.001;
+        metadata["enhanced"] = "true";
+        metadata["version"] = "2.0-Enhanced";
+
     // Universal constants
     variables["epsilon_sw"] = 0.001;                // Buoyancy modulation (unitless)
     variables["rho_vac_sw"] = 8e-21;                // J/m^3 (solar wind energy density)
@@ -124,10 +242,10 @@ double SolarWindBuoyancyModule::computeU_b1() {
 // Equation text
 std::string SolarWindBuoyancyModule::getEquationText() {
     return "Modulation Factor = 1 + ?_sw * ?_vac,sw\n"
-           "Where ?_sw = 0.001 (unitless); ?_vac,sw = 8e-21 J/m�.\n"
+           "Where ?_sw = 0.001 (unitless); ?_vac,sw = 8e-21 J/mï¿½.\n"
            "In U_bi: ... * (1 + ?_sw * ?_vac,sw) * ... ?1 (negligible correction ~8e-24).\n"
            "U_b1 = -?_1 U_g1 ?_g (M_bh / d_g) * modulation * U_UA * cos(? t_n)\n"
-           "? -1.94e27 J/m� (at t_n=0, Sun params; modulation ?1).\n"
+           "? -1.94e27 J/mï¿½ (at t_n=0, Sun params; modulation ?1).\n"
            "Role: Minor solar wind density effect on buoyancy; stabilizes heliosphere/nebulae.\n"
            "UQFF: Scales counterforce to Ug; negligible but flexible for variations.";
 }
@@ -147,14 +265,14 @@ void SolarWindBuoyancyModule::printVariables() {
 //     double mod_factor = mod.computeModulationFactor();
 //     std::cout << "Modulation Factor = " << mod_factor << std::endl;
 //     double u_b1 = mod.computeU_b1();
-//     std::cout << "U_b1 = " << u_b1 << " J/m�\n";
+//     std::cout << "U_b1 = " << u_b1 << " J/mï¿½\n";
 //     std::cout << mod.getEquationText() << std::endl;
 //     mod.updateVariable("epsilon_sw", 0.002);
 //     mod.printVariables();
 //     return 0;
 // }
 // Compile: g++ -o sw_mod_test sw_mod_test.cpp SolarWindBuoyancyModule.cpp -lm
-// Sample Output: Modulation ?1.000000000000008; U_b1 ? -1.94e27 J/m� (unchanged).
+// Sample Output: Modulation ?1.000000000000008; U_b1 ? -1.94e27 J/mï¿½ (unchanged).
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
 SolarWindBuoyancyModule Evaluation

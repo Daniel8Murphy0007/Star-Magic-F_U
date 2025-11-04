@@ -1,12 +1,12 @@
-// UFEOrbModule.h
+﻿// UFEOrbModule.h
 // Modular C++ implementation of the Unified Field Equation (UFE) for Red Dwarf Reactor Plasma Orb Experiment (UFE ORB EXP 2_24_07Mar2025).
 // Computes UP(t) and FU for plasmoid dynamics, integrating SCm, UA, Ug_i, Um_j, etc., across 26 quantum levels.
 // Plug into base (e.g., 'ufe_orb_sim.cpp') via #include "UFEOrbModule.h".
 // Usage: UFEOrbModule mod; mod.computeUP(t); mod.updateVariable("SCm", new_value); mod.setBatch(31);
 // Variables in std::map for dynamic updates; supports batch/timestamp via setBatch().
 // Includes core terms: ? ki Ug_i (gravity modes with t^-, ?_s, etc.), ? ?j/rj (1 - e^{-? t^-} cos(? t_n)) ?^j Um_j, metric g_?? + ? T_s ??, Ub(t^-), FU extensions.
-// Approximations: t^- = -t_n * exp(? - t_n); integral normalized; vacuum energies ?_vac,[SCm] etc. as J/m�.
-// Defaults: Red Dwarf params (SCm=1e15 kg/m�, UA=1e-11 C, E_vac,neb=7.09e-36 J/m�, fps=33.3, cylinder dims 0.089m x 0.254m).
+// Approximations: t^- = -t_n * exp(? - t_n); integral normalized; vacuum energies ?_vac,[SCm] etc. as J/mï¿½.
+// Defaults: Red Dwarf params (SCm=1e15 kg/mï¿½, UA=1e-11 C, E_vac,neb=7.09e-36 J/mï¿½, fps=33.3, cylinder dims 0.089m x 0.254m).
 // Associated text: getEquationText() for full UP/FU; getSolutions() for numerical derivation.
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 09, 2025.
 
@@ -21,13 +21,116 @@
 #include <complex>
 #include <vector>
 
-enum class BatchType {
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+enum #include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
+class BatchType {
     BATCH_31, BATCH_39, EARLY_SEQUENCE, MID_SEQUENCE, LATE_SEQUENCE, GENERIC
     // Extensible for #1-496 batches
 };
 
 class UFEOrbModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     BatchType current_batch;
     double computeTminus(double t_n);
@@ -38,6 +141,15 @@ private:
     double computeFUExtension(double t);
     double computeVacEnergy(const std::string& type);  // e.g., "SCm"
     double computePlasmoidCount(double timestamp);
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Defaults for Red Dwarf Reactor
@@ -81,11 +193,11 @@ UFEOrbModule::UFEOrbModule(BatchType batch) : current_batch(batch) {
     variables["cylinder_h"] = 0.254;   // m (10")
 
     // SCm & UA
-    variables["SCm"] = 1e15;     // kg/m�
+    variables["SCm"] = 1e15;     // kg/mï¿½
     variables["SCm_prime"] = 1e15;  // m^{-3}
     variables["UA"] = 1e-11;     // C
 
-    // Vacuum energies (J/m�, scale-dependent)
+    // Vacuum energies (J/mï¿½, scale-dependent)
     variables["rho_vac_SCm_atomic"] = 1.60e19;
     variables["rho_vac_UA_atomic"] = 1.60e20;
     variables["E_vac_neb"] = 7.09e-36;
@@ -251,8 +363,8 @@ std::string UFEOrbModule::getEquationText() {
     return "UP(t) = ?_i [k_i Ug_i(r, t^-, ?_s, T_s, B_s, SCm, SCm', UA, t_n, RM, SM)] + ?_j [?_j / r_j (1 - e^{-? t^-} cos(? t_n)) ?^j Um_j] + (g_?? + ? T_s ??) + Ub(t^-) + [SCm-UA terms]\n"
            "Where t^- = -t_n exp(? - t_n); Ug_i ~ G M_bh / r^2 exp(-? t^-) cos(? t_n)\n"
            "FU = ? [k_i Ug_i - ?_i Ug_i ?_g M_bh / d_g E_react] + ? [?_j / r_j (1 - e^{-? t} cos(? t_n)) ?^j] + (g_?? + ? T_s ??) - ? [?_i Ui E_react]\n"
-           "Vac Energies: ?_vac,[SCm] = 1.60e19 J/m� (atomic), E_vac,neb = 7.09e-36 J/m�\n"
-           "Red Dwarf: SCm=1e15 kg/m�, UA=1e-11 C, plasmoids ~40-50/frame at 33.3 fps.";
+           "Vac Energies: ?_vac,[SCm] = 1.60e19 J/mï¿½ (atomic), E_vac,neb = 7.09e-36 J/mï¿½\n"
+           "Red Dwarf: SCm=1e15 kg/mï¿½, UA=1e-11 C, plasmoids ~40-50/frame at 33.3 fps.";
 }
 
 // Solutions: Step-by-step for t
@@ -273,12 +385,12 @@ std::string UFEOrbModule::getSolutions(double t) {
     std::stringstream ss;
     ss << std::scientific << "Solutions for t=" << t << " s (Batch " << static_cast<int>(current_batch) << "):\n";
     ss << "t_n = " << t_n << ", t^- = " << t_minus << "\n";
-    ss << "Ug_sum = " << ug << " J/m�\n";
-    ss << "Um_sum = " << um << " J/m�\n";
-    ss << "Metric = " << metric << " J/m�\n";
-    ss << "Ub(t^-) = " << ub << " J/m�\n";
-    ss << "UP(t) = " << up_total << " J/m�\n";
-    ss << "FU(t) = " << fu_total << " J/m�\n";
+    ss << "Ug_sum = " << ug << " J/mï¿½\n";
+    ss << "Um_sum = " << um << " J/mï¿½\n";
+    ss << "Metric = " << metric << " J/mï¿½\n";
+    ss << "Ub(t^-) = " << ub << " J/mï¿½\n";
+    ss << "UP(t) = " << up_total << " J/mï¿½\n";
+    ss << "FU(t) = " << fu_total << " J/mï¿½\n";
     ss << "Plasmoid Count ~ " << plasmoids << "\n";
     ss << "Energy/Frame ~ " << energy_frame << " J\n";
     return ss.str();
@@ -298,8 +410,8 @@ void UFEOrbModule::printVariables() {
 //     double t = 9.03;  // Frame 301
 //     double up = mod.computeUP(t);
 //     double fu = mod.computeFU(t);
-//     std::cout << "UP = " << up << " J/m�\n";
-//     std::cout << "FU = " << fu << " J/m�\n";
+//     std::cout << "UP = " << up << " J/mï¿½\n";
+//     std::cout << "FU = " << fu << " J/mï¿½\n";
 //     std::cout << mod.getEquationText() << std::endl;
 //     std::cout << mod.getSolutions(t) << std::endl;
 //     mod.setBatch(BatchType::BATCH_39);
@@ -307,7 +419,7 @@ void UFEOrbModule::printVariables() {
 //     return 0;
 // }
 // Compile: g++ -o ufe_orb_sim ufe_orb_sim.cpp UFEOrbModule.cpp -lm
-// Sample at t=9.03 s: UP ~1e-20 J/m� (Ug dominant); plasmoids ~45.
+// Sample at t=9.03 s: UP ~1e-20 J/mï¿½ (Ug dominant); plasmoids ~45.
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 09, 2025.
 
 // Evaluation of UFEOrbModule (UFE for Red Dwarf Orb Experiment)
@@ -320,7 +432,7 @@ void UFEOrbModule::printVariables() {
 
 // Weaknesses / Recommendations:
 // - Simplifications: Single i/j=1; extend to loops over levels (e.g., plasma level 13).
-// - Validation: Tie to image data (e.g., count from batch #39); add error �0.5% for fps.
+// - Validation: Tie to image data (e.g., count from batch #39); add error ï¿½0.5% for fps.
 // - Performance: Cache t_minus; for 496 frames, vectorize computeUP.
 // - Magic Numbers: Parameterize gamma=0.001 from exp data.
 

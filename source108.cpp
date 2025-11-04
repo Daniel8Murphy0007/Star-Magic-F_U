@@ -1,4 +1,4 @@
-// CorePenetrationModule.h
+﻿// CorePenetrationModule.h
 // Modular C++ implementation of the Planetary Core Penetration Factor (P_core) in the Universal Quantum Field Superconductive Framework (UQFF).
 // This module computes P_core ?1 (unitless for Sun, ~1e-3 for planets); scales P_core in Universal Gravity U_g3 term.
 // Pluggable: #include "CorePenetrationModule.h"
@@ -16,10 +16,122 @@
 #include <iostream>
 #include <iomanip>
 
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
 class CorePenetrationModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     double computeU_g3(double t);
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize with framework defaults (Sun)
@@ -49,6 +161,12 @@ public:
 
 // Constructor: Set framework defaults (Sun at t=0)
 CorePenetrationModule::CorePenetrationModule() {
+        enableDynamicTerms = true;
+        enableLogging = false;
+        learningRate = 0.001;
+        metadata["enhanced"] = "true";
+        metadata["version"] = "2.0-Enhanced";
+
     // Universal constants
     variables["P_core"] = 1.0;                      // Unitless ?1 for Sun
     variables["k_3"] = 1.8;                         // Coupling
@@ -115,8 +233,8 @@ std::string CorePenetrationModule::getEquationText() {
     return "U_g3 = k_3 * ?_j B_j(r,?,t,?_vac,[SCm]) * cos(?_s(t) t ?) * P_core * E_react\n"
            "Where P_core ?1 (unitless for Sun, ~1e-3 for planets; core penetration).\n"
            "Scales magnetic disk gravity for core [SCm] influence.\n"
-           "Example Sun t=0: U_g3 ?1.8e49 J/m� (P_core=1);\n"
-           "Planet: ?1.8e46 J/m� (P_core=1e-3, -3 orders).\n"
+           "Example Sun t=0: U_g3 ?1.8e49 J/mï¿½ (P_core=1);\n"
+           "Planet: ?1.8e46 J/mï¿½ (P_core=1e-3, -3 orders).\n"
            "Role: Adjusts core interactions; full for stellar plasma, reduced for solid cores.\n"
            "UQFF: Models penetration in nebulae/star formation/disks.";
 }
@@ -136,14 +254,14 @@ void CorePenetrationModule::printVariables() {
 //     double p = mod.computeP_core();
 //     std::cout << "P_core ? " << p << std::endl;
 //     double u_g3_sun = mod.computeU_g3(0.0);
-//     std::cout << "U_g3 (Sun) = " << u_g3_sun << " J/m�\n";
+//     std::cout << "U_g3 (Sun) = " << u_g3_sun << " J/mï¿½\n";
 //     std::cout << mod.getEquationText() << std::endl;
 //     mod.updateVariable("P_core", 1e-3);
 //     mod.printVariables();
 //     return 0;
 // }
 // Compile: g++ -o core_test core_test.cpp CorePenetrationModule.cpp -lm
-// Sample: P_core=1; U_g3?1.8e49 J/m� (Sun); scales for planetary cores.
+// Sample: P_core=1; U_g3?1.8e49 J/mï¿½ (Sun); scales for planetary cores.
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
 CorePenetrationModule Evaluation

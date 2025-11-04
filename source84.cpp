@@ -1,6 +1,6 @@
-// LENRCalibUQFFModule.h
+﻿// LENRCalibUQFFModule.h
 // Modular C++ implementation of the Master Universal Gravity Equation (MUGE & UQFF Integration) for K_n Neutron Production Calibration Constant in LENR.
-// This module models neutron production rate ? via Um, calibrated k_? for 100% accuracy in hydride/wires/corona; pseudo-monopole states ?_n, ?_vac,[UA�]:[SCm].
+// This module models neutron production rate ? via Um, calibrated k_? for 100% accuracy in hydride/wires/corona; pseudo-monopole states ?_n, ?_vac,[UAï¿½]:[SCm].
 // Usage: #include "LENRCalibUQFFModule.h" in base program; LENRCalibUQFFModule mod; mod.setScenario("hydride"); mod.computeEta(t); mod.updateVariable("k_eta", new_value);
 // Variables in std::map for dynamic updates; supports scenarios; exp(-[S S_q]^n 2^6 e^(-? - t)) non-local.
 // Approximations: [S S_q]=1 (calib); t in yr; 100% accuracy post k_? adjustment.
@@ -17,8 +17,111 @@
 #include <iomanip>
 #include <complex>
 
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
 class LENRCalibUQFFModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     std::string current_scenario;  // "hydride", "wires", "corona"
     double computeMuJ(double t);
@@ -29,6 +132,15 @@ private:
     double computeRhoVacUAScm(int n, double t);
     double computeNonLocalExp(int n, double t);
     double computeEta(double um_val, double rho_vac_val, int n, double t);
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize with LENR calib defaults
@@ -60,6 +172,12 @@ public:
 
 // Constructor: LENR calib-specific values
 LENRCalibUQFFModule::LENRCalibUQFFModule() : current_scenario("hydride") {
+        enableDynamicTerms = true;
+        enableLogging = false;
+        learningRate = 0.001;
+        metadata["enhanced"] = "true";
+        metadata["version"] = "2.0-Enhanced";
+
     // Universal constants
     variables["pi"] = 3.141592653589793;
     variables["year_to_s"] = 3.156e7;               // s/yr
@@ -67,8 +185,8 @@ LENRCalibUQFFModule::LENRCalibUQFFModule() : current_scenario("hydride") {
     variables["S_S_q"] = 1.0;                       // Non-local base
 
     // UQFF params
-    variables["rho_vac_SCm"] = 7.09e-37;            // J/m�
-    variables["rho_vac_UA"] = 7.09e-36;             // J/m�
+    variables["rho_vac_SCm"] = 7.09e-37;            // J/mï¿½
+    variables["rho_vac_UA"] = 7.09e-36;             // J/mï¿½
     variables["rho_vac_UA_prime"] = 1e-23;          // For UA':SCm
     variables["gamma"] = 0.00005;                   // day^-1
     variables["t_n"] = 0.0;                         // days
@@ -163,7 +281,7 @@ std::string LENRCalibUQFFModule::getEquationText() {
     return "?(t, n) = k_? * exp(-[S S_q]^n 2^6 e^(-? - t/yr)) * U_m / ?_vac,[UA]\n"
            "U_m(t,r,n) = ? [?_j / r * (1 - e^{-? t cos(? t_n)}) * ?^j ] * P_scm E_react (1 + 10^13 f_Heaviside) (1 + f_quasi)\n"
            "?_j(t) = (10^3 + 0.4 sin(?_c t)) * 3.38e20; E_react(t) = 10^46 e^{-0.0005 t/yr}\n"
-           "?_n = (2?)^{n/6}; ?_vac,[UA�]:[SCm](n,t) = 10^{-23} (0.1)^n exp(-[S S_q]^n 2^6 e^(-? - t/yr))\n"
+           "?_n = (2?)^{n/6}; ?_vac,[UAï¿½]:[SCm](n,t) = 10^{-23} (0.1)^n exp(-[S S_q]^n 2^6 e^(-? - t/yr))\n"
            "E = U_m / (?_vac,[UA] r); Insights: Calib k_? for 100% accuracy; hydride ?=1e13 cm^{-2}/s, E=2e11 V/m.\n"
            "Adaptations: Pramana 2008; Scenarios: hydride/wires/corona. Solutions: ? ~1e13 cm^{-2}/s (non-local dominant).";
 }

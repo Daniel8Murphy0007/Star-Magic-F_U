@@ -1,4 +1,4 @@
-// OrionUQFFModule.h
+﻿// OrionUQFFModule.h
 // Modular C++ implementation of the full Master Universal Gravity Equation (MUGE & UQFF & SM Integration) for Orion Nebula Evolution.
 // This module can be plugged into a base program (e.g., 'ziqn233h.cpp') by including this header and linking the .cpp.
 // Usage in base: #include "OrionUQFFModule.h"
@@ -20,8 +20,112 @@
 #include <iomanip>
 #include <complex>
 
-class OrionUQFFModule {
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
+class OrionUQFFModule
+{
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     double computeQuantumTerm(double t_Hubble_val);
     double computeFluidTerm(double g_base);
@@ -32,15 +136,24 @@ private:
     double computeMsfFactor(double t);
     double computeW_stellar(double t);
     double computeP_rad();
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize all variables with Orion Nebula defaults
     OrionUQFFModule();
 
     // Dynamic variable operations
-    void updateVariable(const std::string& name, double value);
-    void addToVariable(const std::string& name, double delta);
-    void subtractFromVariable(const std::string& name, double delta);
+    void updateVariable(const std::string &name, double value);
+    void addToVariable(const std::string &name, double delta);
+    void subtractFromVariable(const std::string &name, double delta);
 
     // Core computation: Full g_Orion(r, t) for Orion Nebula
     double computeG(double t);
@@ -59,62 +172,63 @@ public:
 #include <complex>
 
 // Constructor: Set all variables with Orion Nebula-specific values
-OrionUQFFModule::OrionUQFFModule() {
+OrionUQFFModule::OrionUQFFModule()
+{
     // Base constants (universal)
-    variables["G"] = 6.6743e-11;                    // m^3 kg^-1 s^-2
-    variables["c"] = 3e8;                           // m/s
-    variables["hbar"] = 1.0546e-34;                 // J s
-    variables["Lambda"] = 1.1e-52;                  // m^-2
-    variables["q"] = 1.602e-19;                     // C
-    variables["pi"] = 3.141592653589793;            // pi
-    variables["t_Hubble"] = 13.8e9 * 3.156e7;       // s
-    variables["year_to_s"] = 3.156e7;               // s/yr
+    variables["G"] = 6.6743e-11;              // m^3 kg^-1 s^-2
+    variables["c"] = 3e8;                     // m/s
+    variables["hbar"] = 1.0546e-34;           // J s
+    variables["Lambda"] = 1.1e-52;            // m^-2
+    variables["q"] = 1.602e-19;               // C
+    variables["pi"] = 3.141592653589793;      // pi
+    variables["t_Hubble"] = 13.8e9 * 3.156e7; // s
+    variables["year_to_s"] = 3.156e7;         // s/yr
 
     // Orion Nebula parameters
-    double M_sun_val = 1.989e30;                    // kg
+    double M_sun_val = 1.989e30; // kg
     variables["M_sun"] = M_sun_val;
-    variables["M"] = 2000 * M_sun_val;              // Total mass kg ≈3.978e33
-    variables["M0"] = variables["M"];               // Initial mass
-    variables["SFR"] = 0.1 * M_sun_val;             // Msun/yr
-    variables["M_visible"] = variables["M"];        // Visible mass (M_DM=0)
-    variables["M_DM"] = 0.0;                        // No DM halo
-    variables["r"] = 1.18e17;                       // m (half span ~12.5 ly)
+    variables["M"] = 2000 * M_sun_val;       // Total mass kg ≈3.978e33
+    variables["M0"] = variables["M"];        // Initial mass
+    variables["SFR"] = 0.1 * M_sun_val;      // Msun/yr
+    variables["M_visible"] = variables["M"]; // Visible mass (M_DM=0)
+    variables["M_DM"] = 0.0;                 // No DM halo
+    variables["r"] = 1.18e17;                // m (half span ~12.5 ly)
 
     // Hubble/cosmology
-    variables["H0"] = 70.0;                         // km/s/Mpc
-    variables["Mpc_to_m"] = 3.086e22;               // m/Mpc
-    variables["z"] = 0.0004;                        // Redshift
+    variables["H0"] = 70.0;           // km/s/Mpc
+    variables["Mpc_to_m"] = 3.086e22; // m/Mpc
+    variables["z"] = 0.0004;          // Redshift
     variables["Omega_m"] = 0.3;
     variables["Omega_Lambda"] = 0.7;
-    variables["t"] = 3e5 * variables["year_to_s"];  // Default t=300k yr s
+    variables["t"] = 3e5 * variables["year_to_s"]; // Default t=300k yr s
 
     // Gas/wind dynamics
-    variables["rho_fluid"] = 1e-20;                 // kg/m^3 (dense gas)
-    variables["V"] = 1.0 / variables["rho_fluid"];  // m^3 (set for unit consistency: fluid_term = g_base)
-    variables["v_wind"] = 8e3;                      // m/s (8 km/s)
-    variables["t_age"] = 3e5 * variables["year_to_s"];  // s (~300k yr)
+    variables["rho_fluid"] = 1e-20;                    // kg/m^3 (dense gas)
+    variables["V"] = 1.0 / variables["rho_fluid"];     // m^3 (set for unit consistency: fluid_term = g_base)
+    variables["v_wind"] = 8e3;                         // m/s (8 km/s)
+    variables["t_age"] = 3e5 * variables["year_to_s"]; // s (~300k yr)
     variables["delta_rho"] = 1e-5 * variables["rho_fluid"];
     variables["rho"] = variables["rho_fluid"];
-    variables["v_exp"] = 2e4;                       // m/s (expansion velocity 20 km/s)
+    variables["v_exp"] = 2e4; // m/s (expansion velocity 20 km/s)
 
     // EM/magnetic
-    variables["B"] = 1e-5;                          // T (nebula field)
-    variables["B_crit"] = 1e11;                     // T (10^15 G)
-    variables["m_p"] = 1.673e-27;                   // kg (proton mass)
-    variables["L_Trap"] = 1.53e32;                  // W (Trapezium luminosity)
-    variables["m_H"] = 1.67e-27;                    // kg (hydrogen mass)
-    variables["rho_vac_UA"] = 7.09e-36;             // Vacuum density UA
-    variables["rho_vac_SCm"] = 7.09e-37;            // Vacuum density SCm
+    variables["B"] = 1e-5;               // T (nebula field)
+    variables["B_crit"] = 1e11;          // T (10^15 G)
+    variables["m_p"] = 1.673e-27;        // kg (proton mass)
+    variables["L_Trap"] = 1.53e32;       // W (Trapezium luminosity)
+    variables["m_H"] = 1.67e-27;         // kg (hydrogen mass)
+    variables["rho_vac_UA"] = 7.09e-36;  // Vacuum density UA
+    variables["rho_vac_SCm"] = 7.09e-37; // Vacuum density SCm
 
     // Quantum terms
-    variables["Delta_x"] = 1e-10;                   // m
+    variables["Delta_x"] = 1e-10; // m
     variables["Delta_p"] = variables["hbar"] / variables["Delta_x"];
     variables["integral_psi"] = 1.0;
 
     // Resonant/oscillatory (H-alpha tuned)
     variables["A"] = 1e-10;
-    variables["k"] = 2 * variables["pi"] / 6.563e-7;  // m^-1 (lambda=656.3 nm)
-    variables["omega"] = 2 * variables["pi"] * 4.57e14;  // rad/s (f=c/lambda)
+    variables["k"] = 2 * variables["pi"] / 6.563e-7;    // m^-1 (lambda=656.3 nm)
+    variables["omega"] = 2 * variables["pi"] * 4.57e14; // rad/s (f=c/lambda)
     variables["x"] = 0.0;
 
     // Ug subterms (initial)
@@ -124,25 +238,34 @@ OrionUQFFModule::OrionUQFFModule() {
     variables["Ug4"] = 0.0;
 
     // Scale factors
-    variables["scale_macro"] = 1.0;                 // No scaling for EM
+    variables["scale_macro"] = 1.0; // No scaling for EM
     variables["f_TRZ"] = 0.1;
-    variables["f_sc"] = 10.0;                       // For Ug4
+    variables["f_sc"] = 10.0; // For Ug4
 }
 
 // Update variable (set to new value)
-void OrionUQFFModule::updateVariable(const std::string& name, double value) {
-    if (variables.find(name) != variables.end()) {
+void OrionUQFFModule::updateVariable(const std::string &name, double value)
+{
+    if (variables.find(name) != variables.end())
+    {
         variables[name] = value;
-    } else {
+    }
+    else
+    {
         std::cerr << "Variable '" << name << "' not found. Adding with value " << value << std::endl;
         variables[name] = value;
     }
-    if (name == "Delta_x") {
+    if (name == "Delta_x")
+    {
         variables["Delta_p"] = variables["hbar"] / value;
-    } else if (name == "M") {
-        variables["M_visible"] = value;  // Since M_DM=0
+    }
+    else if (name == "M")
+    {
+        variables["M_visible"] = value; // Since M_DM=0
         variables["M0"] = value;
-    } else if (name == "rho_fluid") {
+    }
+    else if (name == "rho_fluid")
+    {
         variables["V"] = 1.0 / value;
         variables["delta_rho"] = 1e-5 * value;
         variables["rho"] = value;
@@ -150,28 +273,35 @@ void OrionUQFFModule::updateVariable(const std::string& name, double value) {
 }
 
 // Add delta to variable
-void OrionUQFFModule::addToVariable(const std::string& name, double delta) {
-    if (variables.find(name) != variables.end()) {
+void OrionUQFFModule::addToVariable(const std::string &name, double delta)
+{
+    if (variables.find(name) != variables.end())
+    {
         variables[name] += delta;
-    } else {
+    }
+    else
+    {
         std::cerr << "Variable '" << name << "' not found. Adding with delta " << delta << std::endl;
         variables[name] = delta;
     }
 }
 
 // Subtract delta from variable
-void OrionUQFFModule::subtractFromVariable(const std::string& name, double delta) {
+void OrionUQFFModule::subtractFromVariable(const std::string &name, double delta)
+{
     addToVariable(name, -delta);
 }
 
 // Compute H(z) in s^-1
-double OrionUQFFModule::computeHz() {
+double OrionUQFFModule::computeHz()
+{
     double Hz_kms = variables["H0"] * std::sqrt(variables["Omega_m"] * std::pow(1.0 + variables["z"], 3) + variables["Omega_Lambda"]);
     return (Hz_kms * 1e3) / variables["Mpc_to_m"];
 }
 
 // Compute Ug sum: Ug1 = G M / r^2, Ug2 = v_exp^2 / r, Ug3=0, Ug4 = Ug1 * f_sc
-double OrionUQFFModule::computeUgSum() {
+double OrionUQFFModule::computeUgSum()
+{
     double r = variables["r"];
     double G = variables["G"];
     double M = variables["M"];
@@ -187,19 +317,22 @@ double OrionUQFFModule::computeUgSum() {
 }
 
 // Quantum term: (hbar / sqrt(Delta_x Delta_p)) * integral * (2 pi / t_Hubble)
-double OrionUQFFModule::computeQuantumTerm(double t_Hubble_val) {
+double OrionUQFFModule::computeQuantumTerm(double t_Hubble_val)
+{
     double unc = std::sqrt(variables["Delta_x"] * variables["Delta_p"]);
     double integral_val = variables["integral_psi"];
     return (variables["hbar"] / unc) * integral_val * (2 * variables["pi"] / t_Hubble_val);
 }
 
 // Fluid term: rho_fluid * V * g (with V=1/rho_fluid, yields g)
-double OrionUQFFModule::computeFluidTerm(double g_base) {
+double OrionUQFFModule::computeFluidTerm(double g_base)
+{
     return variables["rho_fluid"] * variables["V"] * g_base;
 }
 
 // Resonant terms: 2 A cos(k x) cos(omega t) + (2 pi / 13.8) A Re[exp(i (k x - omega t))]
-double OrionUQFFModule::computeResonantTerm(double t) {
+double OrionUQFFModule::computeResonantTerm(double t)
+{
     double cos_term = 2 * variables["A"] * std::cos(variables["k"] * variables["x"]) * std::cos(variables["omega"] * t);
     std::complex<double> exp_term(variables["A"] * std::exp(std::complex<double>(0, variables["k"] * variables["x"] - variables["omega"] * t)));
     double real_exp = exp_term.real();
@@ -208,7 +341,8 @@ double OrionUQFFModule::computeResonantTerm(double t) {
 }
 
 // DM term: G * (M_visible + M_DM) * pert / r^2 (unit-fixed; curv approximated in pert)
-double OrionUQFFModule::computeDMTerm() {
+double OrionUQFFModule::computeDMTerm()
+{
     double pert = variables["delta_rho"] / variables["rho"];
     double G = variables["G"];
     double r = variables["r"];
@@ -219,24 +353,28 @@ double OrionUQFFModule::computeDMTerm() {
 }
 
 // Star formation factor: (SFR * t_yr) / M0
-double OrionUQFFModule::computeMsfFactor(double t) {
+double OrionUQFFModule::computeMsfFactor(double t)
+{
     double t_yr = t / variables["year_to_s"];
     return (variables["SFR"] * t_yr) / variables["M0"];
 }
 
 // Stellar wind term: v_wind^2 * (1 + t / t_age) (acceleration)
-double OrionUQFFModule::computeW_stellar(double t) {
+double OrionUQFFModule::computeW_stellar(double t)
+{
     return std::pow(variables["v_wind"], 2) * (1.0 + t / variables["t_age"]);
 }
 
 // Radiation pressure term: L_Trap / (4 pi r^2 c m_H) (acceleration, repulsive)
-double OrionUQFFModule::computeP_rad() {
+double OrionUQFFModule::computeP_rad()
+{
     double r = variables["r"];
     return variables["L_Trap"] / (4 * variables["pi"] * std::pow(r, 2) * variables["c"] * variables["m_H"]);
 }
 
 // Full computation: g_Orion(r, t) = ... all terms with M_sf + W_stellar - P_rad
-double OrionUQFFModule::computeG(double t) {
+double OrionUQFFModule::computeG(double t)
+{
     variables["t"] = t;
     double Hz = computeHz();
     double expansion = 1.0 + Hz * t;
@@ -278,7 +416,8 @@ double OrionUQFFModule::computeG(double t) {
 }
 
 // Get equation text (descriptive)
-std::string OrionUQFFModule::getEquationText() {
+std::string OrionUQFFModule::getEquationText()
+{
     return "g_Orion(r, t) = (G * M(t)) / (r^2) * (1 + H(z) * t) * (1 - B / B_crit) * (1 + f_TRZ) + (Ug1 + Ug2 + Ug3 + Ug4) + (Lambda * c^2 / 3) + "
            "(hbar / sqrt(Delta_x * Delta_p)) * ∫(ψ* H ψ dV) * (2π / t_Hubble) + q * (v_exp × B) * (1 + ρ_vac,UA / ρ_vac,SCm) + ρ_fluid * V * g + "
            "2 A cos(k x) cos(ω t) + (2π / 13.8) A Re[exp(i (k x - ω t))] + G * (M_visible + M_DM) * (δρ/ρ) / r^2 + W_stellar - P_rad\n"
@@ -300,9 +439,11 @@ std::string OrionUQFFModule::getEquationText() {
 }
 
 // Print variables
-void OrionUQFFModule::printVariables() {
+void OrionUQFFModule::printVariables()
+{
     std::cout << "Current Variables:\n";
-    for (const auto& pair : variables) {
+    for (const auto &pair : variables)
+    {
         std::cout << pair.first << " = " << std::scientific << pair.second << std::endl;
     }
 }
@@ -326,16 +467,15 @@ void OrionUQFFModule::printVariables() {
 
 // Evaluation of OrionUQFFModule (MUGE & UQFF & Standard Model Integration for Orion Nebula Evolution)
 
-**Strengths:**
-- **Dynamic & Extensible:** All model parameters stored in `std::map<std::string, double> variables`, enabling runtime updates, additions, and removals. Methods like `updateVariable` support flexible modifications, with auto-dependencies (e.g., `V=1/ρ_fluid`, `δρ=1e-5 ρ`).
-- **Unit Consistency Improvements:** Adjusted `computeFluidTerm` (via `V=1/ρ`) to yield acceleration (g_base); `computeDMTerm` fixed to `G (M pert)/r^2` for m/s². Ensures physical validity while retaining all terms.
+**Strengths : **-**Dynamic &Extensible : **All model parameters stored in `std::map<std::string, double> variables`, enabling runtime updates, additions, and removals.Methods like `updateVariable` support flexible modifications, with auto - dependencies(e.g., `V = 1 / ρ_fluid`, `δρ = 1e-5 ρ`).- **Unit Consistency Improvements : **Adjusted `computeFluidTerm` (via `V = 1 / ρ`) to yield acceleration(g_base); `computeDMTerm` fixed to `G (M pert)/r^2` for m/s². Ensures physical validity while retaining all terms.
 - **Comprehensive Physics:** Incorporates updated MUGE terms (f_TRZ, vac ratio~11, Ug2=v_exp²/r, P_rad repulsive, W_stellar accel), aligned with Hubble/ALMA data (SFR=0.1 Msun/yr, z=0.0004, H0=70). Balances attractive (g_base, Ug1) and repulsive (P_rad, em_term) components.
-- **Immediate Effect & Debugging:** Computations use current map values; `printVariables()` aids validation. Example shows integration with t=300k yr.
-- **Advancement:** Encodes May 2025 doc into Oct 2025 template, adding P_rad/W_stellar accel fixes, H-alpha resonant params, no DM halo. Advances UQFF by situating SM gravity (g_base) within dual-nature framework, explaining nebular expansion.
+- **Immediate Effect & Debugging:** Computations use current map values;
+`printVariables()` aids validation.Example shows integration with t = 300k yr.- **Advancement : **Encodes May 2025 doc into Oct 2025 template, adding P_rad / W_stellar accel fixes, H - alpha resonant params, no DM halo.Advances UQFF by situating SM gravity(g_base)
+within dual - nature framework, explaining nebular expansion.
 
-**Weaknesses / Recommendations:**
-- **Error Handling:** Unknown vars added silently; add validation (e.g., throw on negative M).
-- **Magic Numbers:** Values like ρ_vac_UA=7.09e-36 documented but arbitrary; expose via config file.
+                                        **Weaknesses /
+                                    Recommendations : **-**Error Handling : **Unknown vars added silently;
+add validation(e.g., throw on negative M).- **Magic Numbers : **Values like ρ_vac_UA = 7.09e-36 documented but arbitrary; expose via config file.
 - **Performance:** Map lookups fine for ~50 vars; cache ug_sum if frequent calls.
 - **Physical Justification:** Huge P_rad (~1e15 m/s²) conceptual for local; suggest scaling by opacity/area. Non-standard terms (f_TRZ, vac ratio) need JWST validation.
 - **Testing:** Add unit tests for terms (e.g., ASSERT_NEAR(computeP_rad(), 1.747e15, 1e10)).

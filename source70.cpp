@@ -1,4 +1,4 @@
-// M51UQFFModule.h
+﻿// M51UQFFModule.h
 // Modular C++ implementation of the Master Universal Gravity Equation (MUGE & UQFF Integration) for Whirlpool Galaxy (M51) Evolution.
 // This module models M51's gravitational dynamics, incorporating interaction with NGC 5195, star formation, black hole torus/jets, spiral arm density waves, and dark matter.
 // Usage: #include "M51UQFFModule.h" in base program; M51UQFFModule mod; mod.computeG(t); mod.updateVariable("SFR", new_value);
@@ -17,8 +17,111 @@
 #include <iomanip>
 #include <complex>
 
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
 class M51UQFFModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     double computeHtz(double z_val);
     double computeFenv(double t);
@@ -34,6 +137,15 @@ private:
     double computeUgSum(double r);
     double computeMsfFactor(double t);
     double computeRt(double t);
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize with M51 defaults
@@ -62,6 +174,12 @@ public:
 
 // Constructor: M51-specific values
 M51UQFFModule::M51UQFFModule() {
+        enableDynamicTerms = true;
+        enableLogging = false;
+        learningRate = 0.001;
+        metadata["enhanced"] = "true";
+        metadata["version"] = "2.0-Enhanced";
+
     // Universal constants
     variables["G"] = 6.6743e-11;                    // m^3 kg^-1 s^-2
     variables["c"] = 3e8;                           // m/s
@@ -305,7 +423,7 @@ std::string M51UQFFModule::getEquationText() {
            "F_tidal = G M_NGC5195 / d^2; U_g1 = ?_dipole * B; U_g2 = B_super^2 / (2 ?0);\n"
            "U_g3' = G M_NGC5195 / d^2; U_g4 = k4 * E_react(t); U_i = ?_I * (?_SCm/?_UA) * ?_i * cos(? t_n) * (1 + F_RZ);\n"
            "?_total = A exp(-r^2/(2?^2)) exp(i(m? - ? t)) + BH terms; Insights: Attractive (g_base, Ug1, Ug3') vs. Repulsive (U_g1, U_g2, ?) components advance UQFF.\n"
-           "Adaptations: Hubble ACS/WFPC2 data; SFR=1 Msun/yr; M=1.6e11 Msun. Solutions: g ~3e36 m/s� at t=500 Myr (DM dominant).";
+           "Adaptations: Hubble ACS/WFPC2 data; SFR=1 Msun/yr; M=1.6e11 Msun. Solutions: g ~3e36 m/sï¿½ at t=500 Myr (DM dominant).";
 }
 
 // Print
@@ -323,14 +441,14 @@ void M51UQFFModule::printVariables() {
 //     double t = 5e8 * 3.156e7;  // 500 Myr
 //     double r = 10e3 * 3.086e19;  // 10 kpc
 //     double g = mod.computeG(t, r);
-//     std::cout << "g_M51 = " << g << " m/s�\n";
+//     std::cout << "g_M51 = " << g << " m/sï¿½\n";
 //     std::cout << mod.getEquationText() << std::endl;
 //     mod.updateVariable("SFR", 2 * mod.variables["SFR"]);
 //     mod.printVariables();
 //     return 0;
 // }
 // Compile: g++ -o m51_sim base.cpp M51UQFFModule.cpp -lm
-// Sample Output: g_M51 ~ 3e36 m/s� (DM/fluid dominant; repulsive terms advance framework).
+// Sample Output: g_M51 ~ 3e36 m/sï¿½ (DM/fluid dominant; repulsive terms advance framework).
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
 M51UQFFModule Evaluation
@@ -339,7 +457,7 @@ Strengths :
 -Modular, extensible design for modeling M51 galaxy gravity, including interaction with NGC 5195, star formation, black hole, spiral arms, and dark matter.
 - Comprehensive physics : gravity, cosmological expansion, magnetic fields, environmental / tidal effects, quantum, fluid, and DM terms.
 - Dynamic variable management via std::map enables runtime updates and system adaptation.
-- Clear separation of computation functions(e.g., Ug1�Ug4, F_env, quantum, fluid, DM), aiding maintainability.
+- Clear separation of computation functions(e.g., Ug1ï¿½Ug4, F_env, quantum, fluid, DM), aiding maintainability.
 - M51 - specific parameters are initialized for realistic simulation; supports easy modification.
 - Output functions for equation text and variable state support debugging and documentation.
 

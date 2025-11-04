@@ -1,10 +1,10 @@
-// StellarRotationModule.h
+﻿// StellarRotationModule.h
 // Modular C++ implementation of the Stellar/Planetary Rotation Rate (?_s) in the Universal Quantum Field Superconductive Framework (UQFF).
 // This module computes ?_s=2.5e-6 rad/s (~29-day Sun period); scales ?_s(t) in U_g3 cos(?_s t ?) and U_i ?_s cos(? t_n).
 // Pluggable: #include "StellarRotationModule.h"
 // StellarRotationModule mod; mod.computeU_g3(0.0); mod.updateVariable("omega_s", new_value);
-// Variables in std::map; example for Sun at t=0, t_n=0; U_g3 ?1.8e49 J/m�, U_i ?1.38e-47 J/m�.
-// Approximations: cos(? t_n)=1; f_TRZ=0.1; ?_i=1.0; ?_vac sum=7.80e-36 J/m�.
+// Variables in std::map; example for Sun at t=0, t_n=0; U_g3 ?1.8e49 J/mï¿½, U_i ?1.38e-47 J/mï¿½.
+// Approximations: cos(? t_n)=1; f_TRZ=0.1; ?_i=1.0; ?_vac sum=7.80e-36 J/mï¿½.
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
 #ifndef STELLAR_ROTATION_MODULE_H
@@ -16,12 +16,124 @@
 #include <iostream>
 #include <iomanip>
 
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
 class StellarRotationModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     double computeOmega_s_t(double t);  // ?_s(t), simplified constant
     double computeU_g3(double t);
     double computeU_i(double t, double t_n);
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize with framework defaults (Sun)
@@ -53,6 +165,12 @@ public:
 
 // Constructor: Set framework defaults (Sun at t=0)
 StellarRotationModule::StellarRotationModule() {
+        enableDynamicTerms = true;
+        enableLogging = false;
+        learningRate = 0.001;
+        metadata["enhanced"] = "true";
+        metadata["version"] = "2.0-Enhanced";
+
     // Universal constants
     variables["omega_s"] = 2.5e-6;                  // rad/s
     variables["k_3"] = 1.8;                         // Coupling U_g3
@@ -147,7 +265,7 @@ std::string StellarRotationModule::getEquationText() {
            "U_i = ?_i * ?_vac,[SCm] * ?_vac,[UA] * ?_s(t) * cos(? t_n) * (1 + f_TRZ)\n"
            "Where ?_s = 2.5e-6 rad/s (~29-day Sun equatorial rotation);\n"
            "Scales rotational oscillations/inertia.\n"
-           "Example t=0, t_n=0: U_g3 ?1.8e49 J/m�; U_i ?1.38e-47 J/m�.\n"
+           "Example t=0, t_n=0: U_g3 ?1.8e49 J/mï¿½; U_i ?1.38e-47 J/mï¿½.\n"
            "Role: Introduces spin in disk gravity/inertia; stellar/planetary dynamics.\n"
            "UQFF: Rotational effects in nebulae/disks/formation/mergers.";
 }
@@ -167,14 +285,14 @@ void StellarRotationModule::printVariables() {
 //     double omega = mod.computeOmega_s();
 //     std::cout << "?_s = " << omega << " rad/s (~" << mod.computePeriod_days() << " days)\n";
 //     double u_g3 = mod.computeU_g3(0.0);
-//     std::cout << "U_g3 = " << u_g3 << " J/m�\n";
+//     std::cout << "U_g3 = " << u_g3 << " J/mï¿½\n";
 //     std::cout << mod.getEquationText() << std::endl;
 //     mod.updateVariable("omega_s", 3e-6);
 //     mod.printVariables();
 //     return 0;
 // }
 // Compile: g++ -o rotation_test rotation_test.cpp StellarRotationModule.cpp -lm
-// Sample: ?_s=2.5e-6 rad/s (~29 days); U_g3?1.8e49 J/m�; scales rotation.
+// Sample: ?_s=2.5e-6 rad/s (~29 days); U_g3?1.8e49 J/mï¿½; scales rotation.
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
 StellarRotationModule Evaluation

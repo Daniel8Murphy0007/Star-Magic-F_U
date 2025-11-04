@@ -1,6 +1,6 @@
-// StressEnergyTensorModule.h
+﻿// StressEnergyTensorModule.h
 // Modular C++ implementation of the Stress-Energy Tensor (T_s^{??}) in the Universal Quantum Field Superconductive Framework (UQFF).
-// This module computes T_s^{??} ?1.123e7 J/m� (diagonal scalar); perturbs A_?? = g_?? + ? T_s^{??} (~1.123e-15).
+// This module computes T_s^{??} ?1.123e7 J/mï¿½ (diagonal scalar); perturbs A_?? = g_?? + ? T_s^{??} (~1.123e-15).
 // Pluggable: #include "StressEnergyTensorModule.h"
 // StressEnergyTensorModule mod; mod.computeA_mu_nu(); mod.updateVariable("rho_vac_A", new_value);
 // Variables in std::map; diagonal [tt, xx, yy, zz]; example for Sun at t_n=0.
@@ -17,12 +17,124 @@
 #include <iostream>
 #include <iomanip>
 
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
 class StressEnergyTensorModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     std::vector<double> g_mu_nu;  // Background [1, -1, -1, -1]
-    double computeT_s();  // Scalar approx J/m�
+    double computeT_s();  // Scalar approx J/mï¿½
     std::vector<double> computeA_mu_nu();
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize with framework defaults
@@ -34,7 +146,7 @@ public:
     void subtractFromVariable(const std::string& name, double delta);
 
     // Core computations
-    double computeT_s();  // 1.123e7 J/m�
+    double computeT_s();  // 1.123e7 J/mï¿½
     double computePerturbation();  // ? * T_s ?1.123e-15
     std::vector<double> computeA_mu_nu();  // Perturbed metric
 
@@ -55,6 +167,12 @@ public:
 
 // Constructor: Set framework defaults
 StressEnergyTensorModule::StressEnergyTensorModule() {
+        enableDynamicTerms = true;
+        enableLogging = false;
+        learningRate = 0.001;
+        metadata["enhanced"] = "true";
+        metadata["version"] = "2.0-Enhanced";
+
     // Universal constants
     variables["eta"] = 1e-22;                       // Coupling
     variables["rho_vac_SCm"] = 7.09e-37;            // J/m^3
@@ -115,10 +233,10 @@ std::vector<double> StressEnergyTensorModule::computeA_mu_nu() {
 // Equation text
 std::string StressEnergyTensorModule::getEquationText() {
     return "A_?? = g_?? + ? T_s^{??}(?_vac,[SCm], ?_vac,[UA], ?_vac,A, t_n)\n"
-           "T_s^{??} ? 1.123e7 J/m� (diagonal; T_s_base + ?_vac,A =1.27e3 + 1.11e7);\n"
+           "T_s^{??} ? 1.123e7 J/mï¿½ (diagonal; T_s_base + ?_vac,A =1.27e3 + 1.11e7);\n"
            "? =1e-22 ? perturbation ?1.123e-15;\n"
            "A_?? ? [1 + 1.123e-15, -1 + 1.123e-15, ...].\n"
-           "In F_U: Aether contrib ~1e-15 J/m� (negligible vs U_m=2.28e65).\n"
+           "In F_U: Aether contrib ~1e-15 J/mï¿½ (negligible vs U_m=2.28e65).\n"
            "Role: Encodes energy-momentum for Aether geometry; [SCm]/[UA] stress in spacetime.\n"
            "UQFF: Perturbs metric for nebular/disk/jet dynamics; GR-compatible vacuum.";
 }
@@ -141,7 +259,7 @@ void StressEnergyTensorModule::printTensorAndMetric() {
     double t_s = computeT_s();
     double pert = computePerturbation();
     auto a_mu_nu = computeA_mu_nu();
-    std::cout << "T_s^{??} (diagonal scalar) = " << std::scientific << t_s << " J/m�\n";
+    std::cout << "T_s^{??} (diagonal scalar) = " << std::scientific << t_s << " J/mï¿½\n";
     std::cout << "Perturbation ? T_s = " << pert << "\n";
     std::cout << "A_??: ";
     for (double val : a_mu_nu) {
@@ -155,7 +273,7 @@ void StressEnergyTensorModule::printTensorAndMetric() {
 // int main() {
 //     StressEnergyTensorModule mod;
 //     double t_s = mod.computeT_s();
-//     std::cout << "T_s ? " << t_s << " J/m�\n";
+//     std::cout << "T_s ? " << t_s << " J/mï¿½\n";
 //     mod.printTensorAndMetric();
 //     std::cout << mod.getEquationText() << std::endl;
 //     mod.updateVariable("rho_vac_A", 1.2e7);
@@ -163,7 +281,7 @@ void StressEnergyTensorModule::printTensorAndMetric() {
 //     return 0;
 // }
 // Compile: g++ -o tensor_test tensor_test.cpp StressEnergyTensorModule.cpp -lm
-// Sample: T_s=1.123e7 J/m�; pert?1.123e-15; A_?? nearly [1,-1,-1,-1].
+// Sample: T_s=1.123e7 J/mï¿½; pert?1.123e-15; A_?? nearly [1,-1,-1,-1].
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
 StressEnergyTensorModule Evaluation
