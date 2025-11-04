@@ -1,4 +1,4 @@
-// README.md (for setup and starting new conversation/company)
+﻿// README.md (for setup and starting new conversation/company)
 # CoAnQi Codebase - Unified Field Theory Simulation with 3D Graphics and Plugins
 
 ## Overview
@@ -557,7 +557,7 @@ int main(int argc, char** argv) {
             MUGESystem westerlund = tapestry; westerlund.name = "Westerlund 2";
             MUGESystem pillars = { "Pillars of Creation", 1e21, 2.813e32, 1e-3, -1e-3, 3.552e48, 2e3, 3.156e13, 0.0, 8.457e-14, 1.989e32, 9.46e15, 1e-4, 1e-3, 1e-21, 1e-8, 0.0, 1e-5 };
             MUGESystem rings = { "Rings of Relativity", 1e22, 1e35, 1e-4, -1e-4, 1e54, 1e5, 3.156e14, 0.01, 1e-9, 1.989e36, 3.086e17, 1e-5, 1e-4, 1e-20, 1e-5, 1e36, 1e-3 };
-            MUGESystem student_guide = { "Student�s Guide to the Universe", 1e24, 1e52, 1e-6, -1e-6, 1e80, 3e8, 4.35e17, 0.0, 1e-18, 1e53, 1e26, 1e-10, 1e-9, 1e-30, 1e-10, 1e53, 1e-6 };
+            MUGESystem student_guide = { "Studentï¿½s Guide to the Universe", 1e24, 1e52, 1e-6, -1e-6, 1e80, 3e8, 4.35e17, 0.0, 1e-18, 1e53, 1e26, 1e-10, 1e-9, 1e-30, 1e-10, 1e53, 1e-6 };
             muge_systems = { sgr1745, sagA, tapestry, westerlund, pillars, rings, student_guide };
         }
 
@@ -1842,7 +1842,7 @@ int main(int argc, char** argv) {
             MUGESystem westerlund = tapestry; westerlund.name = "Westerlund 2";
             MUGESystem pillars = { "Pillars of Creation", 1e21, 2.813e32, 1e-3, -1e-3, 3.552e48, 2e3, 3.156e13, 0.0, 8.457e-14, 1.989e32, 9.46e15, 1e-4, 1e-3, 1e-21, 1e-8, 0.0, 1e-5 };
             MUGESystem rings = { "Rings of Relativity", 1e22, 1e35, 1e-4, -1e-4, 1e54, 1e5, 3.156e14, 0.01, 1e-9, 1.989e36, 3.086e17, 1e-5, 1e-4, 1e-20, 1e-5, 1e36, 1e-3 };
-            MUGESystem student_guide = { "Student�s Guide to the Universe", 1e24, 1e52, 1e-6, -1e-6, 1e80, 3e8, 4.35e17, 0.0, 1e-18, 1e53, 1e26, 1e-10, 1e-9, 1e-30, 1e-10, 1e53, 1e-6 };
+            MUGESystem student_guide = { "Studentï¿½s Guide to the Universe", 1e24, 1e52, 1e-6, -1e-6, 1e80, 3e8, 4.35e17, 0.0, 1e-18, 1e53, 1e26, 1e-10, 1e-9, 1e-30, 1e-10, 1e53, 1e-6 };
             muge_systems = { sgr1745, sagA, tapestry, westerlund, pillars, rings, student_guide };
         }
 
@@ -1947,7 +1947,7 @@ glfwTerminate();
     }
 
     return 0;
-}
+
 
 # CoAnQiNode.py(full)
 import os
@@ -2047,7 +2047,7 @@ def update(self, dt: float) :
 
     def main() :
     app = QApplication([])
-    node = CoAnQiNode("user_device_001", { "customize_os": True, "auto_retract_transactions" : True, "3d_vis" : True })
+    node = CoAnQiNode("user_device_001", { "customize_os": True, "auto_retract_transactions" : True, "3d_vis" : True )
     window = MainWindow(node)
     window.show()
     app.exec_()
@@ -2070,7 +2070,3 @@ SectionEnd
 
 #!/bin/bash
 # deb_package.sh
-mkdir - p coanqi.deb / usr / bin
-cp coanqi coanqi.deb / usr / bin /
-dpkg - deb --build coanqi.deb
-
