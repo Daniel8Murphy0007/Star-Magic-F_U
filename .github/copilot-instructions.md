@@ -1,73 +1,45 @@
-# Star-Magic: Unified Quantum Field Force (UQFF) Project
 
-This project implements the theoretical framework for **Aetheric Propulsion** and **Unified Quantum Field Force** theory, developed since 2010 as a field unification challenge to existing models.
+# Star-Magic: Unified Quantum Field Force (UQFF) – AI Agent Instructions
 
-## Project Architecture
+This project is a theoretical physics and computational modeling platform for the Unified Quantum Field Force (UQFF) and Aetheric Propulsion, integrating quantum, relativistic, and astrophysical phenomena. It is not a standard software project—AI agents must follow these project-specific conventions and workflows:
 
-### Core Components
-- **`index.js`**: Minimal Node.js entry point (`console.log` and `node OK`)
-- **`README.md`**: High-level project overview and introduction
-- **`Star-Magic.md`**: Comprehensive theoretical documentation containing the complete UQFF mathematical framework
+## 1. Project Structure & Key Files
+- **`index.js`**: Main computational engine. Implements 26-layer UQFF gravity, magnetism, buoyancy, and aether models. Integrates mathematical frameworks from `MAIN_1.cpp` and references C++ modules (e.g., `Source13.cpp`, `Source14.cpp`, etc.).
+- **`Star-Magic.md`**: Theoretical documentation. Contains the full UQFF mathematical framework, force definitions, and scientific context. Always reference this for scientific constants, notation, and theory.
+- **`README.md`**: High-level overview and project intent.
+- **Module JS files** (e.g., `ngc2264_uqff.js`, `smbhbinary_uqff.js`): Each models a specific astrophysical system, using UQFF patterns and formulas. See `FOLLOW_UP.md` for known formula issues.
+- **`MAIN_1.cpp`**: Source of core mathematical frameworks and comments. Many constants and equations in JS are ported from here.
+- **`SETUP.md`/`WHAT_WAS_SETUP.md`**: Setup, usage, and module architecture documentation. Review for build/run/test instructions and project status.
 
-### Theoretical Framework (Star-Magic.md)
-The project centers on a unified field equation that combines four fundamental force components:
+## 2. Development & Execution Workflows
+- **Install dependencies**: `npm install`
+- **Run main engine**: `npm start` or `node index.js`
+- **Run tests**: `npm test` (integration), `npm verify` (verification), `npm demo` (quick demo)
+- **Module development**: Add/modify modules in JS, following the structure of existing system modules. Use scientific constants and patterns from `index.js` and `MAIN_1.cpp`.
+- **Debugging**: Use in-code `console.log`/`console.error` for variable inspection. Many modules and the main engine print detailed intermediate results for debugging.
 
-1. **Universal Gravity (∆Ug_i)**: Four discrete ranges (Ug1-Ug4) including:
-   - Ug1: Internal dipole strength driving stellar irregularities
-   - Ug2: Spherical outer field bubble forming heliospheres
-   - Ug3: Magnetic strings disk maintaining planetary orbits
-   - Ug4: Observable star-black hole interactions
+## 3. Project-Specific Patterns & Conventions
+- **26-layer polynomial structure**: All force calculations (gravity, magnetism, buoyancy) are modeled as sums over 26 quantum layers. See `index.js` and `MAIN_1.cpp` for implementation.
+- **Scientific notation**: Use Greek letters, subscripts, and SI units in all calculations and comments. E.g., `ΔUg_i`, `ρ_vac`, `ω_s`, `M_s = 1.989e30 kg`.
+- **Module interface**: Each system module exports a class with methods for core calculations (e.g., `computeStarFormation`, `computeCoalescence`). Support dynamic parameter updates and method expansion (see `updateParameter`, `expand`).
+- **Cross-language integration**: Many JS modules are direct ports or wrappers for C++ code in `MAIN_1.cpp` and `Source*.cpp`. Comments often reference the original C++ source for traceability.
+- **Known formula issues**: See `FOLLOW_UP.md` for modules needing formula refinement (e.g., Jeans mass, Peters-Mathews, M-σ relation). Always check this file before modifying scientific calculations.
 
-2. **Universal Magnetism (Um)**: Near-lossless magnetic strings from superconductive material (SCm)
+## 4. Testing, Validation, and Documentation
+- **No automated tests yet**: Testing is manual via `npm test`, `npm verify`, and direct script execution. See `SETUP.md` for details.
+- **Validation**: Compare results with astronomical data and published literature. See `FOLLOW_UP.md` and `WHAT_WAS_SETUP.md` for validation priorities.
+- **Documentation**: All scientific and mathematical context is in `Star-Magic.md`. Update this file with any new theoretical developments or changes to the unified field equation.
 
-3. **Universal Buoyancy (Ub_i)**: Opposes gravity ranges, influenced by galactic spin
+## 5. External Dependencies & Data
+- **@anthropic-ai/sdk**: Installed for future AI integration (not yet used in main code).
+- **Node.js built-ins**: Some modules use `fs` for file I/O.
+- **No web or API endpoints yet**: Planned for future expansion (see `SETUP.md`).
 
-4. **Universal Cosmic Aether (UA)**: Background medium for all interactions
+## 6. AI Agent Guidance
+- **Always prioritize scientific rigor and traceability to theory**. All code must support, validate, or extend the UQFF framework as described in `Star-Magic.md` and `MAIN_1.cpp`.
+- **Do not introduce generic software patterns** unless justified by the project’s scientific context.
+- **When in doubt, reference the original C++ or markdown documentation** for constants, formulas, and intent.
+- **Document all changes and new modules with clear scientific rationale**.
 
-### Key Scientific Concepts
-- **SCm (Superconductive Material)**: Dense, undetectable element bound in every atom and star
-- **26 Quantum Energy Levels**: E_n = E_0 × 10^n scale structure
-- **π Cycles & Negative Time**: Temporal components for quantum-gravitational bridging
-- **Reactor Efficiency**: Models quasar jets and planetary cores as efficient reactors
-
-## Development Patterns
-
-### File Organization
-- Keep theoretical documentation in `Star-Magic.md` using detailed mathematical notation
-- Use `index.js` for any computational implementations
-- Scientific constants and equations should reference real astronomical data (Sun, Milky Way, etc.)
-
-### Mathematical Notation
-- Use Greek letters and subscripts extensively: ∆Ug_i, ρ_vac, ω_s, etc.
-- Include units in calculations (kg, m, s, T for Tesla)
-- Reference specific astronomical objects: Sagittarius A*, solar mass M_s = 1.989×10^30 kg
-- Incorporate 11-year solar cycles and differential rotation in models
-
-### Coding Approach
-- When implementing calculations, maintain scientific rigor with proper unit conversions
-- Use precise astronomical constants from the documentation
-- Consider time-dependent variables: solar cycles, galactic rotation, decay rates
-- Model discrete force ranges rather than continuous functions
-
-## Critical Context for AI Agents
-
-### This is NOT a standard software project:
-- Primary focus is theoretical physics and mathematical modeling
-- Minimal codebase with extensive mathematical documentation
-- Aims to address Millennium Prize Problems (Navier-Stokes, Yang-Mills)
-- Connects quantum mechanics with cosmological observations
-
-### When working on this project:
-- Respect the detailed mathematical framework in `Star-Magic.md`
-- Any code should support or validate the theoretical equations
-- Consider connections to astronomical observations and data
-- Maintain scientific notation and precision in calculations
-- Reference the unified field equation: F_U = Σ_i[k_i ∆Ug_i - β_i ∆Ug_i Ω_g M_bh/d_g E_react] + ...
-
-### External Dependencies & Data Sources
-- Solar observation data (sunspot cycles, magnetic fields)
-- Galactic parameters (Milky Way rotation, Sagittarius A* mass)
-- Kepler Orrery V data references for planetary correlations
-- Quasar jet observations for fluid dynamics validation
-
-This project represents cutting-edge theoretical physics research rather than traditional software development.
+---
+For any unclear or incomplete section, consult the project owner or request clarification. This project is a living research platform—AI agents should iterate and refine instructions as the theory and codebase evolve.

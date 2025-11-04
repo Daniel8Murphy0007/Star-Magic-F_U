@@ -19,11 +19,119 @@
 #include <iostream>
 #include <iomanip>
 #include <complex>
+#include <vector>
+#include <functional>
+#include <random>
+#include <algorithm>
+#include <sstream>
 
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
 using cdouble = std::complex<double>;
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
 
 class NGC2207UQFFModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, cdouble> variables;
     cdouble computeIntegrand(double t);
     cdouble computeDPM_resonance();
@@ -34,6 +142,15 @@ private:
     cdouble computeQ_wave(double t);
     cdouble computeUb1();
     cdouble computeUi(double t);
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize all variables with NGC 2207 defaults
@@ -59,6 +176,49 @@ public:
 
     // Print all current variables (for debugging/updates)
     void printVariables();
+
+    // ========== ENHANCED: 25 Dynamic Self-Update and Self-Expansion Methods ==========
+    
+    // 1. Variable Management (5 methods)
+    void createVariable(const std::string& name, cdouble value);
+    void removeVariable(const std::string& name);
+    void cloneVariable(const std::string& source, const std::string& destination);
+    std::vector<std::string> listVariables() const;
+    std::string getSystemName() const;
+    
+    // 2. Batch Operations (2 methods)
+    void transformVariableGroup(const std::vector<std::string>& names, std::function<cdouble(cdouble)> func);
+    void scaleVariableGroup(const std::vector<std::string>& names, cdouble scale_factor);
+    
+    // 3. Self-Expansion (4 methods: 1 global + 3 domain-specific for NGC 2207)
+    void expandParameterSpace(double global_scale);
+    void expandGalaxyScale(double mass_factor, double radius_factor);
+    void expandForceScale(double dpm_factor, double lenr_factor);
+    void expandInteractionScale(double tidal_factor, double luminosity_factor);
+    
+    // 4. Self-Refinement (3 methods)
+    void autoRefineParameters(const std::string& target_metric);
+    void calibrateToObservations(const std::map<std::string, cdouble>& observed_values);
+    void optimizeForMetric(const std::string& metric_name);
+    
+    // 5. Parameter Exploration (1 method)
+    std::vector<std::map<std::string, cdouble>> generateVariations(int count, double variation_percent);
+    
+    // 6. Adaptive Evolution (2 methods)
+    void mutateParameters(double mutation_rate);
+    void evolveSystem(int generations, std::function<double(const NGC2207UQFFModule&)> fitness_func);
+    
+    // 7. State Management (4 methods)
+    void saveState(const std::string& state_name);
+    void restoreState(const std::string& state_name);
+    std::vector<std::string> listSavedStates() const;
+    std::string exportState() const;
+    
+    // 8. System Analysis (4 methods)
+    std::map<std::string, double> sensitivityAnalysis(const std::vector<std::string>& param_names, double delta_percent);
+    std::string generateReport() const;
+    bool validateConsistency() const;
+    void autoCorrectAnomalies();
 };
 
 #endif // NGC2207_UQFF_MODULE_H
@@ -69,6 +229,12 @@ public:
 
 // Constructor: Set all variables with NGC 2207-specific values
 NGC2207UQFFModule::NGC2207UQFFModule() {
+        enableDynamicTerms = true;
+        enableLogging = false;
+        learningRate = 0.001;
+        metadata["enhanced"] = "true";
+        metadata["version"] = "2.0-Enhanced";
+
     double pi_val = 3.141592653589793;
     cdouble zero = {0.0, 0.0};
     cdouble i_small = {0.0, 1e-37};
@@ -308,7 +474,510 @@ void NGC2207UQFFModule::printVariables() {
     }
 }
 
+// ========== ENHANCED: Implementation of 25 Dynamic Methods ==========
+
+const double pi_val = 3.141592653589793;
+
+// Namespace for saved states
+namespace saved_states_ngc2207 {
+    std::map<std::string, std::map<std::string, cdouble>> states;
+}
+
+// 1. Variable Management
+
+void NGC2207UQFFModule::createVariable(const std::string& name, cdouble value) {
+    variables[name] = value;
+}
+
+void NGC2207UQFFModule::removeVariable(const std::string& name) {
+    variables.erase(name);
+}
+
+void NGC2207UQFFModule::cloneVariable(const std::string& source, const std::string& destination) {
+    if (variables.find(source) != variables.end()) {
+        variables[destination] = variables[source];
+    }
+}
+
+std::vector<std::string> NGC2207UQFFModule::listVariables() const {
+    std::vector<std::string> names;
+    for (const auto& pair : variables) {
+        names.push_back(pair.first);
+    }
+    return names;
+}
+
+std::string NGC2207UQFFModule::getSystemName() const {
+    return "NGC2207_Interacting_Galaxy_UQFF";
+}
+
+// 2. Batch Operations
+
+void NGC2207UQFFModule::transformVariableGroup(const std::vector<std::string>& names, std::function<cdouble(cdouble)> func) {
+    for (const auto& name : names) {
+        if (variables.find(name) != variables.end()) {
+            variables[name] = func(variables[name]);
+        }
+    }
+}
+
+void NGC2207UQFFModule::scaleVariableGroup(const std::vector<std::string>& names, cdouble scale_factor) {
+    transformVariableGroup(names, [scale_factor](cdouble val) { return val * scale_factor; });
+}
+
+// 3. Self-Expansion (Domain-Specific for NGC 2207)
+
+void NGC2207UQFFModule::expandParameterSpace(double global_scale) {
+    for (auto& pair : variables) {
+        pair.second *= global_scale;
+    }
+}
+
+void NGC2207UQFFModule::expandGalaxyScale(double mass_factor, double radius_factor) {
+    // Scale galaxy mass and radius, adjust gas density accordingly
+    variables["M"] *= mass_factor;
+    variables["r"] *= radius_factor;
+    variables["rho_gas"] *= mass_factor / pow(radius_factor, 3);
+    
+    // Adjust luminosity with mass (star formation ~ M)
+    variables["L_X"] *= mass_factor;
+}
+
+void NGC2207UQFFModule::expandForceScale(double dpm_factor, double lenr_factor) {
+    // Scale DPM components
+    variables["DPM_momentum"] *= dpm_factor;
+    variables["DPM_gravity"] *= dpm_factor;
+    variables["DPM_stability"] *= dpm_factor;
+    
+    // Scale LENR coupling
+    variables["k_LENR"] *= lenr_factor;
+}
+
+void NGC2207UQFFModule::expandInteractionScale(double tidal_factor, double luminosity_factor) {
+    // Scale tidal velocity (interaction strength)
+    variables["V"] *= tidal_factor;
+    
+    // Scale X-ray luminosity (star formation bursts)
+    variables["L_X"] *= luminosity_factor;
+    
+    // Scale directed energy coupling (tidal-driven flows)
+    variables["k_DE"] *= luminosity_factor;
+    
+    // Scale activation (interaction-induced variability)
+    variables["k_act"] *= tidal_factor;
+    
+    // Scale magnetic field (proportional to sqrt of luminosity)
+    variables["B0"] *= sqrt(luminosity_factor);
+}
+
+// 4. Self-Refinement
+
+void NGC2207UQFFModule::autoRefineParameters(const std::string& target_metric) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> mass_dist(1e40, 1e41);
+    std::uniform_real_distribution<> radius_dist(1e20, 1e21);
+    std::uniform_real_distribution<> dpm_dist(0.01, 10.0);
+    std::uniform_real_distribution<> lenr_dist(1e-12, 1e-8);
+    
+    variables["M"] = cdouble(mass_dist(gen), 0.0);
+    variables["r"] = cdouble(radius_dist(gen), 0.0);
+    variables["DPM_momentum"] = cdouble(dpm_dist(gen), variables["DPM_momentum"].imag());
+    variables["k_LENR"] = cdouble(lenr_dist(gen), 0.0);
+}
+
+void NGC2207UQFFModule::calibrateToObservations(const std::map<std::string, cdouble>& observed_values) {
+    for (const auto& obs : observed_values) {
+        if (variables.find(obs.first) != variables.end()) {
+            variables[obs.first] = obs.second;
+        }
+    }
+}
+
+void NGC2207UQFFModule::optimizeForMetric(const std::string& metric_name) {
+    if (metric_name == "standard_ngc2207") {
+        variables["M"] = {3.978e40, 0.0};
+        variables["r"] = {4.40e20, 0.0};
+        variables["L_X"] = {1e37, 0.0};
+        variables["B0"] = {1e-5, 0.0};
+    } else if (metric_name == "close_approach") {
+        variables["V"] = {3e5, 0.0};  // 300 km/s tidal velocity
+        variables["k_act"] = {5e-6, 0.0};  // Strong tidal activation
+        variables["L_X"] = {5e37, 0.0};  // Enhanced star formation
+    } else if (metric_name == "starburst_phase") {
+        variables["L_X"] = {8e37, 0.0};  // High star formation luminosity
+        variables["rho_gas"] = {5e-21, 0.0};  // Higher gas density
+        variables["k_DE"] = {5e-30, 0.0};  // Strong outflows
+    } else if (metric_name == "tidal_arms") {
+        variables["V"] = {2.5e5, 0.0};  // 250 km/s arm velocity
+        variables["B0"] = {2e-5, 0.0};  // Enhanced magnetic field
+        variables["k_act"] = {3e-6, 0.0};  // Arm resonances
+    } else if (metric_name == "quiescent") {
+        variables["L_X"] = {1e36, 0.0};  // Lower star formation
+        variables["V"] = {1e5, 0.0};  // Slower tidal motion
+        variables["k_act"] = {1e-7, 0.0};  // Reduced activity
+    }
+}
+
+// 5. Parameter Exploration
+
+std::vector<std::map<std::string, cdouble>> NGC2207UQFFModule::generateVariations(int count, double variation_percent) {
+    std::vector<std::map<std::string, cdouble>> variations;
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dist(-variation_percent / 100.0, variation_percent / 100.0);
+    
+    for (int i = 0; i < count; ++i) {
+        std::map<std::string, cdouble> variant = variables;
+        for (auto& pair : variant) {
+            double delta_real = dist(gen);
+            double delta_imag = dist(gen);
+            cdouble delta(pair.second.real() * delta_real, pair.second.imag() * delta_imag);
+            pair.second += delta;
+        }
+        variations.push_back(variant);
+    }
+    return variations;
+}
+
+// 6. Adaptive Evolution
+
+void NGC2207UQFFModule::mutateParameters(double mutation_rate) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dist(-mutation_rate, mutation_rate);
+    
+    for (auto& pair : variables) {
+        double delta_real = dist(gen);
+        double delta_imag = dist(gen);
+        cdouble delta(pair.second.real() * delta_real, pair.second.imag() * delta_imag);
+        pair.second += delta;
+    }
+}
+
+void NGC2207UQFFModule::evolveSystem(int generations, std::function<double(const NGC2207UQFFModule&)> fitness_func) {
+    double best_fitness = fitness_func(*this);
+    std::map<std::string, cdouble> best_state = variables;
+    
+    for (int gen = 0; gen < generations; ++gen) {
+        mutateParameters(0.05);
+        double current_fitness = fitness_func(*this);
+        
+        if (current_fitness > best_fitness) {
+            best_fitness = current_fitness;
+            best_state = variables;
+        } else {
+            variables = best_state;
+        }
+    }
+}
+
+// 7. State Management
+
+void NGC2207UQFFModule::saveState(const std::string& state_name) {
+    saved_states_ngc2207::states[state_name] = variables;
+}
+
+void NGC2207UQFFModule::restoreState(const std::string& state_name) {
+    if (saved_states_ngc2207::states.find(state_name) != saved_states_ngc2207::states.end()) {
+        variables = saved_states_ngc2207::states[state_name];
+    }
+}
+
+std::vector<std::string> NGC2207UQFFModule::listSavedStates() const {
+    std::vector<std::string> names;
+    for (const auto& pair : saved_states_ngc2207::states) {
+        names.push_back(pair.first);
+    }
+    return names;
+}
+
+std::string NGC2207UQFFModule::exportState() const {
+    std::ostringstream oss;
+    oss << "System: " << getSystemName() << "\n";
+    for (const auto& pair : variables) {
+        oss << pair.first << " = " << std::scientific << std::setprecision(10)
+            << pair.second.real() << " + i*" << pair.second.imag() << "\n";
+    }
+    return oss.str();
+}
+
+// 8. System Analysis
+
+std::map<std::string, double> NGC2207UQFFModule::sensitivityAnalysis(const std::vector<std::string>& param_names, double delta_percent) {
+    std::map<std::string, double> sensitivities;
+    double t_test = 1.26e15;
+    cdouble baseline = computeF(t_test);
+    
+    for (const auto& param : param_names) {
+        if (variables.find(param) != variables.end()) {
+            cdouble original = variables[param];
+            cdouble delta = original * (delta_percent / 100.0);
+            
+            variables[param] = original + delta;
+            cdouble perturbed = computeF(t_test);
+            variables[param] = original;
+            
+            double sensitivity = std::abs(perturbed - baseline) / std::abs(baseline);
+            sensitivities[param] = sensitivity;
+        }
+    }
+    return sensitivities;
+}
+
+std::string NGC2207UQFFModule::generateReport() const {
+    std::ostringstream report;
+    report << "========== NGC 2207 Interacting Galaxy UQFF Module Report ==========\n";
+    report << "System: " << getSystemName() << "\n\n";
+    
+    report << "Key Parameters:\n";
+    report << "  Mass (M): " << std::scientific << variables.at("M").real() << " + i*" << variables.at("M").imag() << " kg\n";
+    report << "  Galaxy Radius (r): " << variables.at("r").real() << " + i*" << variables.at("r").imag() << " m\n";
+    report << "  X-ray Luminosity (L_X): " << variables.at("L_X").real() << " + i*" << variables.at("L_X").imag() << " W\n";
+    report << "  Magnetic Field (B0): " << variables.at("B0").real() << " + i*" << variables.at("B0").imag() << " T\n";
+    report << "  Tidal Velocity (V): " << variables.at("V").real() << " + i*" << variables.at("V").imag() << " m/s\n";
+    report << "  Time (t): " << variables.at("t").real() << " + i*" << variables.at("t").imag() << " s\n";
+    
+    report << "\nForce Components (at current t):\n";
+    double t_current = variables.at("t").real();
+    cdouble F_total = const_cast<NGC2207UQFFModule*>(this)->computeF(t_current);
+    cdouble F_compressed = const_cast<NGC2207UQFFModule*>(this)->computeCompressed(t_current);
+    cdouble DPM_res = const_cast<NGC2207UQFFModule*>(this)->computeResonant();
+    cdouble Ub1 = const_cast<NGC2207UQFFModule*>(this)->computeBuoyancy();
+    cdouble Ui = const_cast<NGC2207UQFFModule*>(this)->computeSuperconductive(t_current);
+    double g_comp = const_cast<NGC2207UQFFModule*>(this)->computeCompressedG(t_current);
+    cdouble Q_wave = const_cast<NGC2207UQFFModule*>(this)->computeQ_wave(t_current);
+    
+    report << "  F_total: " << F_total.real() << " + i*" << F_total.imag() << " N\n";
+    report << "  F_compressed (integrand): " << F_compressed.real() << " + i*" << F_compressed.imag() << " N\n";
+    report << "  DPM_resonance: " << DPM_res.real() << " + i*" << DPM_res.imag() << "\n";
+    report << "  Buoyancy (Ub1): " << Ub1.real() << " + i*" << Ub1.imag() << " N\n";
+    report << "  Superconductive (Ui): " << Ui.real() << " + i*" << Ui.imag() << " J/m^3\n";
+    report << "  Compressed g(r,t): " << g_comp << " J/m^3\n";
+    report << "  Q_wave: " << Q_wave.real() << " + i*" << Q_wave.imag() << " J/m^3\n";
+    
+    report << "\nTotal Variables: " << variables.size() << "\n";
+    report << "========================================\n";
+    
+    return report.str();
+}
+
+bool NGC2207UQFFModule::validateConsistency() const {
+    double M_val = variables.at("M").real();
+    double r_val = variables.at("r").real();
+    double L_X_val = variables.at("L_X").real();
+    
+    // Galaxy mass range check (~2e10 M_sun ~ 3.978e40 kg)
+    if (M_val < 1e40 || M_val > 1e42) return false;
+    
+    // Galaxy radius check (15 kpc ~ 5e20 m)
+    if (r_val < 1e20 || r_val > 1e21) return false;
+    
+    // Luminosity check (interacting/starburst galaxy)
+    if (L_X_val < 1e36 || L_X_val > 1e38) return false;
+    
+    return true;
+}
+
+void NGC2207UQFFModule::autoCorrectAnomalies() {
+    double M_val = variables["M"].real();
+    double r_val = variables["r"].real();
+    double L_X_val = variables["L_X"].real();
+    
+    // Correct mass to galaxy range
+    if (M_val < 1e40) variables["M"] = {1e40, variables["M"].imag()};
+    if (M_val > 1e42) variables["M"] = {1e42, variables["M"].imag()};
+    
+    // Correct radius
+    if (r_val < 1e20) variables["r"] = {1e20, variables["r"].imag()};
+    if (r_val > 1e21) variables["r"] = {1e21, variables["r"].imag()};
+    
+    // Correct luminosity
+    if (L_X_val < 1e36) variables["L_X"] = {1e36, variables["L_X"].imag()};
+    if (L_X_val > 1e38) variables["L_X"] = {1e38, variables["L_X"].imag()};
+}
+
 // Example usage in base program 'ngc2207_sim.cpp' (snippet for integration)
+/*
+========== COMPREHENSIVE USAGE EXAMPLE: NGC 2207 Interacting Galaxy UQFF ==========
+
+#include "source147.cpp"
+#include <iostream>
+#include <iomanip>
+
+int main() {
+    std::cout << "========== NGC 2207 Interacting Galaxy UQFF Enhancement Demo ==========\n\n";
+    
+    // Initialize standard NGC 2207 module
+    NGC2207UQFFModule ngc2207;
+    
+    std::cout << "=== INITIAL STATE ===\n";
+    std::cout << ngc2207.generateReport() << "\n\n";
+    
+    // Test 1: Variable Management
+    std::cout << "=== TEST 1: Variable Management ===\n";
+    ngc2207.createVariable("test_tidal_strength", {1e40, 5e39});
+    std::cout << "Created variable: test_tidal_strength\n";
+    
+    ngc2207.cloneVariable("M", "M_backup");
+    std::cout << "Cloned M to M_backup\n";
+    
+    auto var_list = ngc2207.listVariables();
+    std::cout << "Total variables: " << var_list.size() << "\n";
+    std::cout << "System name: " << ngc2207.getSystemName() << "\n\n";
+    
+    // Test 2: Domain-Specific Expansion
+    std::cout << "=== TEST 2: Domain-Specific Expansion ===\n";
+    
+    // Save initial state
+    ngc2207.saveState("initial");
+    
+    // Expand galaxy scale (more massive, larger)
+    std::cout << "Expanding galaxy scale (1.5x mass, 1.3x radius)...\n";
+    ngc2207.expandGalaxyScale(1.5, 1.3);
+    
+    // Expand interaction scale (stronger tidal, brighter starburst)
+    std::cout << "Expanding interaction scale (1.5x tidal, 3x luminosity)...\n";
+    ngc2207.expandInteractionScale(1.5, 3.0);
+    
+    // Expand force scale (stronger DPM, enhanced LENR)
+    std::cout << "Expanding force scale (1.5x DPM, 2x LENR)...\n";
+    ngc2207.expandForceScale(1.5, 2.0);
+    
+    std::cout << ngc2207.generateReport() << "\n\n";
+    
+    // Test 3: Optimization for Different Scenarios
+    std::cout << "=== TEST 3: Optimization for NGC 2207 Scenarios ===\n";
+    
+    ngc2207.restoreState("initial");
+    
+    std::cout << "Scenario 1: Close Approach\n";
+    ngc2207.optimizeForMetric("close_approach");
+    cdouble F_approach = ngc2207.computeF(1.26e15);
+    std::cout << "  F_U (approach): " << F_approach.real() << " + i*" << F_approach.imag() << " N\n";
+    
+    ngc2207.restoreState("initial");
+    std::cout << "Scenario 2: Starburst Phase\n";
+    ngc2207.optimizeForMetric("starburst_phase");
+    cdouble F_starburst = ngc2207.computeF(1.26e15);
+    std::cout << "  F_U (starburst): " << F_starburst.real() << " + i*" << F_starburst.imag() << " N\n";
+    
+    ngc2207.restoreState("initial");
+    std::cout << "Scenario 3: Tidal Arms\n";
+    ngc2207.optimizeForMetric("tidal_arms");
+    cdouble F_tidal = ngc2207.computeF(1.26e15);
+    std::cout << "  F_U (tidal): " << F_tidal.real() << " + i*" << F_tidal.imag() << " N\n";
+    
+    ngc2207.restoreState("initial");
+    std::cout << "Scenario 4: Quiescent\n";
+    ngc2207.optimizeForMetric("quiescent");
+    cdouble F_quiet = ngc2207.computeF(1.26e15);
+    std::cout << "  F_U (quiet): " << F_quiet.real() << " + i*" << F_quiet.imag() << " N\n\n";
+    
+    // Test 4: Sensitivity Analysis
+    std::cout << "=== TEST 4: Sensitivity Analysis ===\n";
+    ngc2207.restoreState("initial");
+    
+    std::vector<std::string> params_to_test = {"M", "r", "L_X", "B0", "V", "k_act"};
+    auto sensitivities = ngc2207.sensitivityAnalysis(params_to_test, 5.0);
+    
+    std::cout << "Parameter sensitivities (5% perturbation):\n";
+    for (const auto& sens : sensitivities) {
+        std::cout << "  " << std::setw(15) << sens.first << ": " 
+                  << std::scientific << std::setprecision(6) << sens.second << "\n";
+    }
+    std::cout << "\n";
+    
+    // Test 5: Parameter Exploration
+    std::cout << "=== TEST 5: Parameter Exploration ===\n";
+    auto variations = ngc2207.generateVariations(5, 10.0);
+    std::cout << "Generated " << variations.size() << " variations (10% variation):\n";
+    
+    for (size_t i = 0; i < variations.size(); ++i) {
+        double M_var = variations[i]["M"].real();
+        double V_var = variations[i]["V"].real();
+        std::cout << "  Variation " << i+1 << ": M = " << std::scientific << M_var 
+                  << " kg, V = " << V_var << " m/s\n";
+    }
+    std::cout << "\n";
+    
+    // Test 6: Adaptive Evolution
+    std::cout << "=== TEST 6: Adaptive Evolution ===\n";
+    ngc2207.restoreState("initial");
+    
+    // Define fitness function (maximize force magnitude)
+    auto fitness = [](const NGC2207UQFFModule& mod) -> double {
+        cdouble F = const_cast<NGC2207UQFFModule&>(mod).computeF(1.26e15);
+        return std::abs(F);
+    };
+    
+    cdouble F_before_evolution = ngc2207.computeF(1.26e15);
+    std::cout << "Before evolution: |F_U| = " << std::scientific << std::abs(F_before_evolution) << " N\n";
+    
+    ngc2207.evolveSystem(50, fitness);
+    cdouble F_after_evolution = ngc2207.computeF(1.26e15);
+    std::cout << "After 50 generations: |F_U| = " << std::abs(F_after_evolution) << " N\n";
+    std::cout << "Improvement: " << std::setprecision(2) << std::fixed 
+              << (std::abs(F_after_evolution) / std::abs(F_before_evolution) - 1.0) * 100.0 << "%\n\n";
+    
+    // Test 7: State Management
+    std::cout << "=== TEST 7: State Management ===\n";
+    ngc2207.saveState("evolved");
+    ngc2207.saveState("test_state");
+    
+    auto saved_states = ngc2207.listSavedStates();
+    std::cout << "Saved states (" << saved_states.size() << "):\n";
+    for (const auto& name : saved_states) {
+        std::cout << "  - " << name << "\n";
+    }
+    
+    std::cout << "\nExporting initial state:\n";
+    ngc2207.restoreState("initial");
+    std::cout << ngc2207.exportState() << "\n";
+    
+    // Test 8: Validation and Auto-Correction
+    std::cout << "=== TEST 8: Validation and Auto-Correction ===\n";
+    ngc2207.restoreState("initial");
+    
+    bool is_valid = ngc2207.validateConsistency();
+    std::cout << "Initial state valid: " << (is_valid ? "YES" : "NO") << "\n";
+    
+    // Introduce anomalies
+    ngc2207.createVariable("M", {1e43, 0.0});  // Too large
+    ngc2207.createVariable("r", {1e19, 0.0});  // Too small
+    
+    std::cout << "After introducing anomalies: valid = " << (ngc2207.validateConsistency() ? "YES" : "NO") << "\n";
+    
+    ngc2207.autoCorrectAnomalies();
+    std::cout << "After auto-correction: valid = " << (ngc2207.validateConsistency() ? "YES" : "NO") << "\n\n";
+    
+    // Test 9: Batch Operations
+    std::cout << "=== TEST 9: Batch Operations ===\n";
+    ngc2207.restoreState("initial");
+    
+    std::vector<std::string> force_params = {"DPM_momentum", "DPM_gravity", "DPM_stability"};
+    std::cout << "Scaling DPM force parameters by 2.5...\n";
+    ngc2207.scaleVariableGroup(force_params, {2.5, 0.0});
+    
+    auto transform_func = [](cdouble val) -> cdouble {
+        return cdouble(std::abs(val), val.imag() * 1.1);
+    };
+    std::vector<std::string> all_params = {"M", "r", "L_X"};
+    ngc2207.transformVariableGroup(all_params, transform_func);
+    std::cout << "Applied custom transformation to M, r, L_X\n\n";
+    
+    // Test 10: Final Report
+    std::cout << "=== FINAL COMPREHENSIVE REPORT ===\n";
+    ngc2207.restoreState("initial");
+    std::cout << ngc2207.generateReport() << "\n";
+    
+    std::cout << "========== Demo Complete ==========\n";
+    
+    return 0;
+}
+
+========== END COMPREHENSIVE EXAMPLE ==========
+*/
 // #include "NGC2207UQFFModule.h"
 // #include <complex>
 // int main() {

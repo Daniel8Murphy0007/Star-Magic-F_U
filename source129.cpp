@@ -1,9 +1,9 @@
-// UaVacuumDensityModule.h
+﻿// UaVacuumDensityModule.h
 // Modular C++ implementation of the Vacuum Energy Density of [UA] (?_vac,[UA]) in the Universal Quantum Field Superconductive Framework (UQFF).
-// This module computes ?_vac,[UA] = 7.09e-36 J/m� (Sun, level 13); scales in U_g2, U_i, T_s terms.
+// This module computes ?_vac,[UA] = 7.09e-36 J/mï¿½ (Sun, level 13); scales in U_g2, U_i, T_s terms.
 // Pluggable: #include "UaVacuumDensityModule.h"
 // UaVacuumDensityModule mod; mod.computeU_g2_example(1.496e13); mod.updateVariable("rho_vac_UA", new_value);
-// Variables in std::map; example for Sun at r=1.496e13 m; U_g2 ?1.18e53 J/m�, U_i ?1.38e-47 J/m�.
+// Variables in std::map; example for Sun at r=1.496e13 m; U_g2 ?1.18e53 J/mï¿½, U_i ?1.38e-47 J/mï¿½.
 // Approximations: S(r - R_b)=1; (1 + ?_sw v_sw)=5001; ?_i=1.0; f_TRZ=0.1; E_react=1e46.
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
@@ -16,11 +16,123 @@
 #include <iostream>
 #include <iomanip>
 
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
 class UaVacuumDensityModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     double computeU_g2_base(double r);
     double computeU_i_base(double t, double t_n);
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize with framework defaults (Sun, level 13)
@@ -32,9 +144,9 @@ public:
     void subtractFromVariable(const std::string& name, double delta);
 
     // Core computations
-    double computeRho_vac_UA();  // 7.09e-36 J/m�
-    double computeU_g2_example(double r);  // U_g2 with ?_vac,[UA] (J/m�)
-    double computeU_i_example(double t, double t_n);  // U_i with ?_vac,[UA] (J/m�)
+    double computeRho_vac_UA();  // 7.09e-36 J/mï¿½
+    double computeU_g2_example(double r);  // U_g2 with ?_vac,[UA] (J/mï¿½)
+    double computeU_i_example(double t, double t_n);  // U_i with ?_vac,[UA] (J/mï¿½)
 
     // Output descriptive text
     std::string getEquationText();
@@ -50,9 +162,15 @@ public:
 
 // Constructor: Set framework defaults (Sun at level 13)
 UaVacuumDensityModule::UaVacuumDensityModule() {
+        enableDynamicTerms = true;
+        enableLogging = false;
+        learningRate = 0.001;
+        metadata["enhanced"] = "true";
+        metadata["version"] = "2.0-Enhanced";
+
     // Universal constants
-    variables["rho_vac_UA"] = 7.09e-36;             // J/m�
-    variables["rho_vac_SCm"] = 7.09e-37;            // J/m�
+    variables["rho_vac_UA"] = 7.09e-36;             // J/mï¿½
+    variables["rho_vac_SCm"] = 7.09e-37;            // J/mï¿½
     variables["k_2"] = 1.2;                         // Coupling U_g2
     variables["M_s"] = 1.989e30;                    // kg
     variables["R_b"] = 1.496e13;                    // m
@@ -108,7 +226,7 @@ void UaVacuumDensityModule::subtractFromVariable(const std::string& name, double
     addToVariable(name, -delta);
 }
 
-// Compute ?_vac,[UA] (J/m�)
+// Compute ?_vac,[UA] (J/mï¿½)
 double UaVacuumDensityModule::computeRho_vac_UA() {
     return variables["rho_vac_UA"];
 }
@@ -142,9 +260,9 @@ std::string UaVacuumDensityModule::getEquationText() {
     return "U_g2 = k_2 * [(?_vac,[UA] + ?_vac,[SCm]) M_s / r^2] * S(r - R_b) * (1 + ?_sw v_sw) * H_SCm * E_react\n"
            "U_i = ?_i * ?_vac,[SCm] * ?_vac,[UA] * ?_s(t) * cos(? t_n) * (1 + f_TRZ)\n"
            "T_s^{??} ? T_s_base + ?_vac,[SCm] + ?_vac,[UA] + ?_vac,A (in A_?? perturbation)\n"
-           "Where ?_vac,[UA] = 7.09e-36 J/m� (Sun level 13; [UA] vacuum energy).\n"
+           "Where ?_vac,[UA] = 7.09e-36 J/mï¿½ (Sun level 13; [UA] vacuum energy).\n"
            "[UA]: Fundamental Aether mediating [SCm] for dynamics/elements.\n"
-           "Example U_g2 (r=R_b): ?1.18e53 J/m�; U_i (t=0,t_n=0): ?1.38e-47 J/m�.\n"
+           "Example U_g2 (r=R_b): ?1.18e53 J/mï¿½; U_i (t=0,t_n=0): ?1.38e-47 J/mï¿½.\n"
            "Role: [UA] scales gravity/inertia/Aether; pervasive in U terms/F_U.\n"
            "UQFF: Mediates [SCm] reactions; jets/formation/mergers via [UA]-[SCm].";
 }
@@ -162,16 +280,16 @@ void UaVacuumDensityModule::printVariables() {
 // int main() {
 //     UaVacuumDensityModule mod;
 //     double rho = mod.computeRho_vac_UA();
-//     std::cout << "?_vac,[UA] = " << rho << " J/m�\n";
+//     std::cout << "?_vac,[UA] = " << rho << " J/mï¿½\n";
 //     double u_g2 = mod.computeU_g2_base(1.496e13);
-//     std::cout << "U_g2 example = " << u_g2 << " J/m�\n";
+//     std::cout << "U_g2 example = " << u_g2 << " J/mï¿½\n";
 //     std::cout << mod.getEquationText() << std::endl;
 //     mod.updateVariable("rho_vac_UA", 8e-36);
 //     mod.printVariables();
 //     return 0;
 // }
 // Compile: g++ -o ua_density_test ua_density_test.cpp UaVacuumDensityModule.cpp -lm
-// Sample: ?_vac,[UA]=7.09e-36 J/m�; U_g2?1.18e53 J/m�; scales [UA] effects.
+// Sample: ?_vac,[UA]=7.09e-36 J/mï¿½; U_g2?1.18e53 J/mï¿½; scales [UA] effects.
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
 UaVacuumDensityModule Evaluation

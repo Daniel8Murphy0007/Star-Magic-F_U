@@ -1,4 +1,4 @@
-// SMBHUQFFModule.h
+﻿// SMBHUQFFModule.h
 // Modular C++ implementation of the Master Universal Gravity Equation (MUGE & UQFF Integration) for SMBH Comparison to UQFF.
 // This module models SMBH dynamics in the M-? relation context, incorporating Ug1-Ug4, Ui, Um, pseudo-monopole shifts, reactor efficiency, and vacuum energy densities.
 // Usage: #include "SMBHUQFFModule.h" in base program; SMBHUQFFModule mod; mod.computeG(t, sigma); mod.updateVariable("M_bh", new_value);
@@ -18,8 +18,111 @@
 #include <complex>
 #include <vector>
 
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
 class SMBHUQFFModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     double computeCosmicTime(double z_val);
     double computeOmegaSGalactic(double sigma_val);
@@ -29,6 +132,15 @@ private:
     double computeRhoVacUAScm(int n, double t);
     double computeUm(double t, double r, int n);
     double computeUg1(double t, double r, double M_s, int n);
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize with SMBH-UQFF defaults
@@ -57,6 +169,12 @@ public:
 
 // Constructor: SMBH-UQFF specific values
 SMBHUQFFModule::SMBHUQFFModule() {
+        enableDynamicTerms = true;
+        enableLogging = false;
+        learningRate = 0.001;
+        metadata["enhanced"] = "true";
+        metadata["version"] = "2.0-Enhanced";
+
     // Universal constants
     variables["c"] = 3e8;                           // m/s
     variables["hbar"] = 1.0546e-34;                 // J s
@@ -67,9 +185,9 @@ SMBHUQFFModule::SMBHUQFFModule() {
     double M_sun_val = 1.989e30;                    // kg
 
     // Core UQFF params
-    variables["rho_vac_UA"] = 7.09e-36;             // J/m�
-    variables["rho_vac_SCm"] = 7.09e-37;            // J/m�
-    variables["rho_vac_UA_prime"] = 7.09e-36;       // J/m�
+    variables["rho_vac_UA"] = 7.09e-36;             // J/mï¿½
+    variables["rho_vac_SCm"] = 7.09e-37;            // J/mï¿½
+    variables["rho_vac_UA_prime"] = 7.09e-36;       // J/mï¿½
     variables["mu_0"] = 4 * variables["pi"] * 1e-7; // H/m
     variables["omega_s_sun"] = 2.65e-6;             // rad/s
     variables["k_galactic"] = 2.59e-9;              // scale factor
@@ -198,7 +316,7 @@ std::string SMBHUQFFModule::getEquationText() {
            "U_g1 = G M_s / r^2 * ?_n cos(?_s,sun t); ?_n = ? (2?)^{n/6}\n"
            "?_s(?) = ? / R_bulge; ?_vac,UA':SCm = ?_UA' (?_SCm / ?_UA)^n exp(-exp(-? - t/yr))\n"
            "Insights: M-? via UQFF resonance; f_feedback=0.063 calibrates metal retention; no SM illusions.\n"
-           "Adaptations: ROMULUS25 sim; M_bh=1e11-1e14 Msun; ?=100-1000 km/s. Solutions: g ~1e-10 m/s� (Ug1/Um dominant).";
+           "Adaptations: ROMULUS25 sim; M_bh=1e11-1e14 Msun; ?=100-1000 km/s. Solutions: g ~1e-10 m/sï¿½ (Ug1/Um dominant).";
 }
 
 // Print
@@ -216,14 +334,14 @@ void SMBHUQFFModule::printVariables() {
 //     double t = 4.543e9 * 3.156e7;  // 4.543 Gyr
 //     double sigma = 200e3;  // 200 km/s
 //     double g = mod.computeG(t, sigma);
-//     std::cout << "g_UQFF = " << g << " m/s�\n";
+//     std::cout << "g_UQFF = " << g << " m/sï¿½\n";
 //     std::cout << mod.getEquationText() << std::endl;
 //     mod.updateVariable("M_bh", 1e13 * 1.989e30);
 //     mod.printVariables();
 //     return 0;
 // }
 // Compile: g++ -o smbh_uqff base.cpp SMBHUQFFModule.cpp -lm
-// Sample Output: g_UQFF ~ 1e-10 m/s� (resonance/feedback dominant; UQFF advances M-?).
+// Sample Output: g_UQFF ~ 1e-10 m/sï¿½ (resonance/feedback dominant; UQFF advances M-?).
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
 SMBHUQFFModule Evaluation

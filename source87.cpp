@@ -1,4 +1,4 @@
-// MUGEResonanceModule.h
+﻿// MUGEResonanceModule.h
 // Modular C++ implementation of the Resonance-Based Superconductive MUGE (UQFF) for multiple astronomical systems.
 // This module uses frequency-driven dynamics via plasmotic vacuum energy and resonances, excluding SM gravity/magnetics.
 // Pluggable: #include "MUGEResonanceModule.h"
@@ -19,7 +19,107 @@
 #include <iomanip>
 #include <complex>
 
-enum class SystemType {
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+enum #include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
+class SystemType {
     MAGNETAR_SGR_1745_2900,
     SAGITTARIUS_A,
     TAPESTRY_BLAZING_STARBIRTH,
@@ -36,6 +136,9 @@ enum class SystemType {
 
 class MUGEResonanceModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     SystemType current_system;
     double computeHz(double z);
@@ -54,6 +157,15 @@ private:
     double computeAFluidFreq();
     double computeOscTerm(double t);
     double computeAExpFreq(double t);
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize with system-specific defaults
@@ -466,7 +578,7 @@ std::string MUGEResonanceModule::getEquationText() {
         case SystemType::WESTERLUND_2: sys_name = "Westerlund 2"; break;
         case SystemType::PILLARS_CREATION: sys_name = "Pillars of Creation"; break;
         case SystemType::RINGS_RELATIVITY: sys_name = "Rings of Relativity"; break;
-        case SystemType::STUDENTS_GUIDE_UNIVERSE: sys_name = "Student�s Guide to the Universe"; break;
+        case SystemType::STUDENTS_GUIDE_UNIVERSE: sys_name = "Studentï¿½s Guide to the Universe"; break;
         case SystemType::NGC_2525: sys_name = "NGC 2525"; break;
         case SystemType::NGC_3603: sys_name = "NGC 3603"; break;
         case SystemType::BUBBLE_NEBULA: sys_name = "Bubble Nebula"; break;
@@ -482,7 +594,7 @@ std::string MUGEResonanceModule::getEquationText() {
            "a_aether_res = [U_A' : SC_m] ?_i f_THz a_DPM (1 + f_TRZ); Ug4i = (E_vac,neb / c) k4 E_react(t) f_react a_DPM;\n"
            "a_quantum_freq = (E_vac,ISM / c) f_quantum E_vac,neb a_DPM; similar for a_Aether_freq, a_exp_freq;\n"
            "a_fluid_freq = (E_vac,ISM / c) f_fluid E_vac,neb V_sys; Osc_term ? 0; f_exp = H(z) t / (2?).\n"
-           "Aether models expansion; tuned params yield g ~10^{-9} to 10^{35} m/s� (fluid dominant for large systems).";
+           "Aether models expansion; tuned params yield g ~10^{-9} to 10^{35} m/sï¿½ (fluid dominant for large systems).";
 }
 
 void MUGEResonanceModule::printVariables() {
@@ -498,14 +610,14 @@ void MUGEResonanceModule::printVariables() {
 //     MUGEResonanceModule mod(SystemType::MAGNETAR_SGR_1745_2900);
 //     double t = mod.variables["t"];
 //     double g = mod.computeG_resonance(t);
-//     std::cout << "g_resonance = " << g << " m/s�\n";
+//     std::cout << "g_resonance = " << g << " m/sï¿½\n";
 //     std::cout << mod.getEquationText() << std::endl;
 //     mod.updateVariable("v_exp", 2e3);
 //     mod.printVariables();
 //     return 0;
 // }
 // Compile: g++ -o muge_res muge_res.cpp MUGEResonanceModule.cpp -lm
-// Sample for Magnetar: g ? 1.773e-9 m/s� (fluid dominant).
+// Sample for Magnetar: g ? 1.773e-9 m/sï¿½ (fluid dominant).
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
 MUGEResonanceModule Evaluation

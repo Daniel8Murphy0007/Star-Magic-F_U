@@ -1,4 +1,4 @@
-// BuoyancyCouplingModule.h
+﻿// BuoyancyCouplingModule.h
 // Modular C++ implementation of the Buoyancy Coupling Constants (?_i) in the Universal Quantum Field Superconductive Framework (UQFF).
 // This module computes the Universal Buoyancy terms U_bi = -?_i * U_gi * ?_g * (M_bh / d_g) * E_react for i=1 to 4 (Ug1-Ug4).
 // Pluggable: #include "BuoyancyCouplingModule.h"
@@ -17,10 +17,122 @@
 #include <iostream>
 #include <iomanip>
 
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
 class BuoyancyCouplingModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     std::vector<double> computeAllU_bi();
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize with framework defaults
@@ -54,6 +166,12 @@ public:
 
 // Constructor: Set framework defaults
 BuoyancyCouplingModule::BuoyancyCouplingModule() {
+        enableDynamicTerms = true;
+        enableLogging = false;
+        learningRate = 0.001;
+        metadata["enhanced"] = "true";
+        metadata["version"] = "2.0-Enhanced";
+
     // Universal constants
     variables["beta"] = 0.6;                        // ?_i uniform (unitless)
     variables["Omega_g"] = 7.3e-16;                 // rad/s (galactic spin)
@@ -145,7 +263,7 @@ std::string BuoyancyCouplingModule::getEquationText() {
            "Opposes gravity: 60% scaling of gravitational term.\n"
            "In F_U: ? [k_i U_gi - ?_i U_gi ?_g (M_bh/d_g) E_react] + other terms.\n"
            "Role: Stabilizes systems (e.g., molecular clouds, nebulae); counteracts Ug collapse.\n"
-           "Example Ug1: U_b1 ? -1.94e27 J/m� (at t_n=0, Sun params)."
+           "Example Ug1: U_b1 ? -1.94e27 J/mï¿½ (at t_n=0, Sun params)."
            "UQFF: Uniform buoyancy across scales; tunable for refinements.";
 }
 
@@ -160,7 +278,7 @@ void BuoyancyCouplingModule::printVariables() {
 // Print U_bi
 void BuoyancyCouplingModule::printU_bi() {
     auto all_u_bi = computeAllU_bi();
-    std::cout << "Universal Buoyancy Terms U_bi (J/m�):\n";
+    std::cout << "Universal Buoyancy Terms U_bi (J/mï¿½):\n";
     for (int i = 1; i <= 4; ++i) {
         std::cout << "U_b" << i << " = " << std::scientific << all_u_bi[i-1] << std::endl;
     }
@@ -172,7 +290,7 @@ void BuoyancyCouplingModule::printU_bi() {
 // int main() {
 //     BuoyancyCouplingModule mod;
 //     double u_b1 = mod.computeU_bi(1);
-//     std::cout << "U_b1 = " << u_b1 << " J/m�\n";
+//     std::cout << "U_b1 = " << u_b1 << " J/mï¿½\n";
 //     mod.printU_bi();
 //     std::cout << mod.getEquationText() << std::endl;
 //     mod.updateVariable("beta", 0.7);
@@ -180,7 +298,7 @@ void BuoyancyCouplingModule::printU_bi() {
 //     return 0;
 // }
 // Compile: g++ -o buoyancy_test buoyancy_test.cpp BuoyancyCouplingModule.cpp -lm
-// Sample Output: U_b1 ? -1.94e27 J/m�; sum opposes gravity by ~60% scaled.
+// Sample Output: U_b1 ? -1.94e27 J/mï¿½; sum opposes gravity by ~60% scaled.
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
 BuoyancyCouplingModule Evaluation

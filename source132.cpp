@@ -1,4 +1,4 @@
-// ButterflyNebulaUQFFModule.h
+﻿// ButterflyNebulaUQFFModule.h
 // Modular C++ implementation of the UQFF Force for NGC 6302 (Butterfly Nebula) in the Universal Quantum Field Superconductive Framework (UQFF).
 // This module computes F_U_Bi_i,enhanced as integral from x1 to x2 of [-F0 + DPM terms + LENR + activation + DE + EM + neutron + rel + Sweet + Kozima].
 // Pluggable: #include "ButterflyNebulaUQFFModule.h"
@@ -16,8 +16,111 @@
 #include <iostream>
 #include <iomanip>
 
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
 class ButterflyNebulaUQFFModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     double computeDPM_momentum_term(double r);
     double computeDPM_gravity_term(double r);
@@ -32,6 +135,15 @@ private:
     double computeKozima_term();
     double computeIntegrand(double x, double t);
     double computeIntegral(double x1, double x2, double t, int n_points = 1000);
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize with NGC 6302 defaults
@@ -59,6 +171,12 @@ public:
 
 // Constructor: Set NGC 6302-specific values
 ButterflyNebulaUQFFModule::ButterflyNebulaUQFFModule() {
+        enableDynamicTerms = true;
+        enableLogging = false;
+        learningRate = 0.001;
+        metadata["enhanced"] = "true";
+        metadata["version"] = "2.0-Enhanced";
+
     // Universal constants
     variables["G"] = 6.6743e-11;                    // m^3 kg^-1 s^-2
     variables["c"] = 2.998e8;                       // m/s
@@ -81,7 +199,7 @@ ButterflyNebulaUQFFModule::ButterflyNebulaUQFFModule() {
     variables["DPM_momentum"] = 1.0;                // Normalized
     variables["DPM_gravity"] = 1.0;                 // Normalized
     variables["DPM_stability"] = 0.01;              // Normalized
-    variables["rho_vac_UA"] = 7.09e-36;             // J/m�
+    variables["rho_vac_UA"] = 7.09e-36;             // J/mï¿½
     variables["k_LENR"] = 1.0;                      // Coupling
     variables["omega_LENR"] = 7.85e12;              // Hz
     variables["omega_0"] = 1e-12;                   // Hz (reference)
@@ -91,7 +209,7 @@ ButterflyNebulaUQFFModule::ButterflyNebulaUQFFModule() {
     variables["L_x"] = 1.0;                         // Length scale
     variables["B_0"] = 1.0;                         // T
     variables["V"] = 1.0;                           // m/s
-    variables["g"] = 9.8;                           // m/s�
+    variables["g"] = 9.8;                           // m/sï¿½
     variables["k_neutron"] = 1e10;                  // Neutron coupling
     variables["sigma_n"] = 1e-4;                    // Barn
     variables["k_rel"] = 1.0;                       // Rel coupling

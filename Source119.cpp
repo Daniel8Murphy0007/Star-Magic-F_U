@@ -1,9 +1,9 @@
-// StepFunctionModule.h
+﻿// StepFunctionModule.h
 // Modular C++ implementation of the Step Function (S) in the Universal Quantum Field Superconductive Framework (UQFF).
 // This module computes S(r - R_b) = 1 for r > R_b, 0 otherwise; activates U_g2 outside outer field bubble.
 // Pluggable: #include "StepFunctionModule.h"
 // StepFunctionModule mod; mod.computeU_g2(1.5e13); mod.updateVariable("R_b", new_value);
-// Variables in std::map; example for Sun at r=1.496e13 m (R_b: S=1, U_g2?1.18e53 J/m�); r=1e11 m: S=0, U_g2=0.
+// Variables in std::map; example for Sun at r=1.496e13 m (R_b: S=1, U_g2?1.18e53 J/mï¿½); r=1e11 m: S=0, U_g2=0.
 // Approximations: S=1 at r=R_b; (1 + ?_sw v_sw)=5001; H_SCm=1; E_react=1e46.
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
@@ -16,11 +16,123 @@
 #include <iostream>
 #include <iomanip>
 
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
 class StepFunctionModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     double computeS_r_Rb(double r);
     double computeU_g2(double r);
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize with framework defaults (Sun)
@@ -49,6 +161,12 @@ public:
 
 // Constructor: Set framework defaults (Sun at r=R_b)
 StepFunctionModule::StepFunctionModule() {
+        enableDynamicTerms = true;
+        enableLogging = false;
+        learningRate = 0.001;
+        metadata["enhanced"] = "true";
+        metadata["version"] = "2.0-Enhanced";
+
     // Universal constants
     variables["R_b"] = 1.496e13;                    // m (100 AU)
     variables["k_2"] = 1.2;                         // Coupling
@@ -124,8 +242,8 @@ std::string StepFunctionModule::getEquationText() {
     return "U_g2 = k_2 * [(?_vac,[UA] + ?_vac,[SCm]) M_s / r^2] * S(r - R_b) * (1 + ?_sw v_sw) * H_SCm * E_react\n"
            "Where S(r - R_b) = 1 (r > R_b), 0 otherwise (Heaviside step; =1 at boundary).\n"
            "Defines outer bubble activation beyond R_b=1.496e13 m (100 AU).\n"
-           "Example r=1.496e13 m: S=1, U_g2 ?1.18e53 J/m�;\n"
-           "r=1e11 m: S=0, U_g2=0; r=1e14 m: S=1, U_g2?1.18e51 J/m�.\n"
+           "Example r=1.496e13 m: S=1, U_g2 ?1.18e53 J/mï¿½;\n"
+           "r=1e11 m: S=0, U_g2=0; r=1e14 m: S=1, U_g2?1.18e51 J/mï¿½.\n"
            "Role: Sharp transition internal/external gravity; heliopause-like boundary.\n"
            "UQFF: Separates regimes for heliodynamics/nebular formation.";
 }
@@ -145,7 +263,7 @@ void StepFunctionModule::printVariables() {
 //     double s = mod.computeS_r_Rb(1.5e13);
 //     std::cout << "S(1.5e13 - R_b) = " << s << std::endl;
 //     double u_g2 = mod.computeU_g2(1e11);  // Inside
-//     std::cout << "U_g2 (inside) = " << u_g2 << " J/m�\n";
+//     std::cout << "U_g2 (inside) = " << u_g2 << " J/mï¿½\n";
 //     std::cout << mod.getEquationText() << std::endl;
 //     mod.updateVariable("R_b", 2e13);
 //     mod.printVariables();

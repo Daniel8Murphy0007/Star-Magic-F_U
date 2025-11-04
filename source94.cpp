@@ -1,4 +1,4 @@
-// UgCouplingModule.h
+﻿// UgCouplingModule.h
 // Modular C++ implementation of the Coupling Constants for Ug Ranges (k_i) in the Universal Quantum Field Superconductive Framework (UQFF).
 // This module computes scaled Universal Gravity terms k_i * U_gi for i=1-4 (Ug1-Ug4), with k1=1.5, k2=1.2, k3=1.8, k4=1.0 (unitless).
 // Pluggable: #include "UgCouplingModule.h"
@@ -17,11 +17,123 @@
 #include <iostream>
 #include <iomanip>
 
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
 class UgCouplingModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     std::vector<double> k_values;  // [k1, k2, k3, k4]
     std::vector<double> computeAllK_Ugi();
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize with framework defaults
@@ -56,6 +168,12 @@ public:
 
 // Constructor: Set framework defaults
 UgCouplingModule::UgCouplingModule() {
+        enableDynamicTerms = true;
+        enableLogging = false;
+        learningRate = 0.001;
+        metadata["enhanced"] = "true";
+        metadata["version"] = "2.0-Enhanced";
+
     // Coupling constants (unitless)
     k_values = {1.5, 1.2, 1.8, 1.0};               // k1=1.5, k2=1.2, k3=1.8, k4=1.0
 
@@ -157,7 +275,7 @@ std::string UgCouplingModule::getEquationText() {
            "U_g2 = k2 * (?_UA + ?_SCm) M_s / r^2 * S(r-R_b) (1+?_sw v_sw) H_SCm E_react;\n"
            "U_g3 = k3 * (?_SCm + ?_UA) ?_g M_s / d_g * cos(? t_n) (1 + f_mag_str);\n"
            "U_g4 = k4 * ?_SCm M_bh / d_g * e^{-? t} cos(? t_n) (1 + f_feedback).\n"
-           "Example Sun t=0: ? k_i U_gi ?1.42e53 J/m� (Ug2 dominant).\n"
+           "Example Sun t=0: ? k_i U_gi ?1.42e53 J/mï¿½ (Ug2 dominant).\n"
            "Role: Scales Ug strengths; normalizes contributions in F_U.";
 }
 
@@ -177,7 +295,7 @@ void UgCouplingModule::printVariables() {
 // Print k_i * U_gi
 void UgCouplingModule::printK_Ugi() {
     auto all = computeAllK_Ugi();
-    std::cout << "Scaled Ug Terms k_i * U_gi (J/m�):\n";
+    std::cout << "Scaled Ug Terms k_i * U_gi (J/mï¿½):\n";
     for (int i = 1; i <= 4; ++i) {
         std::cout << "k" << i << " * U_g" << i << " = " << std::scientific << all[i-1] << std::endl;
     }
@@ -189,7 +307,7 @@ void UgCouplingModule::printK_Ugi() {
 // int main() {
 //     UgCouplingModule mod;
 //     double sum = mod.computeSumK_Ugi();
-//     std::cout << "? k_i U_gi = " << sum << " J/m�\n";
+//     std::cout << "? k_i U_gi = " << sum << " J/mï¿½\n";
 //     mod.printK_Ugi();
 //     std::cout << mod.getEquationText() << std::endl;
 //     mod.updateVariable("U_g3", 2e49);
@@ -197,7 +315,7 @@ void UgCouplingModule::printK_Ugi() {
 //     return 0;
 // }
 // Compile: g++ -o ug_coupling_test ug_coupling_test.cpp UgCouplingModule.cpp -lm
-// Sample Output: Sum ?1.42e53 J/m�; k3 amplifies Ug3 by 1.8.
+// Sample Output: Sum ?1.42e53 J/mï¿½; k3 amplifies Ug3 by 1.8.
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
 UgCouplingModule Evaluation

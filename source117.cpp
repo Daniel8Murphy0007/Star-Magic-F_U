@@ -1,9 +1,9 @@
-// StellarMassModule.h
+﻿// StellarMassModule.h
 // Modular C++ implementation of the Stellar/Planetary Mass (M_s) in the Universal Quantum Field Superconductive Framework (UQFF).
 // This module computes M_s=1.989e30 kg (1 M_sun for Sun); scales M_s / r^2 in Universal Gravity U_g1 and U_g2 terms.
 // Pluggable: #include "StellarMassModule.h"
 // StellarMassModule mod; mod.computeU_g2(1.496e13); mod.updateVariable("M_s", new_value);
-// Variables in std::map; example for Sun at r=1.496e13 m; U_g2 ?1.18e53 J/m�.
+// Variables in std::map; example for Sun at r=1.496e13 m; U_g2 ?1.18e53 J/mï¿½.
 // Approximations: S(r - R_b)=1; (1 + ?_sw v_sw)=5001; H_SCm=1; E_react=1e46.
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
@@ -16,12 +16,124 @@
 #include <iostream>
 #include <iomanip>
 
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
 class StellarMassModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     double computeM_sOverR2(double r);
     double computeU_g1(double r);
     double computeU_g2(double r);
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize with framework defaults (Sun)
@@ -35,7 +147,7 @@ public:
     // Core computations
     double computeM_s();  // 1.989e30 kg
     double computeM_sInMsun();  // 1 M_sun
-    double computeM_sOverR2(double r);  // M_s / r^2 (kg/m�)
+    double computeM_sOverR2(double r);  // M_s / r^2 (kg/mï¿½)
     double computeU_g1(double r);  // U_g1 example (J/m^3)
     double computeU_g2(double r);  // U_g2 example (J/m^3)
 
@@ -53,6 +165,12 @@ public:
 
 // Constructor: Set framework defaults (Sun at r=R_b)
 StellarMassModule::StellarMassModule() {
+        enableDynamicTerms = true;
+        enableLogging = false;
+        learningRate = 0.001;
+        metadata["enhanced"] = "true";
+        metadata["version"] = "2.0-Enhanced";
+
     // Universal constants
     variables["M_s"] = 1.989e30;                    // kg (Sun)
     variables["M_sun"] = 1.989e30;                  // kg
@@ -118,7 +236,7 @@ double StellarMassModule::computeM_sInMsun() {
     return computeM_s() / variables["M_sun"];
 }
 
-// M_s / r^2 (kg/m�)
+// M_s / r^2 (kg/mï¿½)
 double StellarMassModule::computeM_sOverR2(double r) {
     variables["r"] = r;
     if (r == 0.0) return 0.0;
@@ -151,8 +269,8 @@ std::string StellarMassModule::getEquationText() {
     return "U_g1 = k_1 * ?_vac,[UA/SCm] * (M_s / r^2) * ... E_react (internal dipole);\n"
            "U_g2 = k_2 * ?_vac,[UA/SCm] * (M_s / r^2) * S(r - R_b) * (1 + ?_sw v_sw) * H_SCm * E_react (outer bubble).\n"
            "Where M_s = 1.989e30 kg (1 M_sun for Sun).\n"
-           "Scales gravity by mass; M_s / r^2 ?8.89e3 kg/m� at r=1.496e13 m.\n"
-           "Example U_g2 (r=R_b): ?1.18e53 J/m�.\n"
+           "Scales gravity by mass; M_s / r^2 ?8.89e3 kg/mï¿½ at r=1.496e13 m.\n"
+           "Example U_g2 (r=R_b): ?1.18e53 J/mï¿½.\n"
            "Role: Central mass drives internal/external gravity; stellar/planetary dynamics.\n"
            "UQFF: Mass-dependent fields for nebulae/formation/mergers.";
 }
@@ -172,14 +290,14 @@ void StellarMassModule::printVariables() {
 //     double m_sun = mod.computeM_sInMsun();
 //     std::cout << "M_s = " << m_sun << " M_sun\n";
 //     double u_g2 = mod.computeU_g2(1.496e13);
-//     std::cout << "U_g2 = " << u_g2 << " J/m�\n";
+//     std::cout << "U_g2 = " << u_g2 << " J/mï¿½\n";
 //     std::cout << mod.getEquationText() << std::endl;
 //     mod.updateVariable("M_s", 2e30);
 //     mod.printVariables();
 //     return 0;
 // }
 // Compile: g++ -o stellar_mass_test stellar_mass_test.cpp StellarMassModule.cpp -lm
-// Sample: M_s=1 M_sun; U_g2?1.18e53 J/m�; scales gravity by mass.
+// Sample: M_s=1 M_sun; U_g2?1.18e53 J/mï¿½; scales gravity by mass.
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
 StellarMassModule Evaluation

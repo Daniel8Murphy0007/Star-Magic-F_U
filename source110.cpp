@@ -1,4 +1,4 @@
-// OuterFieldBubbleModule.h
+﻿// OuterFieldBubbleModule.h
 // Modular C++ implementation of the Radius of the Outer Field Bubble (R_b) in the Universal Quantum Field Superconductive Framework (UQFF).
 // This module computes R_b=1.496e13 m (100 AU); defines S(r - R_b) step function in Universal Gravity U_g2 term.
 // Pluggable: #include "OuterFieldBubbleModule.h"
@@ -16,11 +16,123 @@
 #include <iostream>
 #include <iomanip>
 
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
 class OuterFieldBubbleModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     double computeS_r_Rb(double r);
     double computeU_g2(double r);
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize with framework defaults (Sun)
@@ -51,6 +163,12 @@ public:
 
 // Constructor: Set framework defaults (Sun at t=0)
 OuterFieldBubbleModule::OuterFieldBubbleModule() {
+        enableDynamicTerms = true;
+        enableLogging = false;
+        learningRate = 0.001;
+        metadata["enhanced"] = "true";
+        metadata["version"] = "2.0-Enhanced";
+
     // Universal constants
     variables["R_b"] = 1.496e13;                    // m (100 AU)
     variables["AU_to_m"] = 1.496e11;                // m/AU
@@ -137,7 +255,7 @@ std::string OuterFieldBubbleModule::getEquationText() {
     return "U_g2 = k_2 * [(?_vac,[UA] + ?_vac,[SCm]) M_s / r^2] * S(r - R_b) * (1 + ?_sw v_sw) * H_SCm * E_react\n"
            "Where R_b = 1.496e13 m (100 AU, outer bubble radius);\n"
            "S(r - R_b) = 1 (r >= R_b), 0 otherwise (step function).\n"
-           "Example r=R_b: U_g2 ?1.18e53 J/m�; r < R_b (e.g., 1 AU): U_g2=0.\n"
+           "Example r=R_b: U_g2 ?1.18e53 J/mï¿½; r < R_b (e.g., 1 AU): U_g2=0.\n"
            "Role: Defines external gravity boundary (~heliopause); activates U_g2 beyond R_b.\n"
            "UQFF: Separates internal/external fields; models heliosphere/nebular extent.";
 }
@@ -157,14 +275,14 @@ void OuterFieldBubbleModule::printVariables() {
 //     double rb = mod.computeR_b();
 //     std::cout << "R_b = " << rb << " m (" << mod.computeR_bInAU() << " AU)\n";
 //     double u_g2 = mod.computeU_g2(1.5e13);  // r > R_b
-//     std::cout << "U_g2 (r=1.5e13 m) = " << u_g2 << " J/m�\n";
+//     std::cout << "U_g2 (r=1.5e13 m) = " << u_g2 << " J/mï¿½\n";
 //     std::cout << mod.getEquationText() << std::endl;
 //     mod.updateVariable("R_b", 2e13);
 //     mod.printVariables();
 //     return 0;
 // }
 // Compile: g++ -o bubble_test bubble_test.cpp OuterFieldBubbleModule.cpp -lm
-// Sample: R_b=1.496e13 m (100 AU); U_g2?1.18e53 J/m� (r>=R_b); 0 inside.
+// Sample: R_b=1.496e13 m (100 AU); U_g2?1.18e53 J/mï¿½ (r>=R_b); 0 inside.
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
 OuterFieldBubbleModule Evaluation

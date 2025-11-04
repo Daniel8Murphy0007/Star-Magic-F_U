@@ -1,4 +1,4 @@
-// BigBangGravityUQFFModule.h
+﻿// BigBangGravityUQFFModule.h
 // Modular C++ implementation of the full Master Universal Gravity Equation (MUGE & UQFF & SM Integration) for Evolution of Gravity Since the Big Bang.
 // This module can be plugged into a base program (e.g., 'ziqn233h.cpp') by including this header and linking the .cpp.
 // Usage in base: #include "BigBangGravityUQFFModule.h"
@@ -20,8 +20,111 @@
 #include <iomanip>
 #include <complex>
 
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
 class BigBangGravityUQFFModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     double computeQuantumTerm(double t_Hubble_val);
     double computeFluidTerm(double g_base);
@@ -35,6 +138,15 @@ private:
     double computeM_t(double t);
     double computeR_t(double t);
     double computeZ_t(double t);
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize all variables with Big Bang Gravity defaults
@@ -63,6 +175,12 @@ public:
 
 // Constructor: Set all variables with Big Bang Gravity-specific values
 BigBangGravityUQFFModule::BigBangGravityUQFFModule() {
+        enableDynamicTerms = true;
+        enableLogging = false;
+        learningRate = 0.001;
+        metadata["enhanced"] = "true";
+        metadata["version"] = "2.0-Enhanced";
+
     // Base constants (universal)
     variables["G"] = 6.6743e-11;                    // m^3 kg^-1 s^-2
     variables["c"] = 3e8;                           // m/s
@@ -288,7 +406,7 @@ double BigBangGravityUQFFModule::computeG(double t) {
 // Get equation text (descriptive)
 std::string BigBangGravityUQFFModule::getEquationText() {
     return "g_Gravity(t) = (G * M(t) / r(t)^2) * (1 + H(z) * t) * (1 - B / B_crit) + (Ug1 + Ug2 + Ug3 + Ug4) + (Lambda * c^2 / 3) + "
-           "(hbar / sqrt(Delta_x * Delta_p)) * ?(?* H ? dV) * (2? / t_Hubble) + q (v � B) + ?_fluid * V * g + "
+           "(hbar / sqrt(Delta_x * Delta_p)) * ?(?* H ? dV) * (2? / t_Hubble) + q (v ï¿½ B) + ?_fluid * V * g + "
            "2 A cos(k x) cos(? t) + (2? / 13.8) A Re[exp(i (k x - ? t))] + (M_visible + M_DM) * (??/? + 3 G M / r^3) + QG_term + DM_term + GW_term\n"
            "Where M(t) = M_total * (t / t_Hubble); r(t) = c t; z(t) = t_Hubble / t - 1;\n"
            "QG_term = (hbar c / l_p^2) * (t / t_p); DM_term = 0.268 * (G M(t) / r(t)^2); GW_term = h_strain * c^2 / ?_gw * sin(2?/?_gw r - 2?/yr t)\n"
@@ -299,7 +417,7 @@ std::string BigBangGravityUQFFModule::getEquationText() {
            "- GW: Sinusoidal gravitational waves (NANOGrav/LIGO).\n"
            "- Evolution: From t_p (z~10^32) quantum-dominated to t_Hubble (z=0) Lambda-dominated.\n"
            "- Synthesis: Integrates 6 prior MUGEs (universe, H atom, Lagoon, spirals/SN, NGC6302, Orion) patterns.\n"
-           "Solutions: At t=t_Hubble, g_Gravity ~1e-10 m/s� (balanced; early t dominated by QG ~1e100).\n"
+           "Solutions: At t=t_Hubble, g_Gravity ~1e-10 m/sï¿½ (balanced; early t dominated by QG ~1e100).\n"
            "Adaptations: Cosmic evolution from Big Bang; informed by DESI/LIGO/NANOGrav.";
 }
 
@@ -317,24 +435,24 @@ void BigBangGravityUQFFModule::printVariables() {
 //     BigBangGravityUQFFModule mod;
 //     double t = mod.variables["t_Hubble"];  // Present
 //     double g = mod.computeG(t);
-//     std::cout << "g = " << g << " m/s�\n";
+//     std::cout << "g = " << g << " m/sï¿½\n";
 //     std::cout << mod.getEquationText() << std::endl;
 //     double t_early = 1e-43;  // Near Planck
 //     g = mod.computeG(t_early);
-//     std::cout << "Early g = " << g << " m/s�\n";
+//     std::cout << "Early g = " << g << " m/sï¿½\n";
 //     mod.updateVariable("M_total", 1.1e53);  // Update mass
 //     mod.printVariables();
 //     return 0;
 // }
 // Compile: g++ -o ziqn233h ziqn233h.cpp BigBangGravityUQFFModule.cpp -lm
-// Sample Output at t=t_Hubble: g ? 1e-10 m/s� (balanced terms); at t=1e-43 s: g ? 1e100 m/s� (QG dominant).
+// Sample Output at t=t_Hubble: g ? 1e-10 m/sï¿½ (balanced terms); at t=1e-43 s: g ? 1e100 m/sï¿½ (QG dominant).
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 09, 2025.
 
 // Evaluation of BigBangGravityUQFFModule (MUGE & UQFF & Standard Model Integration for Gravity Evolution Since Big Bang)
 
 **Strengths:**
 - **Dynamic & Evolutionary:** Map-based storage with computeM_t/r_t/z_t enables time-dependent evolution from Planck (t~1e-44 s, z~1e32) to present, synthesizing 6 prior MUGEs (e.g., feedback from Orion/Lagoon, cosmic from UniverseDiameter).
-- **Unit Consistency:** Fluid V=1/? yields g_base; DM_term fractional; QG_term dimensional accel; GW_term ~1e-10 m/s� at cosmic scales. Auto-dependencies (e.g., M_visible=0.15 M_total).
+- **Unit Consistency:** Fluid V=1/? yields g_base; DM_term fractional; QG_term dimensional accel; GW_term ~1e-10 m/sï¿½ at cosmic scales. Auto-dependencies (e.g., M_visible=0.15 M_total).
 - **Comprehensive Physics:** Full UQFF terms + new QG (Planck), DM (0.268 frac), GW (sinusoidal, LIGO/NANOGrav); Hz(z_t) for expansion; balances quantum early (QG dom) to Lambda late.
 - **Immediate Effect & Debugging:** Updates reflect in computes; printVariables for snapshots; example tests early/present.
 - **Advancement:** Encodes May 2025 doc (6 MUGEs synthesis) into Oct 2025 template; advances UQFF by unifying scales (atomic-cosmic), addressing gravity evolution from Big Bang, clarifying SM as subset.

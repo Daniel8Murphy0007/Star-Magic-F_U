@@ -1,11 +1,11 @@
-// InertiaUQFFModule.h
+﻿// InertiaUQFFModule.h
 // Modular C++ implementation of UQFF for Inertia Papers (43.d Red Dwarf Compression_D): Quantum Waves (eq1-2), Inertial Operator (eq3-4), Universal Inertia Ui (eq5), Bosonic Energy (eq6), Magnetic H (eq7), integrated with Um/Ug3.
-// Computes ? wave, ?_twist, �?, B_pseudo, Ui, E_boson, H_mag; solves for E_wave scaled by Higgs freq/Earth precession.
+// Computes ? wave, ?_twist, ï¿½?, B_pseudo, Ui, E_boson, H_mag; solves for E_wave scaled by Higgs freq/Earth precession.
 // Plug into base (e.g., 'inertia_uqff_sim.cpp') via #include "InertiaUQFFModule.h".
 // Usage: InertiaUQFFModule mod; mod.setSystem(SystemType::QUANTUM_WAVES); double psi = mod.computeWaveFunction(r, t); mod.computeEwave();
 // Variables in std::map; dynamic for ?_I, ?_vac, etc. Supports three-leg proofset (energy cons, vac density, quantum scaling).
 // Approximations: Y_00=1/sqrt(4?); non-local exp(-?|r-r0|); F_RZ=0.01; n=1-4 for hydrogen levels; Pi from prior.
-// Defaults: ?_vac,[SCm]=7.09e-37 J/m�, ?_vac,[UA]=7.09e-36 J/m�; a0=5.29e-11 m; Higgs freq=1.25e34 Hz; precession=1.617e11 s.
+// Defaults: ?_vac,[SCm]=7.09e-37 J/mï¿½, ?_vac,[UA]=7.09e-36 J/mï¿½; a0=5.29e-11 m; Higgs freq=1.25e34 Hz; precession=1.617e11 s.
 // Associated: getEquationText() for full eqs; getSolutions() for derivations (e.g., E_wave~1.17e-105 J).
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
@@ -20,13 +20,116 @@
 #include <complex>
 #include <vector>
 
-enum class SystemType {
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+enum #include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
+class SystemType {
     QUANTUM_WAVES, INERTIAL_OPERATOR, UNIVERSAL_INERTIA, BOSONIC_ENERGY, GENERIC
     // Extensible: Hydrogen Levels n=1-4
 };
 
 class InertiaUQFFModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     SystemType current_system;
     std::complex<double> computeSphericalHarmonic(int l, int m, double theta, double phi);
@@ -34,6 +137,15 @@ private:
     double computeThreeLegProofset(double E_input);  // Energy cons approx
     double computeVacDensityRatio();  // Galactic scale
     double computeQuantumScalingFactor();
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Defaults from Inertia Papers
@@ -50,7 +162,7 @@ public:
     // Core computations
     std::complex<double> computeWaveFunction(double r, double theta, double phi, double t);  // Eq1: ?
     double computeTwistPhase(double t);  // Eq2: ?_twist
-    std::complex<double> computeInertialOperator(const std::complex<double>& psi, double t);  // Eq3: �? approx
+    std::complex<double> computeInertialOperator(const std::complex<double>& psi, double t);  // Eq3: ï¿½? approx
     double computePseudoMonopoleB(double r);  // Eq4: B_pseudo
     double computeUniversalInertia(double t, double t_n);  // Eq5: Ui
     double computeBosonicEnergy(double x, int n);  // Eq6: E_boson
@@ -93,7 +205,7 @@ InertiaUQFFModule::InertiaUQFFModule(SystemType sys) : current_system(sys) {
     variables["lambda_I"] = 1.0;                // Coupling
     variables["omega_m"] = 1e15;                // Magnetic freq rad/s
     variables["qm"] = 1e-10;                    // Magnetic charge C
-    variables["rho_vac_SCm"] = 7.09e-37;        // J/m�
+    variables["rho_vac_SCm"] = 7.09e-37;        // J/mï¿½
     variables["rho_vac_UA"] = 7.09e-36;
     variables["omega_i"] = 1e3;                 // rad/s
     variables["t_n"] = 0.0;
@@ -102,8 +214,8 @@ InertiaUQFFModule::InertiaUQFFModule(SystemType sys) : current_system(sys) {
     variables["omega_r"] = 1e15;                // Resonant rad/s
     variables["mu_mag"] = 9.27e-24;             // Bohr magneton J/T
     variables["B"] = 1e-5;                      // T
-    variables["E_aether"] = 1.683e-10;          // J/m�
-    variables["V"] = 1e-27;                     // m�
+    variables["E_aether"] = 1.683e-10;          // J/mï¿½
+    variables["V"] = 1e-27;                     // mï¿½
     variables["higgs_freq"] = 1.25e34;          // Hz
     variables["precession_s"] = 1.617e11;       // s
     variables["quantum_state_factor"] = 4.0;    // n=1-4
@@ -192,10 +304,10 @@ double InertiaUQFFModule::computeTwistPhase(double t) {
     return variables["beta"] * std::sin(variables["omega"] * t);
 }
 
-// Eq3: �? approx (apply to ?)
+// Eq3: ï¿½? approx (apply to ?)
 std::complex<double> InertiaUQFFModule::computeInertialOperator(const std::complex<double>& psi, double t) {
     double partial_t = -variables["omega"] * std::imag(psi);  // Approx d?/dt ~ i ? ?
-    double grad_term = variables["omega_m"] * variables["r"] * std::real(psi);  // \vec{r} � ? ? ~ r ??/?r approx
+    double grad_term = variables["omega_m"] * variables["r"] * std::real(psi);  // \vec{r} ï¿½ ? ? ~ r ??/?r approx
     return variables["lambda_I"] * std::complex<double>(partial_t + grad_term, 0.0);
 }
 
@@ -269,12 +381,12 @@ double InertiaUQFFModule::computeUQFF(double t) {
 std::string InertiaUQFFModule::getEquationText() {
     return "UQFF Inertia Papers (43.d): ?(r,?,?,t)=A Y_lm(?,?) sin(kr-?t)/r exp(-?|r-r0|) (eq1)\n"
            "?_twist=? sin(? t) (eq2)\n"
-           "� ? = ?_I (?/?t + i ?_m \vec{r} � ?) ? (eq3)\n"
+           "ï¿½ ? = ?_I (?/?t + i ?_m \vec{r} ï¿½ ?) ? (eq3)\n"
            "B_pseudo = ?0/(4?) q_m / r^2 (eq4)\n"
            "Ui=?_I (?_vac,[SCm]/?_vac,[UA]) ?_i(t) cos(? t_n) (1+F_RZ) (eq5)\n"
            "E_boson=1/2 m ?_r^2 x^2 + ? ?_r (n+1/2) (eq6)\n"
-           "H_mag = -? � B (eq7)\n"
-           "E_wave = E0 � QSF � RDF � WTFF � HFF � PTF � QSF (hydrogen scaled; ~1.17e-105 J for n=1-4)\n"
+           "H_mag = -? ï¿½ B (eq7)\n"
+           "E_wave = E0 ï¿½ QSF ï¿½ RDF ï¿½ WTFF ï¿½ HFF ï¿½ PTF ï¿½ QSF (hydrogen scaled; ~1.17e-105 J for n=1-4)\n"
            "Three-Leg: Cons(E_in=E_out), Vac Ratio~1.683e-97, Q Scale~3.333e-23\n"
            "Integrates Um/Ug3; Solves wave/inertia with low-energy UQFF vs. SM high-energy.";
 }
@@ -306,11 +418,11 @@ std::string InertiaUQFFModule::getSolutions(double t, int n_levels) {
     std::stringstream ss;
     ss << std::scientific << "UQFF Solutions t=" << t << " s, n_levels=" << n_levels << " (" << static_cast<int>(current_system) << "):\n";
     ss << "|?|^2 = " << std::norm(psi) << "\n?_twist = " << phi_tw << " rad\n";
-    ss << "|�?| ? " << std::norm(I_psi) << "\nB_pseudo = " << B_p << " T\n";
-    ss << "Ui = " << Ui << " (units J/m� approx)\nE_boson = " << E_b << " J\nH_mag = " << H_m << " J\n";
+    ss << "|ï¿½?| ? " << std::norm(I_psi) << "\nB_pseudo = " << B_p << " T\n";
+    ss << "Ui = " << Ui << " (units J/mï¿½ approx)\nE_boson = " << E_b << " J\nH_mag = " << H_m << " J\n";
     ss << "E0 = " << E0 << " J\nE_wave = " << E_w << " J (~1.17e-105 for n=1-4)\n";
     ss << "Three-Leg Proofset = " << proofset << "\nVac Ratio = " << vac_r << "\nQ Scale = " << q_s << "\n";
-    ss << "Um = " << Um_v << " J/m�\nUg3 = " << Ug3_v << " J/m�\nUQFF Total = " << uqff_total << "\n";
+    ss << "Um = " << Um_v << " J/mï¿½\nUg3 = " << Ug3_v << " J/mï¿½\nUQFF Total = " << uqff_total << "\n";
     ss << "SM Contrast: High-energy nuclear vs. UQFF low-energy ~1e-105 J (ACE/DCE cons).\nPi Integration: From prior, S(2)?1.64493 for wave harmonics.";
     return ss.str();
 }
@@ -341,12 +453,12 @@ void InertiaUQFFModule::printVariables() {
 // Strengths:
 // - Eq Implementation: Full eq1-7 + E_wave scaling; three-leg proofset for cons/vac/quantum.
 // - UQFF Integration: Links to Um/Ug3; low-energy ~1e-105 J vs. SM 12.94 J.
-// - Dynamic: Map for ?_vac, ?_I; complex for ?/�?; extensible to n=1-4 hydrogen.
+// - Dynamic: Map for ?_vac, ?_I; complex for ?/ï¿½?; extensible to n=1-4 hydrogen.
 // - Solutions: Step-by-step numerics match doc (e.g., E0=1.683e-37 J, E_wave=1.17e-105 J).
 
 // Weaknesses / Recommendations:
 // - Y_lm: Simplified l=0; add full assoc. Legendre for higher l.
-// - Operator: Approx �?; numerical ? via finite diff for full wave.
+// - Operator: Approx ï¿½?; numerical ? via finite diff for full wave.
 // - Proofset: Symbolic cons=1; add sympy tool for exact.
 // - Pi Link: Implicit in harmonics; explicit Basel from prior.
 

@@ -1,4 +1,4 @@
-// Abell2256UQFFModule.h
+﻿// Abell2256UQFFModule.h
 // Modular C++ implementation of the full Master Unified Field Equation (F_U_Bi_i & UQFF Integration) for Abell 2256 Galaxy Cluster Evolution.
 // This module can be plugged into a base program (e.g., 'abell_sim.cpp') by including this header and linking the .cpp.
 // Usage in base: #include "Abell2256UQFFModule.h"
@@ -6,8 +6,8 @@
 // All variables are stored in a std::map for dynamic addition/subtraction/update, using complex<double> for real/imaginary components.
 // Nothing is negligible: Includes all terms - base force, momentum, gravity, vacuum stability, LENR resonance, activation, directed energy, magnetic resonance, neutron, relativistic, neutrino.
 // Associated text: Outputs descriptive equation string via getEquationText().
-// Approximations: Integral approximated as integrand * x2 (quadratic root); imag parts small and not fully scaled; LENR dominant due to low ω_0; x2 from quadratic solver approx.
-// Abell 2256 params: M=1.23e45 kg, r=3.93e22 m, L_X=3.7e37 W, B0=1e-9 T, t=6.31e15 s, ω_0=1e-15 s^-1, etc.
+// Approximations: Integral approximated as integrand * x2 (quadratic root); imag parts small and not fully scaled; LENR dominant due to low Ï‰_0; x2 from quadratic solver approx.
+// Abell 2256 params: M=1.23e45 kg, r=3.93e22 m, L_X=3.7e37 W, B0=1e-9 T, t=6.31e15 s, Ï‰_0=1e-15 s^-1, etc.
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 11, 2025.
 
 #ifndef ABELL2256_UQFF_MODULE_H
@@ -20,10 +20,113 @@
 #include <iomanip>
 #include <complex>
 
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
 using cdouble = std::complex<double>;
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
 
 class Abell2256UQFFModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, cdouble> variables;
     cdouble computeIntegrand(double t);
     cdouble computeDPM_resonance();
@@ -34,6 +137,15 @@ private:
     cdouble computeQ_wave(double t);
     cdouble computeUb1();
     cdouble computeUi(double t);
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize all variables with Abell 2256 defaults
@@ -69,6 +181,12 @@ public:
 
 // Constructor: Set all variables with Abell 2256-specific values
 Abell2256UQFFModule::Abell2256UQFFModule() {
+        enableDynamicTerms = true;
+        enableLogging = false;
+        learningRate = 0.001;
+        metadata["enhanced"] = "true";
+        metadata["version"] = "2.0-Enhanced";
+
     double pi_val = 3.141592653589793;
     cdouble zero = {0.0, 0.0};
     cdouble i_small = {0.0, 1e-37};
@@ -323,7 +441,7 @@ void Abell2256UQFFModule::printVariables() {
 //     return 0;
 // }
 // Compile: g++ -o abell_sim abell_sim.cpp Abell2256UQFFModule.cpp -lm
-// Sample Output at t=0.2 Gyr: F ≈ -8.32e217 + i (large; approx per framework; dominant real from LENR * x2).
+// Sample Output at t=0.2 Gyr: F â‰ˆ -8.32e217 + i (large; approx per framework; dominant real from LENR * x2).
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 11, 2025.
 // ===== MISSING ABELL 2256 BUOYANCY FUNCTION IMPLEMENTATIONS =====
 
@@ -476,7 +594,8 @@ void Abell2256UQFFModule::adaptiveUpdate(double dt, const std::string& feedback_
     }
     
     recordHistory("adaptive_time", {dt, 0.0});
-    std::cout << "Adaptive update: B0=" << variables["B0"].real() 
+    std::cout << "Adaptive update: B0=" << variables["B0"].real() 
+ * Enhanced: November 04, 2025 - Added self-expanding capabilities
               << ", v_disp=" << variables["velocity_dispersion"].real() << std::endl;
 }
 

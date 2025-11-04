@@ -1,10 +1,10 @@
-// RedSpiderUQFFModule.h
+﻿// RedSpiderUQFFModule.h
 // Modular C++ implementation of the Master Universal Gravity Equation (MUGE & UQFF Integration) for Red Spider Nebula (NGC 6537) Evolution.
 // This module models NGC 6537's dynamics via frequency/resonance: DPM core, THz hole pipeline, U_g4i reactive, plasmotic vacuum energy; no SM gravity/magnetics.
 // Usage: #include "RedSpiderUQFFModule.h" in base program; RedSpiderUQFFModule mod; mod.computeG(t); mod.updateVariable("f_super", new_value);
 // Variables in std::map for dynamic updates; supports F_env(t) as resonance factors; Aether replaces dark energy.
 // Approximations: psi_integral=1.0; all terms frequency-derived (a = f * ? / (2?)); U_g4i reactive freq=1e10 Hz.
-// Red Spider params: r=7.1e15 m, rho_lobe=1e-22 kg/m�, rho_fil=1e-20 kg/m�, v_exp=3e5 m/s, T_wd=2.5e5 K, L=1e29 W, z=0.0015, etc.
+// Red Spider params: r=7.1e15 m, rho_lobe=1e-22 kg/mï¿½, rho_fil=1e-20 kg/mï¿½, v_exp=3e5 m/s, T_wd=2.5e5 K, L=1e29 W, z=0.0015, etc.
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
 #ifndef REDSPIDER_UQFF_MODULE_H
@@ -17,8 +17,111 @@
 #include <iomanip>
 #include <complex>
 
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
 class RedSpiderUQFFModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     double computeFreqSuper(double t);
     double computeFreqFluid(double rho);
@@ -31,6 +134,15 @@ private:
     double computeTHzHoleTerm(double t);
     double computeUg4i(double t);
     double computeGfromFreq(double f_total);
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize with Red Spider defaults
@@ -41,7 +153,7 @@ public:
     void addToVariable(const std::string& name, double delta);
     void subtractFromVariable(const std::string& name, double delta);
 
-    // Core computation: g_UQFF(r, t) as freq-derived acceleration m/s�
+    // Core computation: g_UQFF(r, t) as freq-derived acceleration m/sï¿½
     double computeG(double t, double r);
 
     // Output descriptive text of the equation
@@ -59,6 +171,12 @@ public:
 
 // Constructor: Red Spider-specific values
 RedSpiderUQFFModule::RedSpiderUQFFModule() {
+        enableDynamicTerms = true;
+        enableLogging = false;
+        learningRate = 0.001;
+        metadata["enhanced"] = "true";
+        metadata["version"] = "2.0-Enhanced";
+
     // Universal constants
     variables["c"] = 3e8;                           // m/s
     variables["hbar"] = 1.0546e-34;                 // J s
@@ -69,8 +187,8 @@ RedSpiderUQFFModule::RedSpiderUQFFModule() {
 
     // Red Spider parameters
     variables["r"] = 7.1e15;                        // m
-    variables["rho_lobe"] = 1e-22;                  // kg/m�
-    variables["rho_fil"] = 1e-20;                   // kg/m�
+    variables["rho_lobe"] = 1e-22;                  // kg/mï¿½
+    variables["rho_fil"] = 1e-20;                   // kg/mï¿½
     variables["v_exp"] = 3e5;                       // m/s
     variables["T_wd"] = 2.5e5;                      // K
     variables["L_wd"] = 1e29;                       // W
@@ -90,11 +208,11 @@ RedSpiderUQFFModule::RedSpiderUQFFModule() {
     variables["f_DPM"] = 1e12;                      // Hz (di-pseudo-monopole)
     variables["f_THz"] = 1e12;                      // THz hole
     variables["A"] = 1e-10;                         // Resonance amplitude
-    variables["k"] = 1e20;                          // m?�
+    variables["k"] = 1e20;                          // m?ï¿½
     variables["omega"] = 2 * variables["pi"] * variables["f_super"]; // rad/s
 
     // Reactive/Plasmotic
-    variables["rho_vac_plasm"] = 1e-9;              // J/m� (vacuum energy density)
+    variables["rho_vac_plasm"] = 1e-9;              // J/mï¿½ (vacuum energy density)
     variables["lambda_I"] = 1.0;
     variables["f_TRZ"] = 0.1;                       // Time-reversal factor
 }
@@ -213,7 +331,7 @@ std::string RedSpiderUQFFModule::getEquationText() {
            "f_res(t) = 2? f_super |?|^2; f_DPM(t) = f_DPM ?_vac / c; f_THz(t) = 1e12 sin(? t);\n"
            "U_g4i(t) = f_react ?_I (1 + f_TRZ); ? = A exp(i(k r - ? t));\n"
            "Insights: Freq-driven (51% causal); Aether (f_Aether) replaces dark energy; no SM illusions.\n"
-           "Adaptations: Hubble 1997 data; v_exp=300 km/s; Solutions: g ~1.65e-122 m/s� at t=1900 yr (resonance dominant).";
+           "Adaptations: Hubble 1997 data; v_exp=300 km/s; Solutions: g ~1.65e-122 m/sï¿½ at t=1900 yr (resonance dominant).";
 }
 
 // Print
@@ -231,14 +349,14 @@ void RedSpiderUQFFModule::printVariables() {
 //     double t = 1900 * 3.156e7;  // 1900 yr
 //     double r = 1e15;  // Inner lobe
 //     double g = mod.computeG(t, r);
-//     std::cout << "g_UQFF = " << g << " m/s�\n";
+//     std::cout << "g_UQFF = " << g << " m/sï¿½\n";
 //     std::cout << mod.getEquationText() << std::endl;
 //     mod.updateVariable("f_super", 1.5 * mod.variables["f_super"]);
 //     mod.printVariables();
 //     return 0;
 // }
 // Compile: g++ -o redspider_sim base.cpp RedSpiderUQFFModule.cpp -lm
-// Sample Output: g_UQFF ? 1.65e-122 m/s� (Aether/resonance dominant; freq causal advance).
+// Sample Output: g_UQFF ? 1.65e-122 m/sï¿½ (Aether/resonance dominant; freq causal advance).
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
 RedSpiderUQFFModule Evaluation

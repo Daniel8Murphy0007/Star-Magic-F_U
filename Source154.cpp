@@ -1,4 +1,4 @@
-
+﻿
 // HydrogenResonanceUQFFModule.h
 // Modular C++ implementation of the full Master Unified Field Equation (F_U_Bi_i & UQFF Integration) for Hydrogen Resonance Equations of the Periodic Table of Elements (PToE).
 // This module can be plugged into a base program (e.g., 'pto_resonance_sim.cpp') by including this header and linking the .cpp.
@@ -7,7 +7,7 @@
 // All variables are stored in a std::map for dynamic addition/subtraction/update, using complex<double> for real/imaginary components.
 // Nothing is negligible: Includes all terms - amplitude resonance, deep pairing, shell corrections, nuclear stability factors.
 // Associated text: Outputs descriptive equation string via getEquationText().
-// Approximations: SC_m normalized to 1.0; δ_pair for even-odd; magic numbers from nuclear data; f_res from binding energy.
+// Approximations: SC_m normalized to 1.0; Î´_pair for even-odd; magic numbers from nuclear data; f_res from binding energy.
 // PToE params: Z=1-118, A from isotopes, E_bind from nuclear tables, etc.
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 22, 2025.
 
@@ -21,10 +21,113 @@
 #include <iomanip>
 #include <complex>
 
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
 using cdouble = std::complex<double>;
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
 
 class HydrogenResonanceUQFFModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, cdouble> variables;
     cdouble computeA_res(int Z, int A);
     cdouble computeF_res(double E_bind, int A);
@@ -33,6 +136,15 @@ private:
     cdouble computeS_shell(int Z_magic, int N_magic);
     cdouble computeH_res_integrand(double t, int Z, int A);
     cdouble computeX2(int Z, int A);
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize all variables with PToE defaults
@@ -267,8 +379,8 @@ std::string SurfaceMagneticFieldModule::getEquationText() {
            "U_g3 = k_3 * ? B_j * cos(?_s t ?) * P_core * E_react\n"
            "Where B_s = [1e-4, 0.4] T (Sun surface; quiet to sunspot).\n"
            "B_ref=0.4 T (max); scales string fields by surface B_s.\n"
-           "Example t=0, B_s=0.4 T: B_j?1e3 T, U_g3?1.8e49 J/m�;\n"
-           "B_s=1e-4 T: B_j?0.25 T, U_g3?4.5e45 J/m� (-4 orders).\n"
+           "Example t=0, B_s=0.4 T: B_j?1e3 T, U_g3?1.8e49 J/mï¿½;\n"
+           "B_s=1e-4 T: B_j?0.25 T, U_g3?4.5e45 J/mï¿½ (-4 orders).\n"
            "Role: Baseline magnetic strength for strings; variability in U_g3/disks.\n"
            "UQFF: Surface fields drive cosmic magnetism; extensible for planets.";
 }
@@ -308,6 +420,12 @@ double SurfaceMagneticFieldModule::computeU_g3_example(double t, double B_s) {
 
 // Constructor: Set all variables with PToE-specific values
 HydrogenResonanceUQFFModule::HydrogenResonanceUQFFModule() {
+        enableDynamicTerms = true;
+        enableLogging = false;
+        learningRate = 0.001;
+        metadata["enhanced"] = "true";
+        metadata["version"] = "2.0-Enhanced";
+
     double pi_val = 3.141592653589793;
     cdouble zero = {0.0, 0.0};
     cdouble i_small = {0.0, 1e-37};
@@ -493,7 +611,7 @@ void HydrogenResonanceUQFFModule::printVariables() {
 //     return 0;
 // }
 // Compile: g++ -o pto_resonance_sim pto_resonance_sim.cpp HydrogenResonanceUQFFModule.cpp -lm
-// Sample Output for Protium: H_res ≈ small value (resonance amp); full for elements via computeHRes(Z,A,t).
+// Sample Output for Protium: H_res â‰ˆ small value (resonance amp); full for elements via computeHRes(Z,A,t).
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 22, 2025.
 
 // ===== ENHANCED NUCLEAR BUOYANCY FUNCTIONS =====
@@ -634,7 +752,8 @@ void HydrogenResonanceUQFFModule::adaptiveUpdate(double dt, const std::string& f
     variables["f_dp"] *= (1.0 + 0.0001 * learning_rate);
     
     recordHistory("adaptive_time", {dt, 0.0});
-    std::cout << "Nuclear adaptive update: k_A=" << variables["k_A"].real() 
+    std::cout << "Nuclear adaptive update: k_A=" << variables["k_A"].real() 
+ * Enhanced: November 04, 2025 - Added self-expanding capabilities
               << ", S_shell=" << variables["S_shell_scale"].real() << std::endl;
 }
 
@@ -808,6 +927,9 @@ void HydrogenResonanceUQFFModule::recordHistory(const std::string& name, cdouble
 
 class SurfaceMagneticFieldModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     std::map<std::string, std::vector<double>> variable_history;
     std::map<std::string, std::string> variable_dependencies;
@@ -819,6 +941,15 @@ private:
     void updateDependencies(const std::string& changed_var);
     double computeGradient(const std::string& var, const std::string& target);
     void recordHistory(const std::string& name, double value);
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor with dynamic capabilities
@@ -943,7 +1074,8 @@ void SurfaceMagneticFieldModule::adaptiveUpdate(double dt, const std::string& fe
     variables["omega_s"] *= convection_enhancement;
     
     recordHistory("adaptive_time", dt);
-    std::cout << "Magnetic adaptive update: B_ref=" << variables["B_ref"] 
+    std::cout << "Magnetic adaptive update: B_ref=" << variables["B_ref"] 
+ * Enhanced: November 04, 2025 - Added self-expanding capabilities
               << ", k_3=" << variables["k_3"] << std::endl;
 }
 

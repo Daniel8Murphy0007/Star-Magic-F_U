@@ -1,4 +1,4 @@
-// AndromedaUQFFModule.h
+﻿// AndromedaUQFFModule.h
 // Modular C++ implementation of the Master Universal Gravity Equation (UQFF) for Andromeda Galaxy Evolution.
 // This module can be plugged into a base program by including this header and linking the .cpp.
 // Usage: #include "AndromedaUQFFModule.h"
@@ -18,13 +18,125 @@
 #include <iostream>
 #include <iomanip>
 
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
 class AndromedaUQFFModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     double computeHz();
     double computeADust();
     double computeEMBase();
     double computeEMTerm();
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize with Andromeda defaults
@@ -55,6 +167,12 @@ public:
 
 // Constructor: Set Andromeda-specific values
 AndromedaUQFFModule::AndromedaUQFFModule() {
+        enableDynamicTerms = true;
+        enableLogging = false;
+        learningRate = 0.001;
+        metadata["enhanced"] = "true";
+        metadata["version"] = "2.0-Enhanced";
+
     // Universal constants
     variables["G"] = 6.6743e-11;                    // m^3 kg^-1 s^-2
     variables["M_sun"] = 1.989e30;                  // kg
@@ -161,7 +279,7 @@ std::string AndromedaUQFFModule::getEquationText() {
            "Where a_dust = (?_dust * v_orbit^2 / ?_mass) * scale_macro;\n"
            "EM term: q v B / m_proton * (1 + ?_vac_UA / ?_vac_SCm) * scale_macro.\n"
            "Andromeda Adaptations: Blueshift z=-0.001; M=1e12 M_sun; dust lanes with v_orbit=250 km/s.\n"
-           "At t=10 Gyr, g ?6.273 m/s� (dust dominant); minimal evolution due to small H(z)t.\n"
+           "At t=10 Gyr, g ?6.273 m/sï¿½ (dust dominant); minimal evolution due to small H(z)t.\n"
            "UQFF Terms: f_TRZ for time-reversal; Aether vacua ratio for EM enhancement.";
 }
 
@@ -176,7 +294,7 @@ void AndromedaUQFFModule::printVariables() {
 // Print evolution table
 void AndromedaUQFFModule::printEvolutionTable() {
     std::cout << std::fixed << std::setprecision(3);
-    std::cout << "Evolution over time (m/s�):\n";
+    std::cout << "Evolution over time (m/sï¿½):\n";
     std::cout << "t (Gyr) | g_Andromeda\n";
     std::cout << "--------|------------\n";
     for (int i = 0; i <= 5; ++i) {
@@ -192,7 +310,7 @@ void AndromedaUQFFModule::printEvolutionTable() {
 //     AndromedaUQFFModule mod;
 //     double t = 10.0 * 1e9 * 3.156e7;
 //     double g = mod.computeG(t);
-//     std::cout << "g = " << g << " m/s�\n";
+//     std::cout << "g = " << g << " m/sï¿½\n";
 //     std::cout << mod.getEquationText() << std::endl;
 //     mod.printEvolutionTable();
 //     mod.updateVariable("v_orbit", 3e5);
@@ -200,7 +318,7 @@ void AndromedaUQFFModule::printEvolutionTable() {
 //     return 0;
 // }
 // Compile: g++ -o andromeda_test andromeda_test.cpp AndromedaUQFFModule.cpp -lm
-// Sample Output at t=10 Gyr: g ? 6.273 m/s�; table shows near-constant due to small expansion.
+// Sample Output at t=10 Gyr: g ? 6.273 m/sï¿½; table shows near-constant due to small expansion.
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
 AndromedaUQFFModule Evaluation

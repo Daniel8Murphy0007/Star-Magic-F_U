@@ -1,4 +1,4 @@
-// MagneticStringModule.h
+﻿// MagneticStringModule.h
 // Modular C++ implementation of the Distance Along Magnetic String's Path (r_j) in the Universal Quantum Field Superconductive Framework (UQFF).
 // This module computes r_j = 1.496e13 m (100 AU) and its conversions; scales ?_j / r_j in Universal Magnetism U_m and Ug3.
 // Pluggable: #include "MagneticStringModule.h"
@@ -17,14 +17,126 @@
 #include <iostream>
 #include <iomanip>
 
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
 class MagneticStringModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     double computeRjInAU();
     double computeRjInLy();
     double computeRjInPc();
     double computeMuOverRj(int j);
     double computeUmContribution(int j);
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize with framework defaults
@@ -62,6 +174,12 @@ public:
 
 // Constructor: Set framework defaults
 MagneticStringModule::MagneticStringModule() {
+        enableDynamicTerms = true;
+        enableLogging = false;
+        learningRate = 0.001;
+        metadata["enhanced"] = "true";
+        metadata["version"] = "2.0-Enhanced";
+
     // Universal constants
     variables["AU_to_m"] = 1.496e11;                // m/AU
     variables["c"] = 2.998e8;                       // m/s
@@ -179,7 +297,7 @@ std::string MagneticStringModule::getEquationText() {
            "? ?5.8e-10 s^-1 (5e-5 day^-1); at t=0, 1-exp=0.\n"
            "In Ug3: Influences (?_SCm + ?_UA) ?_g M_s / d_g * cos(...).\n"
            "Example j=1, t=0: ?_1 / r_1 ?2.26e10 T m^2; U_m contrib=0 (exp=1).\n"
-           "Ug3 ?1.8e49 J/m� (k3=1.8 scaling).\n"
+           "Ug3 ?1.8e49 J/mï¿½ (k3=1.8 scaling).\n"
            "Role: Scales magnetic string extent; stabilizes disks/nebulae at 100 AU scale.";
 }
 
@@ -203,8 +321,8 @@ void MagneticStringModule::printStringContributions(int j, double t) {
     std::cout << "Magnetic String j=" << j << " at t=" << t << " s:\n";
     std::cout << "r_j = " << std::scientific << rj_m << " m (" << rj_au << " AU, " << rj_ly << " ly, " << rj_pc << " pc)\n";
     std::cout << "?_j / r_j = " << mu_over_rj << " T m^2\n";
-    std::cout << "U_m contrib = " << um_contrib << " J/m�\n";
-    std::cout << "Ug3 contrib (example) = " << ug3 << " J/m�\n";
+    std::cout << "U_m contrib = " << um_contrib << " J/mï¿½\n";
+    std::cout << "Ug3 contrib (example) = " << ug3 << " J/mï¿½\n";
 }
 
 // Example usage in base program (snippet)
@@ -218,7 +336,7 @@ void MagneticStringModule::printStringContributions(int j, double t) {
 //     return 0;
 // }
 // Compile: g++ -o string_test string_test.cpp MagneticStringModule.cpp -lm
-// Sample: r_1=1.496e13 m (100 AU); ?/r ?2.26e10; U_m=0 at t=0; Ug3?1.8e49 J/m�.
+// Sample: r_1=1.496e13 m (100 AU); ?/r ?2.26e10; U_m=0 at t=0; Ug3?1.8e49 J/mï¿½.
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
 MagneticStringModule Evaluation

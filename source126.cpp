@@ -1,6 +1,6 @@
-// AetherVacuumDensityModule.h
+﻿// AetherVacuumDensityModule.h
 // Modular C++ implementation of the Vacuum Energy Density of Aether (?_vac,A) in the Universal Quantum Field Superconductive Framework (UQFF).
-// This module computes ?_vac,A = 1e-23 J/m�; contributes to T_s^{??} ?1.123e7 J/m�, perturbs A_?? = g_?? + ? T_s^{??} (~1.123e-15).
+// This module computes ?_vac,A = 1e-23 J/mï¿½; contributes to T_s^{??} ?1.123e7 J/mï¿½, perturbs A_?? = g_?? + ? T_s^{??} (~1.123e-15).
 // Pluggable: #include "AetherVacuumDensityModule.h"
 // AetherVacuumDensityModule mod; mod.computeA_mu_nu(); mod.updateVariable("rho_vac_A", new_value);
 // Variables in std::map; diagonal [tt, xx, yy, zz]; example for Sun at t_n=0.
@@ -17,12 +17,124 @@
 #include <iostream>
 #include <iomanip>
 
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
 class AetherVacuumDensityModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     std::vector<double> g_mu_nu;  // Background [1, -1, -1, -1]
-    double computeT_s();  // Scalar approx J/m�
+    double computeT_s();  // Scalar approx J/mï¿½
     std::vector<double> computeA_mu_nu();
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize with framework defaults
@@ -34,8 +146,8 @@ public:
     void subtractFromVariable(const std::string& name, double delta);
 
     // Core computations
-    double computeRho_vac_A();  // 1e-23 J/m�
-    double computeT_s();  // 1.123e7 J/m�
+    double computeRho_vac_A();  // 1e-23 J/mï¿½
+    double computeT_s();  // 1.123e7 J/mï¿½
     double computePerturbation();  // ? * T_s ?1.123e-15
     std::vector<double> computeA_mu_nu();  // Perturbed metric
 
@@ -56,12 +168,18 @@ public:
 
 // Constructor: Set framework defaults
 AetherVacuumDensityModule::AetherVacuumDensityModule() {
+        enableDynamicTerms = true;
+        enableLogging = false;
+        learningRate = 0.001;
+        metadata["enhanced"] = "true";
+        metadata["version"] = "2.0-Enhanced";
+
     // Universal constants
-    variables["rho_vac_A"] = 1e-23;                 // J/m� (doc value)
-    variables["rho_vac_SCm"] = 7.09e-37;            // J/m� (for T_s context)
-    variables["rho_vac_UA"] = 7.09e-36;             // J/m�
-    variables["T_s_base"] = 1.27e3;                 // J/m�
-    variables["rho_vac_A_contrib"] = 1.11e7;        // J/m� (for T_s=1.123e7)
+    variables["rho_vac_A"] = 1e-23;                 // J/mï¿½ (doc value)
+    variables["rho_vac_SCm"] = 7.09e-37;            // J/mï¿½ (for T_s context)
+    variables["rho_vac_UA"] = 7.09e-36;             // J/mï¿½
+    variables["T_s_base"] = 1.27e3;                 // J/mï¿½
+    variables["rho_vac_A_contrib"] = 1.11e7;        // J/mï¿½ (for T_s=1.123e7)
     variables["eta"] = 1e-22;                       // Coupling
     variables["t_n"] = 0.0;                         // s
 
@@ -94,7 +212,7 @@ void AetherVacuumDensityModule::subtractFromVariable(const std::string& name, do
     addToVariable(name, -delta);
 }
 
-// Compute ?_vac,A (J/m�)
+// Compute ?_vac,A (J/mï¿½)
 double AetherVacuumDensityModule::computeRho_vac_A() {
     return variables["rho_vac_A"];
 }
@@ -122,11 +240,11 @@ std::vector<double> AetherVacuumDensityModule::computeA_mu_nu() {
 // Equation text
 std::string AetherVacuumDensityModule::getEquationText() {
     return "A_?? = g_?? + ? T_s^{??}(?_vac,[SCm], ?_vac,[UA], ?_vac,A, t_n)\n"
-           "?_vac,A = 1e-23 J/m� (Aether vacuum energy density);\n"
-           "T_s^{??} ?1.123e7 J/m� (diagonal; base 1.27e3 + A contrib 1.11e7);\n"
+           "?_vac,A = 1e-23 J/mï¿½ (Aether vacuum energy density);\n"
+           "T_s^{??} ?1.123e7 J/mï¿½ (diagonal; base 1.27e3 + A contrib 1.11e7);\n"
            "?=1e-22 ? pert ?1.123e-15;\n"
            "A_?? ? [1 + 1.123e-15, -1 + 1.123e-15, ...].\n"
-           "In F_U: Aether ~1e-15 J/m� (negligible vs U_m=2.28e65).\n"
+           "In F_U: Aether ~1e-15 J/mï¿½ (negligible vs U_m=2.28e65).\n"
            "Role: Intrinsic Aether energy for spacetime geometry; [UA] background.\n"
            "UQFF: Subtle vacuum contrib in nebular/disk/jet dynamics; GR-Aether link.";
 }
@@ -150,8 +268,8 @@ void AetherVacuumDensityModule::printDensityAndMetric() {
     double t_s = computeT_s();
     double pert = computePerturbation();
     auto a_mu_nu = computeA_mu_nu();
-    std::cout << "?_vac,A = " << std::scientific << rho_a << " J/m�\n";
-    std::cout << "T_s (diagonal scalar) = " << t_s << " J/m�\n";
+    std::cout << "?_vac,A = " << std::scientific << rho_a << " J/mï¿½\n";
+    std::cout << "T_s (diagonal scalar) = " << t_s << " J/mï¿½\n";
     std::cout << "Perturbation ? T_s = " << pert << "\n";
     std::cout << "A_??: ";
     for (double val : a_mu_nu) {
@@ -165,7 +283,7 @@ void AetherVacuumDensityModule::printDensityAndMetric() {
 // int main() {
 //     AetherVacuumDensityModule mod;
 //     double rho = mod.computeRho_vac_A();
-//     std::cout << "?_vac,A = " << rho << " J/m�\n";
+//     std::cout << "?_vac,A = " << rho << " J/mï¿½\n";
 //     mod.printDensityAndMetric();
 //     std::cout << mod.getEquationText() << std::endl;
 //     mod.updateVariable("rho_vac_A", 2e-23);
@@ -173,7 +291,7 @@ void AetherVacuumDensityModule::printDensityAndMetric() {
 //     return 0;
 // }
 // Compile: g++ -o aether_density_test aether_density_test.cpp AetherVacuumDensityModule.cpp -lm
-// Sample: ?_vac,A=1e-23 J/m�; T_s=1.123e7 J/m�; pert?1.123e-15; A_?? nearly flat.
+// Sample: ?_vac,A=1e-23 J/mï¿½; T_s=1.123e7 J/mï¿½; pert?1.123e-15; A_?? nearly flat.
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
 AetherVacuumDensityModule Evaluation

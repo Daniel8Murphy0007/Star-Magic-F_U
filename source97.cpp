@@ -1,4 +1,4 @@
-// FeedbackFactorModule.h
+﻿// FeedbackFactorModule.h
 // Modular C++ implementation of the Feedback Factor (f_feedback) in the Universal Quantum Field Superconductive Framework (UQFF).
 // This module computes f_feedback=0.1 for ?M_BH=1 dex (10x mass increase); scales (1 + f_feedback) in U_g4 term.
 // Pluggable: #include "FeedbackFactorModule.h"
@@ -16,13 +16,125 @@
 #include <iostream>
 #include <iomanip>
 
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
 class FeedbackFactorModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     double computeDeltaM_BH();  // 1 dex = log10(10) = factor of 10
     double computeM_bh_final();
     double computeU_g4(double t, double t_n);
     double computeU_g4_no_feedback(double t, double t_n);
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize with framework defaults
@@ -57,6 +169,12 @@ public:
 
 // Constructor: Set framework defaults
 FeedbackFactorModule::FeedbackFactorModule() {
+        enableDynamicTerms = true;
+        enableLogging = false;
+        learningRate = 0.001;
+        metadata["enhanced"] = "true";
+        metadata["version"] = "2.0-Enhanced";
+
     // Universal constants
     variables["f_feedback"] = 0.1;                  // Unitless, for ?M_BH=1 dex
     variables["delta_M_BH_dex"] = 1.0;              // 1 dex = factor 10
@@ -146,7 +264,7 @@ std::string FeedbackFactorModule::getEquationText() {
     return "U_g4 = k_4 * (?_vac,[SCm] M_bh / d_g) * e^{-? t} * cos(? t_n) * (1 + f_feedback)\n"
            "Where f_feedback = 0.1 (unitless, for ?M_BH = 1 dex = 10x mass increase);\n"
            "?M_BH =1 dex ? M_bh_final = 10 * M_bh_initial (8.15e36 kg ? 8.15e37 kg).\n"
-           "Example t=0, t_n=0: U_g4 ?2.75e-20 J/m� (with); ?2.50e-20 J/m� (without; +10%).\n"
+           "Example t=0, t_n=0: U_g4 ?2.75e-20 J/mï¿½ (with); ?2.50e-20 J/mï¿½ (without; +10%).\n"
            "Role: Scales feedback in star-BH interactions; regulates AGN, mergers, star formation.\n"
            "UQFF: Enhances energy density for 10x M_BH; resolves final parsec, quasar jets.";
 }
@@ -165,8 +283,8 @@ void FeedbackFactorModule::printU_g4_comparison(double t, double t_n) {
     double u_without = computeU_g4_no_feedback(t, t_n);
     double delta_percent = ((u_with - u_without) / u_without) * 100.0;
     std::cout << "U_g4 Comparison at t=" << t << " s, t_n=" << t_n << " s:\n";
-    std::cout << "With feedback: " << std::scientific << u_with << " J/m�\n";
-    std::cout << "Without feedback: " << std::scientific << u_without << " J/m�\n";
+    std::cout << "With feedback: " << std::scientific << u_with << " J/mï¿½\n";
+    std::cout << "Without feedback: " << std::scientific << u_without << " J/mï¿½\n";
     std::cout << "Difference: +" << std::fixed << std::setprecision(1) << delta_percent << "%\n";
 }
 
@@ -183,7 +301,7 @@ void FeedbackFactorModule::printU_g4_comparison(double t, double t_n) {
 //     return 0;
 // }
 // Compile: g++ -o feedback_test feedback_test.cpp FeedbackFactorModule.cpp -lm
-// Sample: M_bh_final=8.15e37 kg; U_g4 with=2.75e-20 J/m� (+10% vs without).
+// Sample: M_bh_final=8.15e37 kg; U_g4 with=2.75e-20 J/mï¿½ (+10% vs without).
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
 FeedbackFactorModule Evaluation

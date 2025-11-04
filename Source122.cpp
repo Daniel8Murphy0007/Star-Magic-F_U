@@ -1,9 +1,9 @@
-// SurfaceTemperatureModule.h
+﻿// SurfaceTemperatureModule.h
 // Modular C++ implementation of the Surface Temperature (T_s) in the Universal Quantum Field Superconductive Framework (UQFF).
 // This module computes T_s=5778 K (Sun effective); potential scaling T_s / T_s_ref in B_j for U_g3 magnetic strings.
 // Pluggable: #include "SurfaceTemperatureModule.h"
 // SurfaceTemperatureModule mod; mod.computeU_g3_example(0.0, 5778.0); mod.updateVariable("T_s", new_value);
-// Variables in std::map; example for Sun at t=0; T_s=5778 K ? U_g3?1.8e49 J/m� (full); T_s=10000 K: ~3.11e49 J/m�.
+// Variables in std::map; example for Sun at t=0; T_s=5778 K ? U_g3?1.8e49 J/mï¿½ (full); T_s=10000 K: ~3.11e49 J/mï¿½.
 // Approximations: T_s_ref=5778 K (Sun); cos(?_s t ?)=1; P_core=1; E_react=1e46; hypothetical B_j scaling.
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
@@ -16,11 +16,123 @@
 #include <iostream>
 #include <iomanip>
 
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
 class SurfaceTemperatureModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     double computeB_j_hypothetical(double t, double T_s);
     double computeU_g3_example(double t, double T_s);
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize with framework defaults (Sun)
@@ -50,6 +162,12 @@ public:
 
 // Constructor: Set framework defaults (Sun)
 SurfaceTemperatureModule::SurfaceTemperatureModule() {
+        enableDynamicTerms = true;
+        enableLogging = false;
+        learningRate = 0.001;
+        metadata["enhanced"] = "true";
+        metadata["version"] = "2.0-Enhanced";
+
     // Universal constants
     variables["T_s"] = 5778.0;                      // K (Sun effective)
     variables["T_s_ref"] = 5778.0;                  // K (reference)
@@ -113,10 +231,10 @@ double SurfaceTemperatureModule::computeU_g3_example(double t, double T_s) {
 std::string SurfaceTemperatureModule::getEquationText() {
     return "B_j ? (10^3 + 0.4 sin(?_s t)) * (T_s / T_s,ref) T (hypothetical);\n"
            "U_g3 = k_3 * ? B_j * cos(?_s t ?) * P_core * E_react\n"
-           "Where T_s = 5778 K (Sun effective photosphere; �C=5505).\n"
+           "Where T_s = 5778 K (Sun effective photosphere; ï¿½C=5505).\n"
            "T_s,ref=5778 K; scales string fields by temperature.\n"
-           "Example t=0, T_s=5778 K: B_j?1e3 T, U_g3?1.8e49 J/m�;\n"
-           "T_s=10000 K: B_j?1730 T, U_g3?3.11e49 J/m� (+73%).\n"
+           "Example t=0, T_s=5778 K: B_j?1e3 T, U_g3?1.8e49 J/mï¿½;\n"
+           "T_s=10000 K: B_j?1730 T, U_g3?3.11e49 J/mï¿½ (+73%).\n"
            "Role: Thermal baseline for magnetic strength; variability in U_g3/disks.\n"
            "UQFF: Temperature-dependent fields; extensible for radiation/formation.";
 }
@@ -136,14 +254,14 @@ void SurfaceTemperatureModule::printVariables() {
 //     double t_s = mod.computeT_s();
 //     std::cout << "T_s = " << t_s << " K\n";
 //     double u_g3 = mod.computeU_g3_example(0.0, 10000.0);
-//     std::cout << "U_g3 (T_s=10000 K) = " << u_g3 << " J/m�\n";
+//     std::cout << "U_g3 (T_s=10000 K) = " << u_g3 << " J/mï¿½\n";
 //     std::cout << mod.getEquationText() << std::endl;
 //     mod.updateVariable("T_s", 6000.0);
 //     mod.printVariables();
 //     return 0;
 // }
 // Compile: g++ -o temp_test temp_test.cpp SurfaceTemperatureModule.cpp -lm
-// Sample: T_s=5778 K; U_g3 (hot star)?3.11e49 J/m�; thermal scaling.
+// Sample: T_s=5778 K; U_g3 (hot star)?3.11e49 J/mï¿½; thermal scaling.
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
 SurfaceTemperatureModule Evaluation

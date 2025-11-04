@@ -1,4 +1,4 @@
-// CrabResonanceUQFFModule.h
+﻿// CrabResonanceUQFFModule.h
 // Modular C++ implementation of the Master Universal Gravity Equation (UQFF Resonance) for Crab Nebula Evolution.
 // This module can be plugged into a base program (e.g., 'ziqn233h.cpp') by including this header and linking the .cpp.
 // Usage in base: #include "CrabResonanceUQFFModule.h"
@@ -20,8 +20,111 @@
 #include <iomanip>
 #include <complex>
 
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
 class CrabResonanceUQFFModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     double computeDPMResTerm();
     double computeTHzResTerm();
@@ -32,6 +135,15 @@ private:
     double computeOscResTerm(double t);
     double computeExpResTerm();
     double computeSCResIntegrated(double B);
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize all variables with Crab Nebula resonance defaults
@@ -60,6 +172,12 @@ public:
 
 // Constructor: Set all variables with Crab Nebula-specific resonance values
 CrabResonanceUQFFModule::CrabResonanceUQFFModule() {
+        enableDynamicTerms = true;
+        enableLogging = false;
+        learningRate = 0.001;
+        metadata["enhanced"] = "true";
+        metadata["version"] = "2.0-Enhanced";
+
     // Base constants (UQFF universal)
     variables["c"] = 3e8;                           // m/s
     variables["pi"] = 3.141592653589793;            // pi
@@ -231,7 +349,7 @@ std::string CrabResonanceUQFFModule::getEquationText() {
            "- a_exp_res = (f_exp * E_vac * a_DPM_res) / (E_vac/10 * c)\n"
            "- SC_int = (1 - B / B_crit) * f_sc\n"
            "Special Terms: UQFF resonance via plasmotic vacuum; Aether replaces dark energy; no SM terms; pulsar-driven f_osc.\n"
-           "Solutions: At t=971 yr, B=1e-8 T, g ? 1e-40 m/s� (resonance micro-scale, wind proxy).\n"
+           "Solutions: At t=971 yr, B=1e-8 T, g ? 1e-40 m/sï¿½ (resonance micro-scale, wind proxy).\n"
            "Adaptations: Resonance focus for Crab wisps/shocks per Hubble/Chandra.";
 }
 
@@ -250,7 +368,7 @@ void CrabResonanceUQFFModule::printVariables() {
 //     double t = 971 * 3.156e7;  // 971 years
 //     double B = 1e-8;           // T (nebula avg)
 //     double g_res = mod.computeG(t, B);
-//     std::cout << "g_res = " << g_res << " m/s�\n";
+//     std::cout << "g_res = " << g_res << " m/sï¿½\n";
 //     std::cout << mod.getEquationText() << std::endl;
 //     mod.updateVariable("f_DPM", 1.1e12);  // Update resonance freq
 //     mod.addToVariable("f_TRZ", 0.05);     // Add to TR factor
@@ -258,7 +376,7 @@ void CrabResonanceUQFFModule::printVariables() {
 //     return 0;
 // }
 // Compile: g++ -o ziqn233h ziqn233h.cpp CrabResonanceUQFFModule.cpp -lm
-// Sample Output at t=971 yr: g_res ? 1e-40 m/s� (varies; micro-scale resonance terms).
+// Sample Output at t=971 yr: g_res ? 1e-40 m/sï¿½ (varies; micro-scale resonance terms).
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 09, 2025.
 
 // Evaluation of CrabResonanceUQFFModule (UQFF Resonance Model for Crab Nebula)

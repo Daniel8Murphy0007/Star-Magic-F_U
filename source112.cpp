@@ -1,10 +1,10 @@
-// ScmPenetrationModule.h
+﻿// ScmPenetrationModule.h
 // Modular C++ implementation of the [SCm] Penetration Factor (P_SCm) in the Universal Quantum Field Superconductive Framework (UQFF).
 // This module computes P_SCm ?1 (unitless for Sun, ~1e-3 for planets); scales P_SCm in Universal Magnetism U_m term.
 // Pluggable: #include "ScmPenetrationModule.h"
 // ScmPenetrationModule mod; mod.computeUmContribution(0.0); mod.updateVariable("P_SCm", new_value);
 // Variables in std::map; example for Sun at t=0, t_n=0; full penetration for plasma cores.
-// Approximations: 1 - e^{-? t cos(? t_n)}=0 at t=0; ?_hat_j=1; ?_j / r_j=2.26e10 T m�.
+// Approximations: 1 - e^{-? t cos(? t_n)}=0 at t=0; ?_hat_j=1; ?_j / r_j=2.26e10 T mï¿½.
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
 #ifndef SCM_PENETRATION_MODULE_H
@@ -16,11 +16,123 @@
 #include <iostream>
 #include <iomanip>
 
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
 class ScmPenetrationModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     double computeUmBase(double t);
     double computeUmContribution(double t);
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize with framework defaults (Sun)
@@ -50,10 +162,16 @@ public:
 
 // Constructor: Set framework defaults (Sun at t=0)
 ScmPenetrationModule::ScmPenetrationModule() {
+        enableDynamicTerms = true;
+        enableLogging = false;
+        learningRate = 0.001;
+        metadata["enhanced"] = "true";
+        metadata["version"] = "2.0-Enhanced";
+
     // Universal constants
     variables["P_SCm"] = 1.0;                       // Unitless ?1 for Sun
     variables["P_SCm_planet"] = 1e-3;               // For planets
-    variables["mu_j"] = 3.38e23;                    // T�m^3
+    variables["mu_j"] = 3.38e23;                    // Tï¿½m^3
     variables["r_j"] = 1.496e13;                    // m
     variables["gamma"] = 5e-5 / 86400.0;            // s^-1
     variables["t_n"] = 0.0;                         // s
@@ -132,8 +250,8 @@ std::string ScmPenetrationModule::getEquationText() {
     return "U_m = [ (?_j / r_j) (1 - e^{-? t cos(? t_n)}) ?_hat_j ] P_SCm E_react (1 + 10^13 f_Heaviside) (1 + f_quasi)\n"
            "Where P_SCm ?1 (unitless [SCm] penetration factor; ~1e-3 for planets).\n"
            "Scales magnetic energy for [SCm] interior interaction.\n"
-           "Example Sun t=0: U_m ?2.28e65 J/m� (P_SCm=1);\n"
-           "Planet: ?2.28e62 J/m� (P_SCm=1e-3, -3 orders).\n"
+           "Example Sun t=0: U_m ?2.28e65 J/mï¿½ (P_SCm=1);\n"
+           "Planet: ?2.28e62 J/mï¿½ (P_SCm=1e-3, -3 orders).\n"
            "Role: Full for stellar plasma, reduced for solid cores; [SCm] influence on strings.\n"
            "UQFF: Models penetration in jets/nebulae/formation; massless [SCm] dynamics.";
 }
@@ -153,14 +271,14 @@ void ScmPenetrationModule::printVariables() {
 //     double p = mod.computeP_SCm();
 //     std::cout << "P_SCm ? " << p << std::endl;
 //     double um_sun = mod.computeUmContribution(0.0);
-//     std::cout << "U_m (Sun) = " << um_sun << " J/m�\n";
+//     std::cout << "U_m (Sun) = " << um_sun << " J/mï¿½\n";
 //     std::cout << mod.getEquationText() << std::endl;
 //     mod.updateVariable("P_SCm", 1e-3);
 //     mod.printVariables();
 //     return 0;
 // }
 // Compile: g++ -o scm_test scm_test.cpp ScmPenetrationModule.cpp -lm
-// Sample: P_SCm=1; U_m?2.28e65 J/m� (Sun); scales for planetary [SCm].
+// Sample: P_SCm=1; U_m?2.28e65 J/mï¿½ (Sun); scales for planetary [SCm].
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
 ScmPenetrationModule Evaluation

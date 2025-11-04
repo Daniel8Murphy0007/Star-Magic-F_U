@@ -1,9 +1,9 @@
-// SurfaceMagneticFieldModule.h
+﻿// SurfaceMagneticFieldModule.h
 // Modular C++ implementation of the Surface Magnetic Field (B_s) in the Universal Quantum Field Superconductive Framework (UQFF).
 // This module computes B_s range [1e-4, 0.4] T for Sun; influences B_j in U_g3 magnetic strings (scaled by B_s / B_ref).
 // Pluggable: #include "SurfaceMagneticFieldModule.h"
 // SurfaceMagneticFieldModule mod; mod.computeU_g3_example(0.0); mod.updateVariable("B_s_min", new_value);
-// Variables in std::map; example for Sun at t=0; quiet Sun B_s=1e-4 T ? U_g3?4.5e45 J/m�.
+// Variables in std::map; example for Sun at t=0; quiet Sun B_s=1e-4 T ? U_g3?4.5e45 J/mï¿½.
 // Approximations: B_ref=0.4 T (max sunspot); cos(?_s t ?)=1; P_core=1; E_react=1e46.
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
@@ -16,11 +16,123 @@
 #include <iostream>
 #include <iomanip>
 
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
 class SurfaceMagneticFieldModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     double computeB_j(double t, double B_s);
     double computeU_g3_example(double t, double B_s);
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize with framework defaults (Sun)
@@ -51,6 +163,12 @@ public:
 
 // Constructor: Set framework defaults (Sun)
 SurfaceMagneticFieldModule::SurfaceMagneticFieldModule() {
+        enableDynamicTerms = true;
+        enableLogging = false;
+        learningRate = 0.001;
+        metadata["enhanced"] = "true";
+        metadata["version"] = "2.0-Enhanced";
+
     // Universal constants
     variables["B_s_min"] = 1e-4;                    // T (quiet)
     variables["B_s_max"] = 0.4;                     // T (sunspot)
@@ -121,8 +239,8 @@ std::string SurfaceMagneticFieldModule::getEquationText() {
            "U_g3 = k_3 * ? B_j * cos(?_s t ?) * P_core * E_react\n"
            "Where B_s = [1e-4, 0.4] T (Sun surface; quiet to sunspot).\n"
            "B_ref=0.4 T (max); scales string fields by surface B_s.\n"
-           "Example t=0, B_s=0.4 T: B_j?1e3 T, U_g3?1.8e49 J/m�;\n"
-           "B_s=1e-4 T: B_j?0.25 T, U_g3?4.5e45 J/m� (-4 orders).\n"
+           "Example t=0, B_s=0.4 T: B_j?1e3 T, U_g3?1.8e49 J/mï¿½;\n"
+           "B_s=1e-4 T: B_j?0.25 T, U_g3?4.5e45 J/mï¿½ (-4 orders).\n"
            "Role: Baseline magnetic strength for strings; variability in U_g3/disks.\n"
            "UQFF: Surface fields drive cosmic magnetism; extensible for planets.";
 }
@@ -142,14 +260,14 @@ void SurfaceMagneticFieldModule::printVariables() {
 //     double b_min = mod.computeB_s_min();
 //     std::cout << "B_s range: " << b_min << " to " << mod.computeB_s_max() << " T\n";
 //     double u_g3 = mod.computeU_g3_example(0.0, 1e-4);
-//     std::cout << "U_g3 (quiet Sun) = " << u_g3 << " J/m�\n";
+//     std::cout << "U_g3 (quiet Sun) = " << u_g3 << " J/mï¿½\n";
 //     std::cout << mod.getEquationText() << std::endl;
 //     mod.updateVariable("B_s_min", 5e-5);
 //     mod.printVariables();
 //     return 0;
 // }
 // Compile: g++ -o surface_b_test surface_b_test.cpp SurfaceMagneticFieldModule.cpp -lm
-// Sample: B_s [1e-4, 0.4] T; U_g3 quiet?4.5e45 J/m�; scales magnetic influence.
+// Sample: B_s [1e-4, 0.4] T; U_g3 quiet?4.5e45 J/mï¿½; scales magnetic influence.
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
 SurfaceMagneticFieldModule Evaluation

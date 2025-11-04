@@ -1,6 +1,6 @@
-// ScmReactivityDecayModule.h
+﻿// ScmReactivityDecayModule.h
 // Modular C++ implementation of the [SCm] Reactivity Decay Rate (?) in the Universal Quantum Field Superconductive Framework (UQFF).
-// This module computes ?=0.0005 day?� (~5.8e-6 s?�); used in E_react = 10^46 * exp(-? t) for decay in U_m, U_bi, etc.
+// This module computes ?=0.0005 day?ï¿½ (~5.8e-6 s?ï¿½); used in E_react = 10^46 * exp(-? t) for decay in U_m, U_bi, etc.
 // Pluggable: #include "ScmReactivityDecayModule.h"
 // ScmReactivityDecayModule mod; mod.computeE_react(0.0); mod.updateVariable("kappa_day", new_value);
 // Variables in std::map; example for Sun at t=0 (E_react=1e46); t=2000 days: ~3.68e45.
@@ -16,12 +16,124 @@
 #include <iostream>
 #include <iomanip>
 
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
 class ScmReactivityDecayModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
-    double computeKappa_s();  // ? in s?�
+    double computeKappa_s();  // ? in s?ï¿½
     double computeE_react(double t_day);
     double computeUmExample(double t_day);
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize with framework defaults
@@ -33,10 +145,10 @@ public:
     void subtractFromVariable(const std::string& name, double delta);
 
     // Core computations
-    double computeKappa_day();  // 0.0005 day?�
-    double computeKappa_s();    // ~5.8e-6 s?�
+    double computeKappa_day();  // 0.0005 day?ï¿½
+    double computeKappa_s();    // ~5.8e-6 s?ï¿½
     double computeE_react(double t_day);  // 1e46 * exp(-? t)
-    double computeUmExample(double t_day);  // Simplified U_m with E_react (J/m�)
+    double computeUmExample(double t_day);  // Simplified U_m with E_react (J/mï¿½)
 
     // Output descriptive text
     std::string getEquationText();
@@ -55,12 +167,18 @@ public:
 
 // Constructor: Set framework defaults
 ScmReactivityDecayModule::ScmReactivityDecayModule() {
+        enableDynamicTerms = true;
+        enableLogging = false;
+        learningRate = 0.001;
+        metadata["enhanced"] = "true";
+        metadata["version"] = "2.0-Enhanced";
+
     // Universal constants
-    variables["kappa_day"] = 0.0005;                // day?�
+    variables["kappa_day"] = 0.0005;                // day?ï¿½
     variables["day_to_s"] = 86400.0;                // s/day
     variables["E_react_base"] = 1e46;               // J
     variables["t_day"] = 0.0;                       // days
-    variables["mu_over_rj"] = 2.26e10;              // T m� (example)
+    variables["mu_over_rj"] = 2.26e10;              // T mï¿½ (example)
     variables["P_SCm"] = 1.0;                       // Normalized
     variables["heaviside_f"] = 1e11 + 1.0;          // 1 + 10^13 * 0.01
     variables["quasi_f"] = 1.01;                    // 1 + 0.01
@@ -101,12 +219,12 @@ void ScmReactivityDecayModule::subtractFromVariable(const std::string& name, dou
     addToVariable(name, -delta);
 }
 
-// Compute ? (day?�)
+// Compute ? (day?ï¿½)
 double ScmReactivityDecayModule::computeKappa_day() {
     return variables["kappa_day"];
 }
 
-// Compute ? in s?�
+// Compute ? in s?ï¿½
 double ScmReactivityDecayModule::computeKappa_s() {
     return computeKappa_day() / variables["day_to_s"];
 }
@@ -131,10 +249,10 @@ double ScmReactivityDecayModule::computeUmExample(double t_day) {
 
 // Equation text
 std::string ScmReactivityDecayModule::getEquationText() {
-    return "E_react = 10^46 * exp(-? t) (t days); ?=0.0005 day?� (~5.8e-6 s?�, timescale ~5.5 years).\n"
+    return "E_react = 10^46 * exp(-? t) (t days); ?=0.0005 day?ï¿½ (~5.8e-6 s?ï¿½, timescale ~5.5 years).\n"
            "In U_m, U_bi, U_i, U_gi: ... * E_react * ... (decays [SCm] reactivity).\n"
            "Example t=0: E_react=1e46 J; t=2000 days: ~3.68e45 J (~36.8%).\n"
-           "U_m (t=0): ?2.28e65 J/m�; t=2000: ?8.39e64 J/m�.\n"
+           "U_m (t=0): ?2.28e65 J/mï¿½; t=2000: ?8.39e64 J/mï¿½.\n"
            "Role: Gradual [SCm]-[UA] interaction loss; temporal evolution in jets/nebulae/mergers.\n"
            "UQFF: Models reactivity decay; energy dissipation over cosmic time.";
 }
@@ -154,7 +272,7 @@ void ScmReactivityDecayModule::printDecayEffects(double t_day) {
     double fraction = e_react / variables["E_react_base"];
     std::cout << "[SCm] Decay Effects at t=" << t_day << " days:\n";
     std::cout << "E_react = " << std::scientific << e_react << " J (" << fraction << " of initial)\n";
-    std::cout << "U_m example = " << um_ex << " J/m�\n";
+    std::cout << "U_m example = " << um_ex << " J/mï¿½\n";
 }
 
 // Example usage in base program (snippet)
@@ -162,7 +280,7 @@ void ScmReactivityDecayModule::printDecayEffects(double t_day) {
 // int main() {
 //     ScmReactivityDecayModule mod;
 //     double kappa = mod.computeKappa_day();
-//     std::cout << "? = " << kappa << " day?�\n";
+//     std::cout << "? = " << kappa << " day?ï¿½\n";
 //     mod.printDecayEffects(2000.0);
 //     std::cout << mod.getEquationText() << std::endl;
 //     mod.updateVariable("kappa_day", 0.001);
@@ -170,7 +288,7 @@ void ScmReactivityDecayModule::printDecayEffects(double t_day) {
 //     return 0;
 // }
 // Compile: g++ -o scm_decay_test scm_decay_test.cpp ScmReactivityDecayModule.cpp -lm
-// Sample: ?=5e-4 day?�; t=2000 days: E_react?3.68e45 J; U_m?8.39e64 J/m�.
+// Sample: ?=5e-4 day?ï¿½; t=2000 days: E_react?3.68e45 J; U_m?8.39e64 J/mï¿½.
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
 ScmReactivityDecayModule Evaluation

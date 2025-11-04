@@ -1,4 +1,4 @@
-// HeavisideFractionModule.h
+﻿// HeavisideFractionModule.h
 // Modular C++ implementation of the Heaviside Component Fraction (f_Heaviside) in the Universal Quantum Field Superconductive Framework (UQFF).
 // This module computes f_Heaviside=0.01 (unitless) and its scaling (1 + 10^13 * f_Heaviside) in Universal Magnetism U_m term.
 // Pluggable: #include "HeavisideFractionModule.h"
@@ -16,12 +16,124 @@
 #include <iostream>
 #include <iomanip>
 
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+#include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
 class HeavisideFractionModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     double computeHeavisideFactor();
     double computeUmBase(int j, double t);
     double computeUmContribution(int j, double t);
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Initialize with framework defaults
@@ -55,6 +167,12 @@ public:
 
 // Constructor: Set framework defaults
 HeavisideFractionModule::HeavisideFractionModule() {
+        enableDynamicTerms = true;
+        enableLogging = false;
+        learningRate = 0.001;
+        metadata["enhanced"] = "true";
+        metadata["version"] = "2.0-Enhanced";
+
     // Universal constants
     variables["f_Heaviside"] = 0.01;                // Unitless fraction
     variables["scale_Heaviside"] = 1e13;            // Amplification factor
@@ -144,7 +262,7 @@ std::string HeavisideFractionModule::getEquationText() {
     return "U_m = ?_j [ (?_j / r_j) (1 - e^{-? t cos(? t_n)}) ?_hat_j ] P_SCm E_react (1 + 10^13 f_Heaviside) (1 + f_quasi)\n"
            "Where f_Heaviside = 0.01 (unitless Heaviside fraction);\n"
            "Heaviside factor = 1 + 10^13 * 0.01 = 1 + 1e11 (amplifies ~10^11x).\n"
-           "Example j=1, t=0: U_m contrib ?2.28e65 J/m� (with); ?2.28e54 J/m� (without).\n"
+           "Example j=1, t=0: U_m contrib ?2.28e65 J/mï¿½ (with); ?2.28e54 J/mï¿½ (without).\n"
            "Role: Threshold-activated scaling in magnetic energy; nonlinear [SCm]/[UA] effects.\n"
            "UQFF: Amplifies small fraction for large impact in nebulae/quasars/jets.";
 }
@@ -163,8 +281,8 @@ void HeavisideFractionModule::printUmComparison(int j, double t) {
     double um_without = computeUmWithNoHeaviside(j, t);
     double amplification = um_with / um_without;
     std::cout << "U_m Comparison for j=" << j << " at t=" << t << " s:\n";
-    std::cout << "With Heaviside: " << std::scientific << um_with << " J/m�\n";
-    std::cout << "Without Heaviside: " << um_without << " J/m�\n";
+    std::cout << "With Heaviside: " << std::scientific << um_with << " J/mï¿½\n";
+    std::cout << "Without Heaviside: " << um_without << " J/mï¿½\n";
     std::cout << "Amplification: ~" << std::scientific << amplification << "x\n";
 }
 
@@ -181,7 +299,7 @@ void HeavisideFractionModule::printUmComparison(int j, double t) {
 //     return 0;
 // }
 // Compile: g++ -o heaviside_test heaviside_test.cpp HeavisideFractionModule.cpp -lm
-// Sample: Factor=1e11+1; U_m with=2.28e65 J/m� (~1e11x without).
+// Sample: Factor=1e11+1; U_m with=2.28e65 J/mï¿½ (~1e11x without).
 // Watermark: Copyright - Daniel T. Murphy, analyzed Oct 10, 2025.
 
 HeavisideFractionModule Evaluation

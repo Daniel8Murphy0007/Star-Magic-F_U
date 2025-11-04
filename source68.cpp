@@ -1,4 +1,4 @@
-// HydrogenUQFFModule.h
+﻿// HydrogenUQFFModule.h
 // Modular C++ implementation of UQFF for Red Dwarf Compression_E (43.e): Compressed Space Dynamics (E_space eq), Three-Leg Proofset, Hydrogen Levels n=1-4 (page 85-86).
 // Computes E_space scaled by Higgs freq/Earth precession; three-leg (cons, vac ratio, quantum scale); integrates prior Um/Ug3 for matter creation.
 // Plug into base (e.g., 'hydrogen_uqff_sim.cpp') via #include "HydrogenUQFFModule.h".
@@ -20,13 +20,116 @@
 #include <complex>
 #include <vector>
 
-enum class SystemType {
+
+#include <map>
+#include <vector>
+#include <functional>
+#include <memory>
+#include <algorithm>
+#include <fstream>
+#include <sstream>
+enum #include <map>
+#include <vector>
+#include <functional>
+#include <fstream>
+#include <sstream>
+#include <memory>
+#include <algorithm>
+
+// ===========================================================================================
+// SELF-EXPANDING FRAMEWORK: Dynamic Physics Term System
+// ===========================================================================================
+
+class PhysicsTerm {
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    virtual ~PhysicsTerm() {}
+    virtual double compute(double t, const std::map<std::string, double>& params) const = 0;
+    virtual std::string getName() const = 0;
+    virtual std::string getDescription() const = 0;
+    virtual bool validate(const std::map<std::string, double>& params) const { return true; }
+};
+
+class DynamicVacuumTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double amplitude;
+    double frequency;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    DynamicVacuumTerm(double amp = 1e-10, double freq = 1e-15) 
+        : amplitude(amp), frequency(freq) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double rho_vac = params.count("rho_vac_UA") ? params.at("rho_vac_UA") : 7.09e-36;
+        return amplitude * rho_vac * std::sin(frequency * t);
+    }
+    
+    std::string getName() const override { return "DynamicVacuum"; }
+    std::string getDescription() const override { return "Time-varying vacuum energy"; }
+};
+
+class QuantumCouplingTerm : public PhysicsTerm {
+private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
+    double coupling_strength;
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
+public:
+    QuantumCouplingTerm(double strength = 1e-40) : coupling_strength(strength) {}
+    
+    double compute(double t, const std::map<std::string, double>& params) const override {
+        double hbar = params.count("hbar") ? params.at("hbar") : 1.0546e-34;
+        double M = params.count("M") ? params.at("M") : 1.989e30;
+        double r = params.count("r") ? params.at("r") : 1e4;
+        return coupling_strength * (hbar * hbar) / (M * r * r) * std::cos(t / 1e6);
+    }
+    
+    std::string getName() const override { return "QuantumCoupling"; }
+    std::string getDescription() const override { return "Non-local quantum effects"; }
+};
+
+// ===========================================================================================
+// ENHANCED CLASS WITH SELF-EXPANDING CAPABILITIES
+// ===========================================================================================
+
+class SystemType {
     COMPRESSED_SPACE_85, COMPRESSED_SPACE_86, HYDROGEN_LEVELS, GENERIC
     // Extensible: Matter Creation
 };
 
 class HydrogenUQFFModule {
 private:
+    
+    // ========== CORE PARAMETERS (Original UQFF - Preserved) ==========
+    // Note: Can be extended with dynamic parameters via setVariable()
     std::map<std::string, double> variables;
     SystemType current_system;
     double computeE0();
@@ -34,6 +137,15 @@ private:
     double computePrecessionFactor();
     double computeQuantumScaling();
     double computeVacRatio();
+    // ========== SELF-EXPANDING FRAMEWORK MEMBERS ==========
+    std::map<std::string, double> dynamicParameters;
+    std::vector<std::unique_ptr<PhysicsTerm>> dynamicTerms;
+    std::map<std::string, std::string> metadata;
+    bool enableDynamicTerms;
+    bool enableLogging;
+    double learningRate;
+
+
 
 public:
     // Constructor: Defaults for compressed space (page 85)
@@ -75,8 +187,8 @@ public:
 // Constructor
 HydrogenUQFFModule::HydrogenUQFFModule(SystemType sys) : current_system(sys) {
     // Constants
-    variables["E_aether"] = 1.683e-10;      // J/m�
-    variables["V"] = 1e-27;                 // m�
+    variables["E_aether"] = 1.683e-10;      // J/mï¿½
+    variables["V"] = 1e-27;                 // mï¿½
     variables["higgs_freq"] = 1.25e34;      // Hz
     variables["precession_s"] = 1.617e11;   // s
     variables["spatial_config"] = 2.0;      // Spherical/toroidal
@@ -205,7 +317,7 @@ double HydrogenUQFFModule::computeUQFF(double t) {
 
 // Equation text
 std::string HydrogenUQFFModule::getEquationText() {
-    return "UQFF Hydrogen E (43.e): E_space = E0 � SCF � CF � LF � HFF � PTF � QSF (eq)\n"
+    return "UQFF Hydrogen E (43.e): E_space = E0 ï¿½ SCF ï¿½ CF ï¿½ LF ï¿½ HFF ï¿½ PTF ï¿½ QSF (eq)\n"
            "E0 = 1.683e-10 * 1e-27 ?1.683e-37 J\nSCF=2 (spherical/toroidal), CF=1, LF=5 (layers)\n"
            "HFF?8e-34, PTF?6.183e-13, QSF?3.333e-23; E_space?5.52e-104 J (page85)\n"
            "Three-Leg: Cons(E_in=E_out)~1, Vac Ratio?1.683e-97, Q Energy?4.136e-14 eV\n"
@@ -237,7 +349,7 @@ std::string HydrogenUQFFModule::getSolutions(double t, int layers) {
     ss << "E0 = " << E0_val << " J\nSCF=" << spatial_f << ", CF=" << comp_f << ", LF=" << layer_f << "\n";
     ss << "HFF=" << higgs_f << ", PTF=" << prec_f << ", QSF=" << q_scale << "\nE_space = " << E_sp << " J (~5.52e-104 page85)\n";
     ss << "Cons Leg ~" << cons_leg << "\nVac Leg=" << vac_leg << "\nQ Leg=" << q_leg << " eV\n";
-    ss << "Proofset = " << proofset << "\nUm = " << Um_v << " J/m�\nUg3 = " << Ug3_v << " J/m�\n";
+    ss << "Proofset = " << proofset << "\nUm = " << Um_v << " J/mï¿½\nUg3 = " << Ug3_v << " J/mï¿½\n";
     ss << "UQFF Total = " << uqff_total << "\nSM ESM = " << ESM << " J (high vs. UQFF low-energy).\n";
     return ss.str();
 }
@@ -274,7 +386,7 @@ void HydrogenUQFFModule::printVariables() {
 // Weaknesses / Recommendations:
 // - Compression: Fixed=1; add variable for toroidal rotational (page86).
 // - Proofset: Leg3 eV fixed; derive from h f (f=Higgs).
-// - Volume: V=1e-27 m� atomic; scale for reactor/galactic.
+// - Volume: V=1e-27 mï¿½ atomic; scale for reactor/galactic.
 // - Validation: Vs. Mayan precession exact (5125.36 yr=1.617e11 s precise).
 
 // Summary: Models compressed H dynamics for matter creation; unifies low-energy UQFF. Rating: 9.1/10.
