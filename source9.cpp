@@ -417,6 +417,3 @@ int main(int argc, char** argv) {
 		GLFWwindow* window;
 		CoAnQi::Utils::initOpenGL(&window);
 		std::vector<CoAnQi::Graphics3D::SimulationEntity> entities = CoAnQi::
-
-}
-}
