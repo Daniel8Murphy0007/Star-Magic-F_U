@@ -1,0 +1,10 @@
+^C:\USERS\TMSJD\SOURCE\REPOS\DANIEL8MURPHY0007\STAR-MAGIC-F_U\CMAKELISTS.TXT
+setlocal
+C:\CMake\bin\cmake.exe -SC:/Users/tmsjd/source/repos/Daniel8Murphy0007/Star-Magic-F_U -BC:/Users/tmsjd/source/repos/Daniel8Murphy0007/Star-Magic-F_U/build --check-stamp-file C:/Users/tmsjd/source/repos/Daniel8Murphy0007/Star-Magic-F_U/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

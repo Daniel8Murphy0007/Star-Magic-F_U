@@ -1,0 +1,4 @@
+C:/Users/tmsjd/source/repos/Daniel8Murphy0007/Star-Magic-F_U/build/CMakeFiles/verify_enhancements.dir
+C:/Users/tmsjd/source/repos/Daniel8Murphy0007/Star-Magic-F_U/build/CMakeFiles/test_enhanced_modules.dir
+C:/Users/tmsjd/source/repos/Daniel8Murphy0007/Star-Magic-F_U/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/tmsjd/source/repos/Daniel8Murphy0007/Star-Magic-F_U/build/CMakeFiles/ZERO_CHECK.dir
