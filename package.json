@@ -1,4 +1,10 @@
 {
+  "scripts": {
+    "start": "node index.js",
+    "test": "node integration_check.js",
+    "verify": "node h154_verify.js",
+    "demo": "node quick_demo.js"
+  },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.68.0"
   }
